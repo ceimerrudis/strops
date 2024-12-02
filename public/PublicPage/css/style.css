@@ -1,0 +1,778 @@
+.additional_picture {
+    object-fit: cover;
+    width: 100%;
+    display: block;
+    height: 400px;
+}
+
+.additional_picture2 {
+    object-fit: cover;
+    width: 100%;
+    display: block;
+}
+
+@media (max-width: 992px) {
+    .additional_picture {
+        display: none;
+		/*width:400px;
+		margin-right: auto;
+		margin-left: auto;*/
+    }
+	.maininfo
+	{
+		font-size: 20px;
+		
+	}
+   
+}
+.numbers
+{
+	font-family: system-ui;
+	
+}
+#home {
+    min-height: 800px !important;
+}
+.additionalSection
+{
+	display: block;
+    position: relative;
+    overflow: hidden;
+    padding: 80px 0;
+}
+
+.section  {
+    min-height: 800px !important;
+}
+#contact {
+    min-height: 1px !important;
+}
+#contact {
+    max-height: 500px !important;
+}
+.address {
+    font-size: 15px;
+}
+.top {
+    margin-top: 250px;
+}
+.container-top {
+    width: 100%;
+    padding-left: 50px;
+    padding-right: 50px;
+}
+.black_row {
+    background-color: #181818;
+}
+.serv {
+    min-height: 600px;
+    width: 20%;
+    float: left;
+    font-size: 16px;
+}
+.serv_name {
+    font-size: 22px;
+}
+.wire_bckgrnd {
+    background: url('../images/wire_background2.png');
+    background-size: contain;
+    background-repeat: repeat-x;
+}
+@media (min-width: 1300px) {
+    .container-top {
+        width: 100%;
+    }
+    .container {
+        width: 90% !important;
+    }
+}
+@media (max-width: 1580px) {
+    .top-nav {
+        /*font-size: 12px !important;*/
+    }
+    .serv {
+        font-size: 12px;
+    }
+    .serv_name {
+        font-size: 16px;
+    }
+}
+@media (max-width: 1200px) {
+    .container-top {
+        width: 100%;
+    }
+    .top-nav {
+        font-size: 12px !important;
+    }
+    .serv {
+        min-height: 590px;
+        font-size: 12px;
+		width: 33%;
+    }
+    .serv_name {
+        font-size: 14px;
+    }
+}
+@media (max-width: 770px) {
+    .serv {
+        min-height: 300px;
+        font-size: 12px;
+		width: 100%;
+    }
+}
+@media (max-width: 1182px) {
+    .maintitle {
+		width: auto;
+		margin-left: auto;
+		margin-right: auto;
+    }
+}
+@media (max-width: 1000px) {
+	.megamenu{
+		/*height: 60px;*/
+	}
+    .serv {
+        font-size: 10px;
+    }
+
+    .serv_name {
+        font-size: 11px;
+    }
+}
+@media (max-width: 992px) {
+    #contact {
+        min-height: 1000px !important;
+    }
+}
+@media (max-width: 976px) {
+    .container-top {
+        width: 100%;
+    }
+}
+@media (max-width: 984px) {
+    .top {
+        margin-top: 20%;
+    }
+
+}
+
+@media (min-width: 1200px) {
+    .additional_picture {
+        display: block;
+    }
+}
+@media (max-width: 412px) {
+	.container-top
+	{
+		padding-left: 0px;
+		padding-right:  0px;
+	}
+	.white
+	{
+		font-size: 30px;
+		margin-top: 40px;
+	}
+}
+@media (max-width: 300px) {
+	span
+	{
+		font-size: 16px !important;
+	}
+}
+
+    /*:root{
+	--blue: #b9c9c3; /*#aed9e6;#22ad9f;*/
+    /*--darkBlue: #3a6687;#aee6cc;#1b7789;* /
+	--headerHeight: 120px;
+	--white: #ffffff;
+}
+/**{
+    box-sizing: border-box;
+	font-family: sans-serif;
+	color: #212121;
+}* /
+
+#labelName{
+    width: 35%;
+    display: block;
+    float: left;
+}
+#labelLastName{
+    width: 35%;
+    display: block;
+    float: left;
+}
+#name
+{
+    margin-right: 25px;
+    width: 65%;
+    float: left;
+    border-radius: 2px;
+    border: 2px black solid;
+}
+#lastName
+{
+    margin-right: 25px;
+    width: 65%;
+    float: left;
+    border-radius: 2px;
+    border: 2px black solid;
+}
+#issue
+{
+    border-radius: 8px;
+    border: 2px black solid;
+    width: 100%;
+    height: 50%;
+    resize: none;
+}
+#issueSubmit
+{
+    float: right;
+    width: 100px; 
+    height: 40px; 
+}
+#closeIssueBtn
+{
+    position: absolute;
+    top: 8px; 
+    right: 8px; 
+    width: 100px; 
+    height: 40px; 
+}
+#disablingDiv
+{
+    display: none;
+    z-index:1001;
+    position: fixed; 
+    top: 0%; 
+    left: 0%; 
+    width: 100%; 
+    height: 100%; 
+    background-color: white; 
+    opacity:.1; 
+    filter: alpha(opacity=00); 
+}
+#issueForm
+{
+    padding: 15px;
+    width: 100%;
+}
+.half
+{
+    float: left;
+    width: 49%;
+}
+.blueLine
+{
+    color: var(--darkBlue);
+    width: 100%;
+    margin-bottom: 1px;
+    margin-bottom: 20px;
+}
+.googleMap
+{
+    float: left;
+    width: 55%;
+}
+.servicesArrowIcon
+{
+    float: right;
+}
+.darbaL
+{
+    list-style-type: none;
+    font-size: 14px;
+}
+.contactBox
+{
+    margin: 25px;
+    padding: 5px;
+    border: 2px var(--darkBlue) solid;
+    float: left;
+    width: 40%;
+}
+.contactFooter
+{
+    display: inline-block;
+    width: 33%;
+    float: left;
+}
+.mainInfoList
+{
+    text-align: center;
+    list-style-type: none;
+    font-size: 22px;
+    padding-left: 0px;
+}
+.mainInfoTxt
+{
+    font-size: 30px;
+    text-align: fill;
+}
+.contactTxt
+{
+    font-size: 18px;
+}
+.contactTxtBtm
+{
+    font-size: 18px;
+    display: block;
+    text-align: center;
+}
+button:hover
+{
+	opacity: 0.85;
+}
+a:hover
+{  
+    text-decoration: underline;
+	cursor:pointer;
+	opacity: 0.5;
+}
+.button {
+  font-size: 20px;
+  font-style: bold;
+  padding: 8px 24px 8px 24px;
+  background-color: none;
+}
+.a{
+  background: none!important;
+  border: none;
+  padding: 0!important;
+  /*optional* /
+  font-family: arial, sans-serif;
+  /*input has OS specific font-family* /
+  color: #069;
+  text-decoration: underline;
+  cursor: pointer;
+  cursor: pointer;
+}
+.darkBlueStripe
+{
+    width: 100%;
+    background-color: var(--darkBlue);
+    height: 20px;
+}
+.darkBlueStripeSmall
+{
+    width: 100%;
+    background-color: var(--darkBlue);
+    height: 10px;
+}
+.navigationFooter
+{
+	width: 33%;
+	height: auto;
+	margin-left: auto;
+	margin-right: auto;
+	display: inline-block;
+	float: left;
+}
+.navWrap
+{
+    height: 100%;
+}
+/*.navigation
+{
+	height: 100%;
+
+	font-size: 20px;
+	overflow:hidden;
+}* /
+.navigationBtnBtm
+{
+    text-decoration: none;
+    text-align: center;
+    display: block;
+	font-size: 18px;
+}
+#closeIssueBtn2
+{
+    display: none;
+}
+.x
+{
+    width: 100%;
+    height: 100%;
+}
+.navigationBtn
+{
+    text-decoration: none;
+	padding-top: 10px;
+	margin-top: 15px;
+	margin-bottom: 45px;
+	margin-left: 15px;
+	padding-left: 0px;
+	padding-right: 0px;
+	float: right;
+	height: 40px;
+	font-size: 18px;
+}
+.headerBox1
+{
+	padding-top: 25px;
+	height: 70px;
+	width: 100%;
+}
+.mainImg
+{
+	width: 80%;
+	margin-left: auto;
+	margin-right: auto;
+	
+}
+.footerbox1
+{
+	padding-top: 35px;
+	padding-bottom: 5px;
+	height: 200px;
+	width: 100%;
+}
+.logo
+{
+    height: 70px;
+	display: block;
+	float: left;
+}
+.logob
+{
+    width: 33%;
+    margin-top: 15px;
+    padding-right: 70px;
+	float: left;
+}
+body
+{
+	margin: 0px;
+	background-color: var(--white);
+}
+.headOverFlow
+{
+    overflow: auto;
+}
+.fixPos
+{
+	position: fixe;
+}
+.header
+{
+	background-color: var(--blue);
+	width: 100%;
+	margin: auto;
+	height: var(--headerHeight);
+	padding-top: 20px;/* javascript  * /
+}
+.line
+{
+	width: 100%;
+	display: block;
+	margin-bottom: 30px; 
+	color: white;
+}
+.adress{
+	width: 100%;
+	font-size: 15px;
+}
+.bNav
+{
+	width: auto;
+	height: 100px;
+	display: block;
+	float: right;
+}
+.bottomPadding{
+    padding-top: 0px;
+}
+.topPadding
+{
+    padding-top: 20px;
+}
+.collapsible
+{
+    /*color: var(--darkBlue);* /
+    text-align: left;
+    width: 60%;
+    font-size: 26px;
+    border: none, 1px solid black, none, 1px solid black;
+    margin-bottom: 8px;
+    background-color: #cfcfcf;/*var(--white);* /
+}
+.servicesColumn
+{
+    width: 60%;
+    float: left;
+}
+.servicesImg{
+    float: left;
+    width: 40%;
+}
+.infoTxt
+{
+    font-size: 22px;
+}
+.title
+{
+    text-align: center;
+    font-size: 36px;
+    color: var(--darkBlue);
+}
+.servicesContent
+{
+    padding-left: 30px;
+    display: none;
+    overflow: hidden;
+}
+.footer
+{
+	background-color: var(--blue);
+	width: 100%;
+	margin: auto;
+	/*height: 340px;* /
+}
+#buffer
+{
+	width: 90%;
+	height: var(--headerHeight);
+}
+.content
+{
+	max-width: 1200px;
+	margin: 0px auto 0px auto;
+}
+.fullContent
+{
+    width: 90%;
+	max-width: 1800px;
+	margin: 0px auto 0px auto;
+}
+#middle
+{
+	padding-bottom: 30px;
+	padding-top: 30px;
+}
+@media only screen and (max-width: 820px) {
+    #name
+    {
+        display: block;
+    }
+    #issueSubmit
+    {
+        font-size: 12px;
+        position: absolute;
+        bottom: 8px; 
+        right: 8px; 
+        width: 80px; 
+        height: 30px; 
+    }
+    #closeIssueBtn
+    {
+        font-size: 12px;
+        position: absolute;
+        top: 8px; 
+        right: 8px; 
+        width: 80px; 
+        height: 30px; 
+    }
+    :root{
+        --headerHeight: 90px;
+    }
+    .footer
+    {
+    	height: 280px;
+    }
+    .footerbox1
+    {
+    	padding-top: 25px;
+    	padding-bottom: 0px;
+    	height: 120px;
+    }
+    .logo
+    {
+        width: auto;
+        height: 50px;
+    }
+    .logob
+    {
+        width:30%;
+        height: auto;
+    }
+    .mainInfoList
+    {
+        font-size: 16px;
+    }
+    .mainInfoTxt
+    {
+        font-size: 18px;
+    }
+    .navigationBtnBtm
+    {
+        font-size: 16px;
+        padding-top: 10px;
+    	margin-top: 25px;
+    	margin-bottom: 0px;
+    	margin-left: 15px;
+    	padding-left: 0px;
+    	padding-right: 0px;
+    }
+    .navigationBtn
+    {
+        font-size: 16px;
+        padding-top: 10px;
+    	margin-top: 5px;
+    	margin-bottom: 0px;
+    	margin-left: 15px;
+    	padding-left: 0px;
+    	padding-right: 0px;
+    }
+    .headerBox1
+    {
+    	padding-top: 20px;
+    	height: 50px;
+    	width: 100%;
+    }
+    .navigationFooter
+    {
+        margin-top: 10px;
+    	/*height: 100%;
+    	float: right;
+    	font-size: 20px;* /
+    }
+    .adress
+    {
+        font-size: 12px;
+    }
+}
+@media only screen and (max-width: 565px) {
+    /* jump top navigation * /
+    :root{
+        --headerHeight: 140px;
+    }
+    .navigationFooter
+    {
+        display: block;
+        width: 100%;
+    }
+    .footerbox1
+    {
+    	padding-top: 25px;
+    	padding-bottom: 0px;
+    	height: 180px;
+    }
+    .logob
+    {
+        width:40%;
+        height: auto;
+    }
+    .navigationBtnBtm
+    {
+        text-align: center;
+        width: 30%;
+        font-size: 16px;
+        padding-top: 10px;
+    	margin-top: 5%;
+    	margin-bottom: 0px;
+    	margin-left: 0px;
+    	margin-right: 5%;
+    	padding-left: 0px;
+    	padding-right: 0px;
+    }
+    .navigationBtn
+    {
+        text-align: center;
+        width: 30%;
+        font-size: 14px;
+        padding-top: 5px;
+    	margin-top: 5%;
+    	margin-bottom: 0px;
+    	margin-left: 0px;
+    	margin-right: 5%;
+    	padding-left: 0px;
+    	padding-right: 0px;
+    }
+    .lastBtn
+    {
+        margin-right: 0px;
+    }
+    .navigation
+    {
+        height: 60px;
+        display: block;
+        width: 100%;
+    }
+}
+@media only screen and (max-width: 420px) {
+    #labelName{
+        width: 70%;
+        display: block;
+    }
+    #issueSubmit
+    {
+        font-size: 12px;
+        position: absolute;
+        bottom: 8px; 
+        right: 8px; 
+        width: 80px; 
+        height: 30px; 
+    }
+    #name
+    {
+        width: 80%;
+    }
+    #closeIssueBtn
+    {
+        display: none;
+    }
+    #closeIssueBtn2
+    {
+        display: block;
+        font-size: 12px;
+        position: absolute;
+        top: 8px; 
+        right: 8px; 
+        width: 20px; 
+        height: 20px; 
+    }
+    .navigationBtn
+    {
+        font-size: 10px;
+    }
+    .navigationBtnBtm
+    {
+        font-size: 12px;
+    }
+    .mainInfoList
+    {
+        font-size: 12px;
+    }
+    .mainInfoTxt
+    {
+        font-size: 14px;
+    }
+    .footerbox1
+    {
+    	padding-top: 0px;
+    	height: 130px;
+    }
+    .footer
+    {
+    	height: 180px;
+    }
+    .adress
+    {
+        font-size: 8px;
+    }
+    .line
+    {
+    	margin-bottom: 10px; 
+    }
+    .logob
+    {
+        width: auto;
+        height: 50px;
+    }
+    .navigationFooter
+    {
+        margin-top: 0px;
+    }
+}*/

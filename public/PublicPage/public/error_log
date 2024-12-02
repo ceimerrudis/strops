@@ -1,0 +1,19 @@
+[16-Dec-2021 15:48:09 UTC] PHP Parse error:  syntax error, unexpected 'mail' (T_STRING) in /home/ynmhthe4fdyh/public_html/template/issue_handler.php on line 10
+[16-Dec-2021 15:53:46 UTC] PHP Parse error:  syntax error, unexpected 'mail' (T_STRING) in /home/ynmhthe4fdyh/public_html/template/issue_handler.php on line 10
+[16-Dec-2021 16:35:08 UTC] PHP Parse error:  syntax error, unexpected 'mail' (T_STRING) in /home/ynmhthe4fdyh/public_html/template/issue_handler.php on line 10
+[16-Dec-2021 16:37:26 UTC] PHP Parse error:  syntax error, unexpected 'mail' (T_STRING) in /home/ynmhthe4fdyh/public_html/template/issue_handler.php on line 10
+[16-Dec-2021 16:43:46 UTC] PHP Parse error:  syntax error, unexpected 'mail' (T_STRING) in /home/ynmhthe4fdyh/public_html/template/issue_handler.php on line 10
+[16-Dec-2021 16:47:22 UTC] PHP Parse error:  syntax error, unexpected 'mail' (T_STRING) in /home/ynmhthe4fdyh/public_html/template/issue_handler.php on line 10
+[16-Dec-2021 16:53:06 UTC] PHP Parse error:  syntax error, unexpected 'mail' (T_STRING) in /home/ynmhthe4fdyh/public_html/template/issue_handler.php on line 10
+[16-Dec-2021 16:54:07 UTC] PHP Parse error:  syntax error, unexpected 'mail' (T_STRING) in /home/ynmhthe4fdyh/public_html/template/issue_handler.php on line 10
+[16-Dec-2021 16:59:44 UTC] PHP Parse error:  syntax error, unexpected 'mail' (T_STRING) in /home/ynmhthe4fdyh/public_html/template/issue_handler.php on line 10
+[16-Dec-2021 17:00:34 UTC] PHP Parse error:  syntax error, unexpected 'mail' (T_STRING) in /home/ynmhthe4fdyh/public_html/template/issue_handler.php on line 10
+[16-Dec-2021 17:00:38 UTC] PHP Parse error:  syntax error, unexpected 'mail' (T_STRING) in /home/ynmhthe4fdyh/public_html/template/issue_handler.php on line 10
+[16-Dec-2021 17:00:38 UTC] PHP Parse error:  syntax error, unexpected 'mail' (T_STRING) in /home/ynmhthe4fdyh/public_html/template/issue_handler.php on line 10
+[16-Dec-2021 17:00:39 UTC] PHP Parse error:  syntax error, unexpected 'mail' (T_STRING) in /home/ynmhthe4fdyh/public_html/template/issue_handler.php on line 10
+[16-Dec-2021 17:01:21 UTC] PHP Parse error:  syntax error, unexpected 'mail' (T_STRING) in /home/ynmhthe4fdyh/public_html/template/issue_handler.php on line 10
+[31-Dec-2021 13:35:57 UTC] PHP Parse error:  syntax error, unexpected '"asssaaa"' (T_CONSTANT_ENCAPSED_STRING), expecting ')' in /home/ynmhthe4fdyh/public_html/template/issue_handler.php on line 4
+[31-Dec-2021 13:36:20 UTC] PHP Parse error:  syntax error, unexpected '"asssaaa"' (T_CONSTANT_ENCAPSED_STRING), expecting ')' in /home/ynmhthe4fdyh/public_html/template/issue_handler.php on line 4
+[13-Feb-2022 17:22:38 UTC] PHP Warning:  Undefined array key "submit" in /home/ynmhthe4fdyh/public_html/template/index.php on line 2
+[13-Feb-2022 17:22:46 UTC] PHP Warning:  Undefined array key "submit" in /home/ynmhthe4fdyh/public_html/template/index.php on line 2
+[13-Feb-2022 17:23:42 UTC] PHP Warning:  Undefined array key "submit" in /home/ynmhthe4fdyh/public_html/template/index.php on line 2
