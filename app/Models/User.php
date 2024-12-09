@@ -2,47 +2,97 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory;
+    use SoftDeletes;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
-    protected $fillable = [
-        'name',
-        'email',
-        'password',
-    ];
+    protected $table = 'users';
+    protected $primaryKey = 'id';
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
+    protected $guarded = ['id'];
+
     protected $hidden = [
         'password',
-        'remember_token',
+        'deleted_at',
+        'created_at',
+        'updated_at',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
+    protected $fillable = [
+        'username',
+        'password',
+        'name',
+        'lname',
+        'type',
+        'lastUsedVehicle',
+        'lastUsedObject',
+    ];
+
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime',
+            'type' => 'integer',
+            'created_at' => 'datetime:Y-m-d H:i:s',
+            'updated_at' => 'datetime:Y-m-d H:i:s',
+            'deleted_at' => 'datetime:Y-m-d H:i:s',
             'password' => 'hashed',
         ];
+    }
+
+    public function Reservations()
+    {
+        return $this->hasMany(Reservation::class, 'user');
+    }
+
+    public function VehicleUses()
+    {
+        return $this->hasMany(VehicleUse::class, 'user');
+    }
+
+    public function CreateUser($data)
+    {
+        if(isset($data['password'])) {
+            $data['password'] = Hash::make($data['password']);
+        }
+        return $this->create($data);
+    }
+
+    public function UpdateUser($id, $data)
+    {
+        if(isset($data['password'])) {
+            $data['password'] = Hash::make($data['password']);
+        }
+
+        $user = $this->find($id);
+        if ($user) {
+            $user->update($data);
+            return $user;
+        }
+        return null;
+    }
+
+    public function DeleteUser($id)
+    {
+        $user = $this->find($id);
+        if ($user) {
+            $user->delete();
+            return true;
+        }
+        return false;
+    }
+
+    public function GetUser($id)
+    {
+        return $this->find($id);
+    }
+
+    public function GetAllUsers()
+    {
+        return $this->all();
     }
 }
