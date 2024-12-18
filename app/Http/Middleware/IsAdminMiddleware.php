@@ -17,6 +17,6 @@ class IsAdminMiddleware
         if($request->user() && $request->user()->type == UserTypes::ADMIN)
             return $next($request);
         
-        return response()->json(['message' => 'Šī lapa domāta adminiem TODO'], 429);
+        return redirect()->route('unauthorized');
     }
 }

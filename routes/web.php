@@ -1,6 +1,5 @@
 <?php
 
-
 use App\Http\Middleware\AuthenticationMiddleware;
 use App\Http\Middleware\IsAdminMiddleware;
 
@@ -13,55 +12,68 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware(AuthenticationMiddleware::class)->group(function () {
     Route::middleware(IsAdminMiddleware::class)->group(function () {
-        //admin model
-
+        //Administratoru modulis
         //Funkcija PVIR.
-        Route::post('/izveidot', [AdminController::class, 'CreateUser'])->name("create");  
-        Route::get('/izveidot', [AdminController::class, 'CreateUserView']);  
-        
+        Route::post('/izveidot', [AdminController::class, 'CreateEntry'])->name("create");  
+        Route::get('/izveidot', [AdminController::class, 'ViewCreateEntryPage']);  
         //Funkcija RDIR.
-        Route::post('/rediget', [AdminController::class, 'UpdateUser'])->name("edit");
-        Route::get('/rediget', [AdminController::class, 'CreateUserView']);  
-
+        Route::post('/rediget', [AdminController::class, 'UpdateEntry'])->name("edit");
+        Route::get('/rediget', [AdminController::class, 'ViewUpdateEntryPage']); 
         //Funkcija DZIR.
-        Route::post('/dzest', [AdminController::class, 'DeleteUser'])->name("delete");  //add  error
-        
+        Route::post('/dzest', [AdminController::class, 'DeleteEntry'])->name("delete");  //add  error
         //Funkcija APIR.
-        Route::get('/apskatitVisus', [AdminController::class, 'CreateUserView']); //add error
-
+        Route::get('/apskatitVisus', [AdminController::class, 'ViewAllEntriesPage']); //add error
         //funkcija RKLT izpildīta ar jquery un ajax
-        Route::get('/todaysCalendarData', [AdminController::class, 'RecalculateTime']);
+        Route::get('/parrekinatlaiku', [AdminController::class, 'RecalculateTime']);
     });
 
-    //user 
-    Route::post('/startUsing', [VehicleUseController::class, 'StartUsingVehicle'])->name("startUsing");  
-    Route::get('/startUsing', [VehicleUseController::class, 'StartUsingVehicleView'])->name("startUsingView"); 
-    Route::get('/confirm', [VehicleUseController::class, 'ConfirmVehicleUsage']); 
-    Route::post('/stopUsing', [VehicleUseController::class, 'StopUsingVehicle'])->name("stopUsing");
-    Route::get('/stopUsing', [VehicleUseController::class, 'StopUsingVehicleView']);
-    Route::get('/myDrives', [VehicleUseController::class, 'MyVehicleUses'])->name("myVehicleUses");  
-    Route::get('/myActiveDrives', [VehicleUseController::class, 'MyActiveVehicleUses'])->name("myActiveVehicleUses");  
+    //Objektu modulis
+    //Funkcija ATJO
+    Route::get('/atjaunotObjektus', [ObjectController::class, 'UpdateObjects']);
+    //Funkcija PVAT
+    Route::get('/pievienotAtskaiti', [ObjectController::class, 'CreateReport']);
+    Route::post('/pievienotAtskaiti', [ObjectController::class, 'CreateReport']);
+    //Funkcija RDAT
+    Route::get('/redigetAtskaiti', [ObjectController::class, 'UpdateReport']);
+    Route::post('/redigetAtskaiti', [ObjectController::class, 'UpdateReport']);
+    //Funkcija SVAT
+    Route::get('/apskatitatskaites', [ObjectController::class, 'ViewReports']);
+    
+    //Rezervāciju modulis
+    //Funkcija AVRZ
+    Route::get('/manasRezervacijas', [ReservationController::class, 'ViewMyReservationsPage']);
+    //Funkcija RZKL
+    Route::get('/kalendars', [ReservationController::class, 'ViewCalendarPage']);
+    //Funkcija RZIZ
+    Route::post('/izveidotRezervaciju', [ReservationController::class, 'CreateReservation']);
+    //Funkcija RLIZ
+    Route::post('/izveidotRezervacijuUnLietojumu', [ReservationController::class, 'CreateReservationAndUse']);
 
-    Route::get('/makeReservation', [ReservationController::class, 'MakeReservation'])->name("makeReservation");
-    Route::post('/makeReservationOrStartUsing', [ReservationController::class, 'ReservationOrUse'])->name("makeReservationOrStartUsing");
-    
-    Route::post('/removeReservation', [ReservationController::class, 'RemoveReservation'])->name("removeReservation");   
-    Route::get('/myReservations', [ReservationController::class, 'MyReservations'])->name("myReservations");
-    
-    Route::get('/vehicleReservationSelection', [ReservationController::class, 'GetReservationSelection'])->name("reservationS");
-    
-    Route::get('/user', [UserController::class, 'UserView']);
-    
-    Route::get('/calendarData', [CalendarController::class, 'GetCalendar']);
-    Route::get('/todaysCalendarData', [CalendarController::class, 'GetTodaysCalendar']);
-    Route::get('/logout', [UserController::class, 'Logout']);
+    //Lietojumu modulis
+    //Funkcija LTSK
+    Route::post('/saktLietojumu', [VehicleUseController::class, 'StartVehicleUse']);
+    //Funkcija LTBG
+    Route::post('/beigtLietojumu', [VehicleUseController::class, 'FinishVehichleUse']);
+    //Funkcija LTAP
+    Route::get('/maniPabeigtieLietojumi', [VehicleUseController::class, 'ViewMyFinishedVehichleUsesPage']);
+    //Funkcija ALTA
+    Route::get('/maniNepabeigtieLietojumi', [VehicleUseController::class, 'ViewMyActiveVehichleUsesPage']);
 
-    Route::get('/synchronizeObjects', [ObjectController::class, 'synchronizeObjects']);
-
-    Route::get('/mail', [VehicleUseController::class, 'SendM']);
+    //Lietotāju modulis
+    //Funkcija ATKT
+    Route::get('/logout', function () { return redirect('/atteikties'); });
+    Route::get('/atteikties', [UserController::class, 'Logout']);
 });
+//Funkcijas PTKT ceļi
+//Pievienošanās ceļš nosaukts arī angliski lai vieglāk piekļūt lapai
+Route::get('/login', function () { return redirect('/pieteikties'); });
+Route::get('/pieteikties', [UserController::class, 'ViewLoginPage'])->name("login");
+Route::post('/pieteikties', [UserController::class, 'RecieveLogin']);
 
-Route::view('/unauthorized', 'main.unauthorized')->name("unauthorized"); 
-Route::get('/login', [UserController::class, 'ShowLogin'])->name("login");
-Route::post('/login', [UserController::class, 'RecieveLogin']);
-Route::view('/', 'main.publicPage')->name("public");
+
+//Papildus lapas kas neitilpst nevienā moduilī 
+//Publiskās lapas ceļš
+Route::view('/', 'publicPage')->name("public"); 
+
+//Šī ir sistēmas kļūdas lapa ko redz pēc tam kad veikts pieprasījums bez nepieciešamajām tiesībām. 
+Route::view('/unauthorized', 'unauthorized')->name("unauthorized");

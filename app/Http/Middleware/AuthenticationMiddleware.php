@@ -15,5 +15,7 @@ class AuthenticationMiddleware
     {
         if($request->user())
             return $next($request);
+        
+        return redirect()->route('unauthorized');
     }
 }

@@ -12,7 +12,6 @@ enum UserType: int
         return match($value) {
             self::ADMIN->value => 'administrators',
             self::USER->value => 'darbinieks',
-            default => 'unused',
         };
     }
     public static function GetAllEnums()
