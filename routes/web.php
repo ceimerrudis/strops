@@ -14,11 +14,11 @@ Route::middleware(AuthenticationMiddleware::class)->group(function () {
     Route::middleware(IsAdminMiddleware::class)->group(function () {
         //Administratoru modulis
         //Funkcija PVIR.
-        Route::post('/izveidot', [AdminController::class, 'CreateEntry'])->name("create");  
         Route::get('/izveidot', [AdminController::class, 'ViewCreateEntryPage']);  
+        Route::post('/izveidot', [AdminController::class, 'CreateEntry'])->name("create");  
         //Funkcija RDIR.
-        Route::post('/rediget', [AdminController::class, 'UpdateEntry'])->name("edit");
         Route::get('/rediget', [AdminController::class, 'ViewUpdateEntryPage']); 
+        Route::post('/rediget', [AdminController::class, 'UpdateEntry'])->name("edit");
         //Funkcija DZIR.
         Route::post('/dzest', [AdminController::class, 'DeleteEntry'])->name("delete");  //add  error
         //Funkcija APIR.
@@ -31,10 +31,10 @@ Route::middleware(AuthenticationMiddleware::class)->group(function () {
     //Funkcija ATJO
     Route::get('/atjaunotObjektus', [ObjectController::class, 'UpdateObjects']);
     //Funkcija PVAT
-    Route::get('/pievienotAtskaiti', [ObjectController::class, 'CreateReport']);
+    Route::get('/pievienotAtskaiti', [ObjectController::class, 'ViewCreateReportPage']);
     Route::post('/pievienotAtskaiti', [ObjectController::class, 'CreateReport']);
     //Funkcija RDAT
-    Route::get('/redigetAtskaiti', [ObjectController::class, 'UpdateReport']);
+    Route::get('/redigetAtskaiti', [ObjectController::class, 'ViewUpdateReportPage']);
     Route::post('/redigetAtskaiti', [ObjectController::class, 'UpdateReport']);
     //Funkcija SVAT
     Route::get('/apskatitatskaites', [ObjectController::class, 'ViewReports']);
@@ -43,7 +43,7 @@ Route::middleware(AuthenticationMiddleware::class)->group(function () {
     //Funkcija AVRZ
     Route::get('/manasRezervacijas', [ReservationController::class, 'ViewMyReservationsPage']);
     //Funkcija RZKL
-    Route::get('/kalendars', [ReservationController::class, 'ViewCalendarPage']);
+    Route::get('/kalendars', [ReservationController::class, 'ViewCalendarPage'])->name("calendar");
     //Funkcija RZIZ
     Route::post('/izveidotRezervaciju', [ReservationController::class, 'CreateReservation']);
     //Funkcija RLIZ

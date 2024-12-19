@@ -18,7 +18,8 @@ class MultipleRequestProtectionMiddleware
         //Veic šo pārbaudi tikai datu sūtīšanai
         // jo pastāv liela iespēja ka lietotājs tiešām gribēs pieprasīt vienu un to pašu lapu vairākas reizes, 
         // bet ir maza iespēja ka viņš vēlas saglabāt divus vienādus datus dažu sekunžu laikā.
-        if (!$request->isMethod('post'))
+        //Ja nav zināms sūtītājs  tad nevaram pārbaudīt vai šis ir duplikāt pieprasījums.
+        if (!$request->isMethod('post') || $request->user() == null)
             return $next($request);
 
         $userId = $request->user()->id;

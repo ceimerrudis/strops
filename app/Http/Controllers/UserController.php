@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Str;
+use App\Http\Requests\LoginData;
 
 //Lietotāju modulis
 class UserController extends Controller
@@ -31,7 +32,7 @@ class UserController extends Controller
                     'token' => $entryToken,
                 ]);
             }
-            return redirect(route("reservationS"));
+            return redirect(route("calendar"));
         }
         
         $msg = Text(100);
@@ -44,7 +45,7 @@ class UserController extends Controller
         //Ja lietotājs jau ir pieteicies tad aizved viņu uz galveno strops lapu
         if(Auth::check())
         {
-            return redirect(route("kalendars"));
+            return redirect(route("calendar"));
         }
         
         //Pārbauda vai lietotājam ir derīgs pieteikšanās cepums.
@@ -55,7 +56,7 @@ class UserController extends Controller
             if($user != null)
             {
                 Auth::login($user);
-                return redirect(route("kalendars"));
+                return redirect(route("calendar"));
             }
         }
         //msg pārbaude jāveic lai paziņotu lietotājam ja kāds no ievadlaukiem nav pareizi aizpildīts.

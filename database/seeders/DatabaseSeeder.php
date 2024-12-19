@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\User;
+use App\Enums\UserTypes;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -13,6 +14,7 @@ class DatabaseSeeder extends Seeder
             'username' => 'rudolfs', 
             'name' => 'rudolfs', 
             'lname' => 'ceimers', 
+            'type'  => UserTypes::ADMIN,
             'password' => 'grgyl',
         ]);
     }

@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Enums;
-enum VehicleUsageType: int
+enum VehicleUsageTypes: int
 {
     case MOTOR_HOURS = 1;
     case DAYS = 2;
@@ -20,9 +20,9 @@ enum VehicleUsageType: int
     {
         $enums = [];
 
-        foreach (VehicleUsageType::cases() as $case) {
+        foreach (VehicleUsageTypes::cases() as $case) {
             $enums[] = [
-                'name' => VehicleUsageType::getName($case->value),
+                'name' => VehicleUsageTypes::getName($case->value),
                 'value' => $case->value,
             ];
         }

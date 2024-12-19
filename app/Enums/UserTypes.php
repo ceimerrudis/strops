@@ -2,7 +2,7 @@
 
 namespace App\Enums;
 
-enum UserType: int
+enum UserTypes: int
 {
     case ADMIN = 2;
     case USER = 1;
@@ -18,9 +18,9 @@ enum UserType: int
     {
         $enums = [];
 
-        foreach (UserType::cases() as $case) {
+        foreach (UserTypes::cases() as $case) {
             $enums[] = [
-                'name' => UserType::getName($case->value),
+                'name' => UserTypes::getName($case->value),
                 'value' => $case->value,
             ];
         }
