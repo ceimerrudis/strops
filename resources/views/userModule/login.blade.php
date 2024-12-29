@@ -1,21 +1,22 @@
-<div class="loginBox">
-    <img class="loginLogo" src="images/logo_basic.png">
-    <h2 class="loginTitle">Pieteikšanās strops sistēmai</h2>
-    <form action="pieteikties" method="POST" class="loginForm">
+@include("header")
+<div class="login_box">
+    <img class="login_logo" src="images/logo_basic.png">
+    <h2 class="login_title">Pieteikšanās strops sistēmai</h2>
+    <form action="pieteikties" method="POST" class="login_form">
         @csrf
-        <div class="loginInputDividerBox">
-            <label class="loginLabel" for="username">Lietotājvārds:</label>
-            <input class="loginInput" type="text" id="username" name="username" value="{{old('username')}}">
-            <div class="errorBox">
+        <div class="login_input_divider_box">
+            <label class="login_label" for="username">Lietotājvārds:</label>
+            <input class="login_input" type="text" id="username" name="username" value="{{old('username')}}">
+            <div class="error_box">
                 @error('username')
                     <span class="alert">{{ $message }}</span>
                 @enderror
             </div>
         </div>
-        <div class="loginInputDividerBox">
-            <label class="loginLabel" for="password">Parole:</label>
-            <input class="loginInput" type="password" id="password" name="password" value="{{old('password')}}">
-            <div class="errorBox">
+        <div class="login_input_divider_box">
+            <label class="login_label" for="password">Parole:</label>
+            <input class="login_input" type="password" id="password" name="password" value="{{old('password')}}">
+            <div class="error_box">
                 @error('password')
                 <span class="alert">{{ $message }}</span><br>
                 @enderror
@@ -24,18 +25,18 @@
                 @endif
             </div>
         </div>
-        <div class="loginInputDividerBox">
-            <input id="rememberMe" class="showPass" type="checkbox">
-            <label for="rememberMe" class="showPassLabel">Automātiski pieteikties</label>
+        <div class="login_input_divider_box">
+            <input id="rememberMe" class="show_pass" type="checkbox">
+            <label for="rememberMe" class="show_pass_label">Automātiski pieteikties</label>
             <br>
         </div>
-        <div class="loginInputDividerBox">
-            <input id="showPass" class="showPass" type="checkbox" onclick="ShowPassword()">
-            <label for="showPass" class="showPassLabel">Rādīt paroli</label>
+        <div class="login_input_divider_box">
+            <input id="showPass" class="show_pass" type="checkbox" onclick="ShowPassword()">
+            <label for="showPass" class="show_pass_label">Rādīt paroli</label>
             <br>
         </div>
-        <div class="loginInputDividerBox">
-            <input class="loginInput" id="submit" type="submit" value="Pieslēgties">
+        <div class="login_input_divider_box">
+            <input class="login_input" id="submit" type="submit" value="Pieslēgties">
         </div>
     </form>
 

@@ -3,14 +3,17 @@
 namespace Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
+use Illuminate\Foundation\Testing\DatabaseMigrations;
 
 class ExampleTest extends TestCase
 {
-    /**
-     * A basic test example.
-     */
-    public function test_that_true_is_true(): void
+    use DatabaseMigrations;
+    
+    //Pārbauda vai publiskā lapa ir pieejama
+    public function publicPageUp()
     {
-        $this->assertTrue(true);
+        $response = $this->get('/');
+
+        $response->assertStatus(200);
     }
 }

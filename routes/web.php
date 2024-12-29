@@ -22,7 +22,7 @@ Route::middleware(AuthenticationMiddleware::class)->group(function () {
         //Funkcija DZIR.
         Route::post('/dzest', [AdminController::class, 'DeleteEntry'])->name("delete");  //add  error
         //Funkcija APIR.
-        Route::get('/apskatitVisus', [AdminController::class, 'ViewAllEntriesPage']); //add error
+        Route::get('/apskatitVisus', [AdminController::class, 'ViewAllEntriesPage'])->name("viewAllEntries"); //add error
         //funkcija RKLT izpildīta ar jquery un ajax
         Route::get('/parrekinatlaiku', [AdminController::class, 'RecalculateTime']);
     });
@@ -43,7 +43,9 @@ Route::middleware(AuthenticationMiddleware::class)->group(function () {
     //Funkcija AVRZ
     Route::get('/manasRezervacijas', [ReservationController::class, 'ViewMyReservationsPage']);
     //Funkcija RZKL
-    Route::get('/kalendars', [ReservationController::class, 'ViewCalendarPage'])->name("calendar");
+    Route::get('/sakums', [ReservationController::class, 'ViewCalendarPage'])->name("calendar");
+    //Šo lapu izsauc ar ajax (tas atļauj vienā reizē ielādēt tikai viena mēneša rezervācijas)
+    Route::get('/kalendars', [ReservationController::class, 'GetCalendar']);
     //Funkcija RZIZ
     Route::post('/izveidotRezervaciju', [ReservationController::class, 'CreateReservation']);
     //Funkcija RLIZ
@@ -77,3 +79,4 @@ Route::view('/', 'publicPage')->name("public");
 
 //Šī ir sistēmas kļūdas lapa ko redz pēc tam kad veikts pieprasījums bez nepieciešamajām tiesībām. 
 Route::view('/unauthorized', 'unauthorized')->name("unauthorized");
+Route::view('/kluda', 'kluda')->name("kluda");

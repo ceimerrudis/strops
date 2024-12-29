@@ -16,6 +16,8 @@ return new class extends Migration
             $table->unsignedBigInteger('object')->nullable(false);
             $table->foreign('object')->references('id')->on('objects');
             $table->decimal('progress')->nullable(false)->default(0);
+            $table->dateTime('date')->nullable(false);
+            $table->dateTime('deleted_at')->nullable(true); 
             $table->timestamps();
         });
     }
