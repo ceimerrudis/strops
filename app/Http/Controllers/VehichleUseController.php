@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\StartVehicleUse;
 use App\Http\Requests\StartVehicleUseCalendarData;
 use App\Http\Requests\EndVehicleUse;
+use App\Services\SharedMethods;
 
 class VehichleUseController extends Controller
 {
@@ -19,65 +20,13 @@ class VehichleUseController extends Controller
         $data = $request->all();
         $vehicleId = $request->$vehicle;
 
-        $now = Carbon::now();
-        
-        $messages = [];
-        //Vispirms pārliecinās ka neviens pašlaik nelieto šo inventāru.
-        $vehicleUse = VehicleUse::whereNull('until')
-        ->where('vehicle', '=', $vehicleId)
-        ->join('users', 'user', '=', 'users.id')
-        ->select('user', 'users.name', 'users.lname')->first();
-        if($vehicleUse->user == Auth::user()->id){
-            $messages[] = ["statuss" => "usedBySelf", "message" => Text(116)];
-        }else{
-            $messages[] = ["statuss" => "used", "message" => Text(117) . $vehicleUse->name . " " . $vehicleUse->lname . "." . Text(118)];
-        }
-        
-        //Pārbauda vai lietotājs ir rezervējis inventāru uz  šo brīdi. Ja jā tad pāriet uz soli 5. Ja nē tad turpina ar soli 3.
-        $myReservationExists = Reservation::where('from', '<=', $now)
-        ->where('until', '>=', $now)
-        ->where('vehicle', '=', $vehicleId)
-        ->where('user', '==', Auth::user()->id) 
-        ->select('users.name', 'users.lname', 'until')
-        ->exists();
-        if(!$myReservationExists){
-            $conflictingReservation = Reservation::where('from', '<=', $now->copy()->addMinutes(-30))
-            ->where('until', '>=', $now)
-            ->where('vehicle', '=', $vehicleId)
-            ->where('user', '!=', Auth::user()->id) 
-            ->join('users', 'user', '=', 'users.id')
-            ->select('users.name', 'users.lname', 'until')
-            ->first();
-            
-            //Pārbauda vai kāds cits ir rezervējis šo inventāru uz šo dienu. Ja jā tad  pabrīdina lietotāju.
-            if($conflictingReservation != null){
-                $timeString = substr($intervalReservation->until, 11, 5);//Laiks teksta formātā
-                $msg = Text(119) . $intervalReservation->name . " " . $intervalReservation->lname . Text(120) . $timeString . ".";
-                $messages[] = ["statuss" => "reserved", "message" => $msg];
-            }
-            else
-            {
-                $todaysReservations = Reservation::where('from', '<=', $now)
-                ->where('until', '>=', $now)
-                ->where('vehicle', '=', $vehicleId)
-                ->where('user', '!=', Auth::user()->id) 
-                ->join('users', 'user', '=', 'users.id')
-                ->select('users.name', 'users.lname', 'until')
-                ->first();
-                if($todaysReservations != null){
-                    $timeString = substr($intervalReservation->from, 11, 5);//Laiks teksta formātā
-                    $msg = Text(122) . $intervalReservation->name . " " . $intervalReservation->lname . Text(121) . $timeString . ".";
-                    $messages[] = ["statuss" => "reservedInFuture", "message" => $msg];
-                }
-            }
-        }
-    
-        $vehicle = Vehicle::findOrFail($vehicleId);
-        $usage = $vehicle->usage;
-        $usagetype = $vehicle->usagetype;
-        //Iegūst Objektu kurā tiks strādāts kā arī komentāru ja objekts ir “Citi”.
-        //Ja izvēlētā inventāra lietojuma  veids ir nolasāms, tad iegūst lietojuma apstiprinājumu vai lietojuma daudzumu. 
-        return view("vehicleUseModule.StartVehicleUse", compact('messages', 'usage', 'usagetype'));
+        return SharedMethods::StartVehicleUse($vehicleId);
+    }
+
+    private function DeleteReservation($reservationId)
+    {
+        //Mēģina izdzēst tikko izveidoto rezervāciju gadījumā ja neizdodas izveidot lietojumu
+        Reservation::find($reservationId)?->delete();
     }
 
     //Funkcija LTSK (LTSK nobeigums)
@@ -88,6 +37,7 @@ class VehichleUseController extends Controller
         //Ja norādīts ka jābeidz iepriekšējais lietojums vai ka lietojums ir nepareizs tad lietojumam JĀBŪT norādītam.
         if(($data['endCurrentUsage'] == "yes" || $data['usageCorrect'] != "yes") && !isset($data["usage"]))
         {
+            DeleteReservation($data['reservationToDelete']);
             return redirect("/kalendars");//TODO
         }
 
@@ -105,7 +55,8 @@ class VehichleUseController extends Controller
             }
             else
             {
-                //TODO addMessage()
+                AddMessage(Text(143), "k");
+                DeleteReservation($data['reservationToDelete']);
                 return redirect("/kalendars");//TODO
             }
         }
@@ -192,7 +143,7 @@ class VehichleUseController extends Controller
         
         //Iegūst laika ilgumu starp lietojuma sākumu un pašreizējo brīdi.
         $vehicleUse->until = Carbon::now();
-        $time = AdminController->RecalculateTimeCalculation($vehicleUse->from, $vehicleUse->until) / ((float)60);//Iegūst laiku stundās
+        $time = SharedMethods::RecalculateTimeCalculation($vehicleUse->from, $vehicleUse->until) / ((float)60);//Iegūst laiku stundās
         
         //Pārbaida vai kādam citam darbiniekam pašlaik nav rezervācija uz šo inventāru.
         // Ja ir tad piefiksē kļūdas gadījumu

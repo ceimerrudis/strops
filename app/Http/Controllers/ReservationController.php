@@ -9,6 +9,9 @@ use App\Models\Vehicle;
 use App\Models\VehicleUse;
 use App\Models\Reservation;
 use Carbon\Carbon;
+use App\Services\SharedMethods;
+use App\Requests\GetCalendar;
+use App\Requests\MakeReservation;
 
 class ReservationController extends Controller
 {
@@ -77,7 +80,7 @@ class ReservationController extends Controller
     }
 
     //Palīgfunkcija funkcijai RZKL
-    public function GetCalendarData(Request $request)
+    public function GetCalendarData(GetCalendar $request)
     {
         //Vispirms jāpārbauda vai funkcijai tika padoti gada un mēneša parametri,
         //ja nē tad jārāda pašreizējais mēnesis
@@ -230,81 +233,99 @@ class ReservationController extends Controller
     }
 
     //Funkcija RZIZ
-    public function CreateReservation(Request $request)
+    public function CreateReservation(MakeReservation $request)
     {     
-        $data = $request->all();          
-        if(Carbon::parse($data['from']) < Carbon::now())
+        $data = $request->validated();      
+        $this->CreateReservationLogic($data['vehicle'], $data['from'], $data['until']);
+        return redirect("vehicleReservationSelection");
+    }
+
+    public function CreateReservationLogic($vehicle, $from, $until)
+    {
+        //Vispirms pārbauda vai rezervācija netiek veikta pagātnē.    
+        //addMinutes(-1) pievienots gadījumiem kad lietotājs sāk lietot un veido rezervāciju reizē
+        if(Carbon::parse($from) < Carbon::now()->addMinutes(-1))
         {
-            Session::flash('info_message', 'Nevar veikt rezervāciju pagātnē!');
-            return redirect("vehicleReservationSelection");  
+            AddMessage(Text(140), "e");
+            return redirect("start");  
         }
         
-        $reservations = Reservation::where('vehicle', $data['vehicle'])
-        ->where(function ($query) use($data) {
-            $query->orwhere(function ($query) use($data) {
-                $query->where('from', '<=', $data['until'])
-                ->where('until', '>=', $data['until']);
+        //Pārliecinās ka norādītajā laika intervālā inventāram nav rezervāciju. 
+        $reservationExists = Reservation::where('vehicle', $vehicle)
+        ->where(function ($query) use($from, $until) {//Jāizpildās vienai no šīm trim pārbaudēm
+            $query->orwhere(function ($query) use($from, $until) {//Pārklājas ar intervāla beigu galu
+                $query->where('from', '<=', $until)
+                ->where('until', '>=', $until);
             })
-            ->orWhere(function ($query) use($data) {
-                $query->where('from', '<=', $data['from'])
-                ->where('until', '>=', $data['from']);
+            ->orWhere(function ($query) use($from, $until) {//Pārklājas ar intervāla sākuma galu
+                $query->where('from', '<=', $from)
+                ->where('until', '>=', $from);
             })
-            ->orWhere(function ($query) use($data) {
-                $query->where('from', '>=', $data['from'])
-                ->where('until', '<=', $data['until']);
+            ->orWhere(function ($query) use($from, $until) {//Pārklājas ar intervāla vidu
+                $query->where('from', '>=', $from)
+                ->where('until', '<=', $until);
             });
         })
-        ->get();
-        if(!$reservations->isEmpty())
-        {
-            Session::flash('info_message', 'Inventārs šajā laikā jau ir rezervēts!');
-            return redirect("vehicleReservationSelection");
-        }
-        Reservation::create([
-            'user' => Auth::user()->id,
-            'vehicle' => $data['vehicle'],
-            'from' => $data['from'],
-            'until' => $data['until'],
-        ]);
-        
-        $vehicle = Vehicle::where('id', '=', $data['vehicle'])->select('name')->first();
-        $user = User::where('id', '=', Auth::user()->id)->select('name')->first();
-        
-        $monthNames = [
-            1 => 'Janvāra',
-            2 => 'Februāra',
-            3 => 'Marta',
-            4 => 'Aprīļa',
-            5 => 'Maija',
-            6 => 'Jūnija',
-            7 => 'Jūlija',
-            8 => 'Augusta',
-            9 => 'Septembra',
-            10 => 'Oktobra',
-            11 => 'Novembra',
-            12 => 'Decembra',
-        ];
-        
-        $from = Carbon::parse($data['from'] );
-        $until = Carbon::parse($data['until'] );
-        $fromMonthName = $monthNames[$from->month];
-        $untilMonthName = $monthNames[$until->month];
-        
-        // Format output string
-        $fromStr = $from->format("d. ") . $fromMonthName . $from->format(" H:i");
-        $untilStr = $until->format("d. ") . $fromMonthName . $until->format(" H:i");
-        
-        Session::flash('info_message',  $user->name . ' veiksmīgi rezervējis ' . $vehicle->name . '  no ' . $fromStr . ' līdz ' . $untilStr . '.');
-        return redirect("vehicleReservationSelection");
-        //Pārliecinās ka norādītajā laika intervālā inventāram nav rezervāciju. 
+        ->exists();
         //Ja pārbaude veiksmīga tad izveido rezervācijas ierakstu datu bāzē.
+        if($reservationExists)
+        {
+            AddMessage(Text(138), "k");
+            return -1;
+        }
+        else
+        {
+            $reservationId = Reservation::create([
+                'user' => Auth::user()->id,
+                'vehicle' => $vehicle,
+                'from' => $from,
+                'until' => $until,
+            ]);
+            
+            //Izveido paziņojumu
+            $vehicleObj = Vehicle::where('id', '=', $data['vehicle'])->select('name')->first();
+            $userObj = User::where('id', '=', Auth::user()->id)->select('name')->first();
+            
+            $monthNames = [
+                1 => 'Janvāra',
+                2 => 'Februāra',
+                3 => 'Marta',
+                4 => 'Aprīļa',
+                5 => 'Maija',
+                6 => 'Jūnija',
+                7 => 'Jūlija',
+                8 => 'Augusta',
+                9 => 'Septembra',
+                10 => 'Oktobra',
+                11 => 'Novembra',
+                12 => 'Decembra',
+            ];
+            
+            $from = Carbon::parse($data['from'] );
+            $until = Carbon::parse($data['until'] );
+            $fromMonthName = $monthNames[$from->month];
+            $untilMonthName = $monthNames[$until->month];
+            
+            $fromStr = $from->format("d. ") . $fromMonthName . $from->format(" H:i");
+            $untilStr = $until->format("d. ") . $fromMonthName . $until->format(" H:i");
+            AddMessage($userObj->name . ' veiksmīgi rezervējis ' . $vehicleObj->name . '  no ' . $fromStr . ' līdz ' . $untilStr . '.', "info");
+            return $reservationId;
+        }
     }
 
     //Funkcija RLIZ
-    public function CreateReservationAndUse(Request $request)
+    public function CreateReservationAndUse(MakeReservation $request)
     {     
-        //Vispirms pārliecinās ka no pašreizējā laika līdz norādītajam, izvēlētais inventārs nav rezervēts. 
-        //Ja pārbaude veiksmīga tad izveido rezervāciju un izsauc lietojuma izveidošanas funkciju.
-        //Ja lietojuma izveide ir nesekmīga tad izdzēš rezervācijas ierakstu
+        $data = $request->validated();      
+        $reservationId = $this->CreateReservationLogic($data['vehicle'], $data['from'], $data['until']);
+        if($reservationId == -1)
+        {
+            return redirect("calendar");
+        }
+        else{
+            //Izveido lietojumu
+            return SharedMethods::StartVehicleUse($data['vehicle'], $reservationId);
+            //Ja lietojuma izveide ir nesekmīga tad izdzēš rezervācijas ierakstu
+        }
     }
 }

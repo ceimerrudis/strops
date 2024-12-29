@@ -45,7 +45,7 @@ Route::middleware(AuthenticationMiddleware::class)->group(function () {
     //Funkcija RZKL
     Route::get('/sakums', [ReservationController::class, 'ViewCalendarPage'])->name("calendar");
     //Šo lapu izsauc ar ajax (tas atļauj vienā reizē ielādēt tikai viena mēneša rezervācijas)
-    Route::get('/kalendars', [ReservationController::class, 'GetCalendar']);
+    Route::get('/kalendars', [ReservationController::class, 'GetCalendar'])->name("start");
     //Funkcija RZIZ
     Route::post('/izveidotRezervaciju', [ReservationController::class, 'CreateReservation']);
     //Funkcija RLIZ

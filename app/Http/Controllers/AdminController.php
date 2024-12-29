@@ -17,6 +17,7 @@ use App\Http\Requests\TimeCalculationRequest;
 use App\Enums\EntryTypes;
 use App\Enums\UserTypes;
 use App\Enums\VehicleUsageTypes;
+use App\Services\SharedMethods;
 
 class AdminController extends Controller
 {
@@ -61,7 +62,7 @@ class AdminController extends Controller
     //Funkcija RDIR.
     public function UpdateEntry(SpecificEntry $request)
     {
-        $data = $request->all();
+        $data = $request->validated();
         ValidateEntry($request);
         $table = $request->$table;
         $model = GetModelFromEnum($table);
@@ -123,7 +124,7 @@ class AdminController extends Controller
     //Funkcija DZIR.
     public function DeleteEntry(SpecificEntry $request)
     { 
-        //GetModelFromEnum nevar atgriezt false jo EditEntry jau ir to pārbaudījis
+        //GetModelFromEnum nevar atgriezt false jo SpecificEntry jau ir to pārbaudījis
         GetModelFromEnum($request->table)::deleteAt($request->id);
     }
 
@@ -151,82 +152,9 @@ class AdminController extends Controller
     public function RecalculateTime(TimeCalculationRequest $request)
     { 
         $data = [
-            'time' => RecalculateTimeCalculation($request->$from, $request->$until),//TODO format in days
+            'time' => SharedMethods::RecalculateTimeCalculation($request->$from, $request->$until),//TODO format in days
         ];
         return response()->json($data);
-    }
-    
-    //funkcija RKLT
-    public function RecalculateTimeCalculation($from, $until) : int
-    { 
-        $WORK_DAY_BEGINS = 7;//CONFIG
-        $WORK_DAY_BEGINS_STR = "07:00";
-        $WORK_DAY_ENDS = 18;
-        $WORK_DAY_ENDS_STR = "18:00";
-
-        $fromStr = $from->format('H:i');
-        $untilStr = $until->format('H:i');
-
-        //Rēķinot laiku tiek summēti visi laika intervāli starp sākuma un beigu laiku kas reizē arī laika intervālā (07:00 – 18:00).
-        $time = 0;//Kopējais laiks minūtēs
-        
-        //Gadījums kad sākuma un beigu laiks ir vienā un tai pašā dienā.
-        if($from->day == $until->day && $from->month == $until->month && $from->year == $until->year){    
-            $fromClipped = $from->copy();
-            $untilClipped = $until->copy();
-            
-            if($fromStr < $WORK_DAY_BEGINS_STR)
-            {
-                $fromClipped->setTime($WORK_DAY_BEGINS, 0, 0);
-            }
-            if($untilStr > $WORK_DAY_ENDS_STR)
-            {
-                $untilClipped->setTime($WORK_DAY_ENDS, 0, 0);
-            }
-            $time = $fromClipped->diffInMinutes($untilClipped);
-            if($fromClipped > $untilClipped)
-            {
-                //Šajā gadijumā lietojums ir pilnībā ārpus darba laika.
-                //Laika starpība ir negatīva (bet diffInMinutes atgriež absolūto vērtību).
-                return $time = 0;
-            }
-        }
-        //Gadījums kad laika intervāls izplatās pa vairākām dienām.
-        else {
-            $fromClipped = $from->copy();
-            
-            if($fromStr < $WORK_DAY_BEGINS_STR)
-            {
-                $fromClipped->setTime($WORK_DAY_BEGINS, 0, 0);
-            }
-            if($fromStr > $WORK_DAY_ENDS_STR)
-            {
-                $fromClipped->setTime($WORK_DAY_ENDS, 0, 0);
-            }
-            $endOfWorkTime = $from->copy()->setTime($WORK_DAY_ENDS, 0, 0);
-            $time += $endOfWorkTime->diffInMinutes($fromClipped);
-            
-            $untilClipped = $until->copy();
-            if($untilStr > $WORK_DAY_ENDS_STR)
-            {
-                $untilClipped->setTime($WORK_DAY_ENDS, 0, 0);
-            }
-            if($untilStr < $WORK_DAY_BEGINS_STR)
-            {
-                $untilClipped->setTime($WORK_DAY_BEGINS, 0, 0);
-            }
-            $startOfWorkTime = $until->copy()->setTime($WORK_DAY_BEGINS, 0, 0);
-            $time += $startOfWorkTime->diffInMinutes($untilClipped);    
-            
-            //Tagad kad pievienoti abi intervāla gali atliek vienīgi  pievienot pilnas stundas par katru dienu starp šiem galiem. 
-            
-            $fromEndOfDay = $from->copy()->setTime(23, 59, 0);
-            $untilStartOfDay = $until->copy()->setTime(0, 0, 0);
-            $dayCount = $fromEndOfDay->diffInDays($untilStartOfDay);//Pilno dienu skaits (neskaitot galus).
-            $time += $dayCount * (60 * ($WORK_DAY_ENDS - $WORK_DAY_BEGINS));
-        }
-
-        return $time;//minūtēs
     }
 
     //Šī palīgfunkcija pārbauda lietotāju datu atbilstību nepieciešamajam formātam.

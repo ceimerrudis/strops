@@ -59,16 +59,14 @@ class UserController extends Controller
                 return redirect(route("calendar"));
             }
         }
-        //msg pārbaude jāveic lai paziņotu lietotājam ja kāds no ievadlaukiem nav pareizi aizpildīts.
-        $msg = "";
-        if($request->has("msg"))
-            $msg = $request->input('msg');
 
-        return view("userModule.login", compact('msg'));
+        AddMessage(Text(144), "k");
+
+        return view("userModule.login");
     }
 
     //Funkcija ATKT (Šai funkcijai nav konkrēta lapa tikai post pieprasījums bez datiem) 
-    public function Logout()
+    public function Logout(Request $request)
     {
         Auth::logout();
         Cookie::queue(Cookie::forget('entryToken'));

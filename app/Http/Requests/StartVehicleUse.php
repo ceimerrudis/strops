@@ -10,6 +10,7 @@ class StartVehicleUse extends FormRequest
     {
         $rules = [
             'vehicle' => 'required|exists:vehicles,id',
+            'reservationToDelete' => 'nullable|exists:reservations,id',
             'usage' => 'nullable|numeric',
             'usageCorrect' => 'required',
             'endCurrentUsage' => 'required',
@@ -22,6 +23,7 @@ class StartVehicleUse extends FormRequest
     public function messages()
     {
         return [
+            'reservationToDelete.exists' => Text(142),
             'vehicle.required' => Text(123),
             'vehicle.exists' => Text(124),
             'usage.numeric' =>  Text(125),

@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\ObjectModel;
 use App\Models\Report;
+use App\Requests\CreateReport;
+use App\Requests\ViewCreateReport;
+use App\Requests\ViewReport;
 
 class ObjectController extends Controller
 {    
@@ -13,32 +16,72 @@ class ObjectController extends Controller
     { 
         $code = Artisan::call('app:fetch-excel-object-data');
         $output = Artisan::output();
-        $str = text(110);
+        $str = Text(110);
         if($code === 0)
-            $str = text(109);
+            $str = Text(109);
         return response()->json(['message' => $str, 'output' => $output]);
     }
 
     //Funkcija PVAT
-    public function ViewCreateReportPage(Request $request)
+    public function ViewCreateReportPage(ViewCreateReport $request)
     { 
-        //Ja šim objektam šajā  mēnesī nav atskaites izveido atskaiti un aizpilda ar novērtējumu.
+        $object = $request->input("object");
+        $now = Carbon::now();
+        $year = $now->year;
+        $month = $now->month;
+        return view("objectModule.createReport", compact('object', 'year', 'month'));
     }
 
     //Funkcija PVAT
-    public function CreateReport( $request)
+    public function CreateReport(CreateReport $request)
     { 
-        //Ja šim objektam šajā  mēnesī nav atskaites izveido atskaiti un aizpilda ar novērtējumu.
+        $data = $request->validated();
+        $year = $data['year'];
+        $month = $data['month'];
+        $object = $data['object'];
+
+        //Ja šim objektam šajā mēnesī nav atskaites izveido atskaiti un aizpilda ar novērtējumu.
+        $reportExists = Report::where('object', $object)
+        ->whereYear('date', $year)
+        ->whereMonth('date', $month)
+        ->exists();
+        if($reportExists)
+        {
+            AddMessage(Text(147), "w");
+            return back();       
+        }else
+        {
+            //Pārbauda vai lietotājs ir objekta atbildīgais.
+            if(ObjectModel::where("id", $object)->where("user_in_charge", Auth::user()->id)->exists())
+            {
+                //Izveido atskaiti.
+                Report::create($data);
+            }
+            else
+            {
+                AddMessage(Text(151), "k");
+            }
+        }
+        return redirect("ViewReports");//TODO
     }
 
     //Funkcija RDAT
-    public function ViewUpdateReportPage(Request $request)
+    public function ViewUpdateReportPage(ViewReport $request)
     { 
+        $objectId = $request->input("object");
+        $reportId = $request->input("report");
+        if(!ObjectModel::where("id", $objectId)->where("user_in_charge", Auth::user()->id)->exists())
+        {
+            return redirect("ViewReports");//TODO
+        }
+
         //Nedrīkst rediģēt atskaites datuma lauku.
+        $report = Report::where("id", $reportId)->first();
+        return view("objectModule.UpdateReport", compact('report'));
     }
 
     //Funkcija RDAT
-    public function UpdateReport( $request)
+    public function UpdateReport(CreateReport $request)
     { 
         //Nedrīkst rediģēt atskaites datuma lauku.
     }
