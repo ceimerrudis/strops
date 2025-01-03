@@ -1,0 +1,1 @@
+//Globālais js

@@ -17,6 +17,6 @@ class IsAdminMiddleware
         if($request->user() && $request->user()->type == UserTypes::ADMIN)
             return $next($request);
         
-        return redirect()->route('unauthorized');
+        return response()->view('unauthorized', [], 403);
     }
 }

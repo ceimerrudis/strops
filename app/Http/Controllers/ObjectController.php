@@ -75,15 +75,25 @@ class ObjectController extends Controller
             return redirect("ViewReports");//TODO
         }
 
-        //Nedrīkst rediģēt atskaites datuma lauku.
         $report = Report::where("id", $reportId)->first();
-        return view("objectModule.UpdateReport", compact('report'));
+        $update = true;
+        return view("objectModule.createReport", compact('report', 'update'));
     }
 
     //Funkcija RDAT
     public function UpdateReport(CreateReport $request)
     { 
-        //Nedrīkst rediģēt atskaites datuma lauku.
+        $data = $request->validated();
+
+        $entry = Report::findOrFail($data['id']);
+        $entry->progress = $data['progress'] ?? $entry->progress;
+        if(!empty($data['date'])){
+            //Nedrīkst rediģēt atskaites datuma lauku. Saglabā ierakstu datu bāzē. 
+            AddMessage(Text(111), "w");
+        }
+
+        $entry->save();
+        return redirect()->route("ViewReports");
     }
 
     //Funkcija SVAT

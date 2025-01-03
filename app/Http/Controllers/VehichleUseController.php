@@ -14,6 +14,7 @@ use App\Services\SharedMethods;
 class VehichleUseController extends Controller
 {
     //Funkcija LTSK (LTSK sākums)
+    //GET
     public function ViewStartVehicleUsePage(StartVehicleUseCalendarData $request)
     {
         //Pieprasījums nāk no kalendāra lapas
@@ -30,6 +31,7 @@ class VehichleUseController extends Controller
     }
 
     //Funkcija LTSK (LTSK nobeigums)
+    //POST
     public function StartVehicleUse(StartVehicleUse $request)
     {
         $data = $request->validated();

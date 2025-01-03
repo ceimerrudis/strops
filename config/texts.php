@@ -52,5 +52,7 @@ return [
     149 => 'Atskaitē progressam jābūt skaitlim.',
     150 => 'Atskaitē progressam jābūt starp 0 un 100.',
     151 => 'Jūs neesat šī objekta atbildīgā persona.',
+    152 => 'Veikt inventāra rezervāciju +',
+    153 => 'Veikt inventāra rezervāciju -',
     999 => 'template',
 ];

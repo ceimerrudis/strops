@@ -1,7 +1,6 @@
 @include('base')
 
-<script src="{{ asset('js/calendarLoader.js') }}"></script>
-<script src="{{ asset('js/reservationSelection.js') }}"></script>
+<script src="{{ asset('js/startPage.js') }}"></script>
 
 <div class="flex_parent">
 
@@ -24,12 +23,7 @@
     <div class="make_reservation_flex_box_item">
         <p id="collapsor" class="make_reservation_title collapsible"><span class='collapse_label'>Veikt inventāra rezervāciju -</span></p>
             <div class="make_reservation_box" id="collapse_content">
-                @if(Session::has('info_message'))
-                    <script>
-                        alert("{{ Session::get('info_message') }}");
-                    </script>
-                @endif
-                <form id="make_reservation_form" action="{{ route('makeReservationOrStartUsing') }}" method="post">
+                <form id="make_reservation_form" action="setByJs" method="post">
                     @csrf   
                     <div class="centered">
                         <div class="date_time_input_box">    
@@ -92,6 +86,7 @@
                     <!-- palielinat datms lauku -->
                     <div class="reserve_btn_container">
                         <button type="button" class="create_vehicle_use_button" id="make_reservation_btn">REZERVĒT</button>
+                        <button type="button" class="create_vehicle_use_button" id="start_using_with_reservation_btn">LIETOT UN REZERVĒT</button>
                         <button type="button" class="create_vehicle_use_button" id="start_using_btn">LIETOT</button>
                     </div>
                     <input id="type_inp" type="hidden" value="0" name="type">
@@ -100,14 +95,6 @@
                     @enderror
                 </form>
             </div>
-            <script>
-                $("#collapsor").on( "click", function() {
-                    $("#collapse_content").toggle();
-                    if($("#collapse_content").is(":hidden")){$("#collapsor").html("<span class='collapse_label'>Veikt inventāra rezervāciju +</span>");}else{
-                        $("#collapsor").html("<span class='collapse_label'>Veikt inventāra rezervāciju -</span>");
-                    }
-                });
-            </script>
         </div>
     </div>
     <div style="display: flex;">
@@ -153,4 +140,4 @@
     </div>
 </div>
 
-@include('tail')
+@include('footer')
