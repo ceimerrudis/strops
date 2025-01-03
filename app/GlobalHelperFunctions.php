@@ -1,4 +1,6 @@
 <?php
+use App\Enums\EntryTypes;
+
 //Šis fails tiek automātiski pievienots vairākās vietās tapēc veic duplikācijas pārbaudi.
 function Text($key)
 {
@@ -24,6 +26,16 @@ function GetMessages(): array
 function DeleteMessages(): array
 {
     return session()->pull('messages', []); 
+}
+
+//Izdzēš konkrētu ziņu
+function DeleteMessage($index): array
+{
+    $messages = session()->get('messages', []);
+    if (isset($messages[$index])) {
+        unset($messages[$index]);
+        session()->put('messages', array_values($messages));
+    }
 }
 
 //Šī funkcija pāriet no enumeratora uz modeli

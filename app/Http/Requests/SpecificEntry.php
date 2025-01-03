@@ -11,11 +11,13 @@ class SpecificEntry extends FormRequest
     {
         return [
             'table' => [
-                'required|integer',
+                'required',
+                'integer',
                 Rule::in(array_column(EntryTypes::cases(), 'value')),//Pārbauda vai padotā vērtība atrodama sarakstā.
             ],
             'id' => [
-                'required|integer',
+                'required',
+                'integer',
                 function ($attribute, $value, $fail) {//Pārbauda vai norādītajā tabulā eksistē ieraksts ar šo id.
                     $table = $this->input('table');
                     if (!EntryHelper::idExistsInTable($table, $value)) {

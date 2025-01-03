@@ -10,8 +10,8 @@ use App\Models\VehicleUse;
 use App\Models\Reservation;
 use Carbon\Carbon;
 use App\Services\SharedMethods;
-use App\Requests\GetCalendar;
-use App\Requests\MakeReservation;
+use App\Http\Requests\GetCalendar;
+use App\Http\Requests\MakeReservation;
 
 class ReservationController extends Controller
 {
@@ -80,18 +80,13 @@ class ReservationController extends Controller
     }
 
     //Palīgfunkcija funkcijai RZKL
-    public function GetCalendarData(GetCalendar $request)
+    public function GetCalendarData(GetCalendar $request)/*GetCalendar*/
     {
         //Vispirms jāpārbauda vai funkcijai tika padoti gada un mēneša parametri,
         //ja nē tad jārāda pašreizējais mēnesis
         $year = $request->input('year');
         $month = $request->input('month');
         $now = Carbon::now();
-        if($year == null || $month == null)
-        {
-            $year = $now->year;
-            $month = $now->month;
-        }
         //Diena ir svarīga tikai pašreizējajam mēnesim
         if($year == $now->year && $month == $now->month)
         {
@@ -222,14 +217,14 @@ class ReservationController extends Controller
             }
         }
 
-        return view("main.calendar",compact('year', 'month', 'day', 'firstDayOfMonth', 'monthLength', 'monthStartOn', 'rowCount', 'monthName', 'username', 'separatedReservations'));    
+        return view("reservationModule.calendar",compact('year', 'month', 'day', 'firstDayOfMonth', 'monthLength', 'monthStartOn', 'rowCount', 'monthName', 'separatedReservations'));    
     }
 
     //Funkcija AVRZ
     public function ViewMyReservationsPage(Request $request)
     {     
-        $myreservations = Reservation::where('user', Auth::user()->id)->order_by('from', 'desc')->get();
-        return view('reservationModule.ViewMyReservationsPage', compact('myreservations'));
+        $myreservations = Reservation::where('user', Auth::user()->id)->orderBy('from', 'desc')->get();
+        return view('reservationModule.myReservations', compact('myreservations'));
     }
 
     //Funkcija RZIZ

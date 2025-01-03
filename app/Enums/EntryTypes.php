@@ -11,4 +11,18 @@ enum EntryTypes: int
     case VEHICLE_USE = 5;
     case RESERVATION = 6;
     case ERROR = 7;
+    
+    public static function GetName($value): string
+    {   
+        return match((int)$value) {
+            self::USER->value => 'user',
+            self::VEHICLE->value => 'vehicle',
+            self::OBJECT->value => 'object',
+            self::REPORT->value => 'report',
+            self::VEHICLE_USE->value => 'vehicleUse',
+            self::RESERVATION->value => 'reservation',
+            self::ERROR->value => 'error',
+            default => ""
+        };
+    }
 }

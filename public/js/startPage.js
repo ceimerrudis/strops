@@ -53,10 +53,17 @@ $( document ).ready(function() {
     $("#calendarPreviousMonthButton").on('click', loadLastMonthsCalendar);
     $("#calendarNextMonthButton").on('click', loadNextMonthsCalendar);
 
+    var currentDate = new Date();
+    var currentMonth = currentDate.getMonth() + 1;
+    var currentYear = currentDate.getFullYear();
     //Katru mēnesi pieprasa no servera ar ajax
     $.ajax({
         type: "GET",
         url: "kalendars", 
+        data: { 
+            year: currentYear, 
+            month: currentMonth, 
+          },
         cache: false,//Tiek  iegūti rezervācijas dati tapēc neizmanto kešu
         success: function(result){
             $("#calendar").html(result);
@@ -75,8 +82,7 @@ function resizeTimeline() {
     //Laika skala tiek sadalīta Vienādās daļās. pāri palikušie pikseļi tiek pievienoti pa vienam pēc kārtas katrai kolonai.
 
     const timelineVisualObject = $("#timelineVisual");//Pelēkā horizontālā līnija pie kuras piestiprina rezervāciju attēlojumus
-    const timelinePillarObjects = $('.timelineBackgroundPillar');//Saraksts ar visiem kolonu objektiem
-    const timelineLastPillarObject = $('#lastTimelineBackgroundPillar');//Pēdējā kolona no kuras tiks nogriezti pikseļi ja nepieciešams
+    const timelinePillarObjects = $('.timeline_background_pillar');//Saraksts ar visiem kolonu objektiem
     timelineVisualObject.empty();
     //Vecākelements ar platumu 100% 
     //Platums iegūts pikseļos un laika rindai jāiekļaujas šajā platumā
@@ -344,7 +350,7 @@ function FillOutDateFields(desiredDay)
     setYear = $("#year").html();
     setMonth = $("#month").html();
     //date ir datuma teksts
-    date = desiredYear.toString()+"-"+(desiredMonth < 10 ? '0' + desiredMonth.toString() : desiredMonth.toString())+"-"+(desiredDay < 10 ? '0'+desiredDay.toString() : desiredDay.toString());
+    date = setYear.toString()+"-"+(setMonth < 10 ? '0' + setMonth.toString() : setMonth.toString())+"-"+(desiredDay < 10 ? '0'+desiredDay.toString() : desiredDay.toString());
     fromAdd = "";//Laika daļa glabāta teksta formātā
     untilAdd = "";//Laika daļa glabāta teksta formātā
 

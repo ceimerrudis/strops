@@ -7,11 +7,11 @@
     <div class="calendar_box">
         <div class="calendar_box_2">
             <div class="calendar_head_box">
-                <button id="calendar_previous_month_button"> << </button>
+                <button id="calendarPreviousMonthButton"> << </button>
                     <div class="calendar_title_box">
-                        <p class="calendar_month_title" id="calendar_month_title">month</p>
+                        <p class="calendar_month_title" id="calendarMonthTitle">month</p>
                     </div>
-                <button id="calendar_next_month_button"> >> </button>
+                <button id="calendarNextMonthButton"> >> </button>
             </div>
 
             <table class="calendar" id="calendar">
@@ -133,7 +133,7 @@
                 <div class="timeline_background_pillar">
                     17<span class="timeline_pillar_time_suffix">:00</span>
                 </div>
-                <div id="timeline_visual" class="timeline_visual">
+                <div id="timelineVisual" class="timeline_visual">
                 </div>
             </div>
         </div>

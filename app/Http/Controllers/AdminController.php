@@ -10,6 +10,7 @@ use App\Models\VehicleUse;
 use App\Models\Vehicle;
 use App\Models\Error;
 
+use Illuminate\Validation\Rule; 
 use Illuminate\Http\Request;
 use App\Http\Requests\SpecificEntry;
 use App\Http\Requests\NonSpecificEntry;
@@ -25,7 +26,9 @@ class AdminController extends Controller
     public function ViewCreateEntryPage(NonSpecificEntry $request)
     { 
         $table = $request->input('table');
-        return view("adminModule.ViewCreateEntryPage", compact('table'));
+        $viewName = EntryTypes::GetName($table);
+        $entry = new (GetModelFromEnum($table))([]);//Izveido tukšu elementu 
+        return view("adminModule.createEntry", compact('table', 'viewName', 'entry'));
     }
 
     //Funkcija PVIR.
@@ -56,7 +59,7 @@ class AdminController extends Controller
         $id = $request->input('id');
         $table = $request->input('table');
         $entry = GetModelFromEnum($table)::findOrFail($id);
-        return view("adminModule.ViewCreateEntryPage", compact('entry', '$request->table'));
+        return view("adminModule.createEntry", compact('entry', '$request->table'));
     }
 
     //Funkcija RDIR.
@@ -131,21 +134,44 @@ class AdminController extends Controller
     //Funkcija APIR.
     public function ViewAllEntriesPage(NonSpecificEntry $request)
     { 
+        $table = $request->table;
         $sortFields = [
-            EntryTypes::USER => ['name', 'asc'],
-            EntryTypes::VEHICLE => ['name', 'asc'],
-            EntryTypes::OBJECT => ['name', 'asc'],
-            EntryTypes::REPORT => ['date', 'desc'],
-            EntryTypes::RESERVATION => ['from', 'desc'],
-            EntryTypes::VEHICLE_USE => ['from', 'desc'],
-            EntryTypes::ERROR => ['time', 'desc'],
+            EntryTypes::USER->value => ['name', 'asc'],
+            EntryTypes::VEHICLE->value => ['name', 'asc'],
+            EntryTypes::OBJECT->value => ['name', 'asc'],
+            EntryTypes::REPORT->value => ['date', 'desc'],
+            EntryTypes::RESERVATION->value => ['from', 'desc'],
+            EntryTypes::VEHICLE_USE->value => ['from', 'desc'],
+            EntryTypes::ERROR->value => ['time', 'desc'],
         ];
-        $sortFieldName = $sortFields[$request->table];
+        $sortFieldName = $sortFields[$table];
 
-        $allEntryData = GetModelFromEnum($request->table)::orderBy($sortFieldName[0], $sortFieldName[1])->get();
+        $allHeaders = [//Tabulas galvene
+            EntryTypes::USER->value => ["Lietotājvārds", "Vārds", "Uzvārds", "Loma"],
+            EntryTypes::VEHICLE->value => ["Inventāra nosaukums", "Nolietojums", "Lietojuma veids", "Id"],
+            EntryTypes::OBJECT->value => ["Objekta Nr.", "Nosaukums", "Aktīvs / Slēgts"],
+            EntryTypes::REPORT->value => ["Objekts", "Progress", "Datums"],
+            EntryTypes::RESERVATION->value => ["Lietotājs", "Inventārs", "Datums/laiks no","Datums/laiks līdz"],
+            EntryTypes::VEHICLE_USE->value => ["Lietotājs", "Inventārs", "Objekts, Lietojums", "Lietojums sākot / beidzot", "Datums/laiks no", "Datums/laiks līdz", "Komentārs"],
+            EntryTypes::ERROR->value => ["Komentārs", "Laiks", "Rezervācija", "Lietojums", "Nolietojums pirms", "Nolietojums pēc"],
+        ];
+
+        $tableName = [//Akuzatīvs
+            EntryTypes::USER->value => "lietotāju",
+            EntryTypes::VEHICLE->value => "inventāru",
+            EntryTypes::OBJECT->value => "objektu",
+            EntryTypes::REPORT->value => "atskaiti",
+            EntryTypes::RESERVATION->value => "rezervāciju",
+            EntryTypes::VEHICLE_USE->value => "lietojumu",
+            EntryTypes::ERROR->value => "kļūdu",
+        ];
+        $viewName = EntryTypes::GetName($table);
+        $headers = $allHeaders[$table];
+        $name = $tableName[$table];
+        $allEntryData = GetModelFromEnum($table)::orderBy($sortFieldName[0], $sortFieldName[1])->get();
         //Iegūst visus konkrētā veida ierakstus, sakārto tos vai nu alfabēta secībā pēc nosaukuma, vai arī pēc lauka sākuma laiks.
         //Atskaites tiek sagrupētas pa objektiem un sakārtotas pēc datumiem.
-        return view('viewAllEntries', compact('allEntryData'));
+        return view('adminModule.allEntries', compact('table', 'allEntryData', 'name', 'headers', 'viewName'));
     }
 
     //funkcija RKLT
@@ -170,7 +196,8 @@ class AdminController extends Controller
                 'name' => 'required|string',
                 'lname' => 'required|string',
                 'type' => [ 
-                    'required|integer',
+                    'required',
+                    'integer',
                     Rule::in(array_column(UserTypes::cases(), 'value')),//Pārbauda vai padotā vērtība atrodama sarakstā.
                 ],
             ],
@@ -184,7 +211,9 @@ class AdminController extends Controller
                 'name' => 'required|string',
                 'usage' => 'required|numeric|min:0',
                 'usagetype' => [
-                    'required|numeric|integer', 
+                    'required',
+                    'numeric',
+                    'integer', 
                     Rule::in(array_column(VehicleUsageTypes::cases(), 'value')),//Pārbauda vai padotā vērtība atrodama sarakstā.
                 ],
             ],

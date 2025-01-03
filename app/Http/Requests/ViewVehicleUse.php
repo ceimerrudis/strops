@@ -4,13 +4,12 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class GetCalendar extends FormRequest
+class EndVehicleUse extends FormRequest
 {
     public function rules(): array
     {
         $rules = [
-            'year' => 'required|integer|min:1000|max:3000',
-            'month' => 'required|integer|min:1|max:12',
+            'vehicleUse' => 'required|exists:vehicleUses,id',
        ];
         return $rules;
     }
@@ -18,6 +17,8 @@ class GetCalendar extends FormRequest
     public function messages()
     {
         return [
+            'vehicleUse.required' => Text(131),
+            'vehicleUse.exists' => Text(132),
         ];
     }
 }

@@ -9,9 +9,10 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\StartVehicleUse;
 use App\Http\Requests\StartVehicleUseCalendarData;
 use App\Http\Requests\EndVehicleUse;
+use App\Http\Requests\ViewVehicleUse;
 use App\Services\SharedMethods;
 
-class VehichleUseController extends Controller
+class VehicleUseController extends Controller
 {
     //Funkcija LTSK (LTSK sākums)
     //GET
@@ -124,7 +125,16 @@ class VehichleUseController extends Controller
     }
     
     //Funkcija LTBG
-    public function FinishVehichleUse(EndVehicleUse $request)
+    public function ViewFinishVehicleUsePage(ViewVehicleUse $request)
+    { 
+        $data = $request->validated();
+        $vehicleUse = VehicleUse::findOrFail($data["vehicleUse"]);
+        return view("vehicleUseModule.finishVehicleUse", compact('vehicleUse'));
+    }
+
+
+    //Funkcija LTBG
+    public function FinishVehicleUse(EndVehicleUse $request)
     { 
         $data = $request->validated();
         $msg = $this->StopUsingVehicleLogic($data['vehicleUse'], $data['usage']);
@@ -195,16 +205,16 @@ class VehichleUseController extends Controller
     }
 
     //Funkcija LTAP
-    public function ViewMyFinishedVehichleUsesPage(Request $request)
+    public function ViewMyFinishedVehicleUsesPage(Request $request)
     { 
-        $uses = VehicleUse::where('user', Auth::user()->id)->order_by('from', 'desc')->get();
-        return view('vehicleUseModule.ViewMyFinishedVehichleUsesPage', compact('uses'));
+        $uses = VehicleUse::where('user', Auth::user()->id)->orderBy('from', 'desc')->get();
+        return view('vehicleUseModule.myFinishedVehicleUses', compact('uses'));
     }
 
     //Funkcija ALTA
-    public function ViewMyActiveVehichleUsesPage(Request $request)
+    public function ViewMyActiveVehicleUsesPage(Request $request)
     { 
-        $uses = VehicleUse::where('user', Auth::user()->id)->where('until', null)->order_by('from', 'desc')->get();
-        return view('vehicleUseModule.ViewMyActiveVehichleUsesPage', compact('uses'));
+        $uses = VehicleUse::where('user', Auth::user()->id)->where('until', null)->orderBy('from', 'desc')->get();
+        return view('vehicleUseModule.myActiveVehicleUses', compact('uses'));
     }
 }
