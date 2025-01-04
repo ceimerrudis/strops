@@ -2,8 +2,10 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Validation\Rules\Enum;
 use Illuminate\Foundation\Http\FormRequest;
 use App\RequestHelperFunctions;
+use App\Enums\EntryTypes;
 
 class SpecificEntry extends FormRequest
 {
@@ -13,15 +15,20 @@ class SpecificEntry extends FormRequest
             'table' => [
                 'required',
                 'integer',
-                Rule::in(array_column(EntryTypes::cases(), 'value')),//Pārbauda vai padotā vērtība atrodama sarakstā.
+                new Enum(EntryTypes::class),//Pārbauda vai padotā vērtība atrodama enumeratorā.
             ],
             'id' => [
                 'required',
                 'integer',
                 function ($attribute, $value, $fail) {//Pārbauda vai norādītajā tabulā eksistē ieraksts ar šo id.
-                    $table = $this->input('table');
-                    if (!EntryHelper::idExistsInTable($table, $value)) {
-                        $fail(text(104));
+                    if ($this->input('table') != null) {//Nezinu vai varu paļauties uz to ka  table ir validēts
+                        $modelClass = GetModelFromEnum((int)$this->input('table'));
+                        if ($modelClass === false) {//$modelClass ir false ja neizdevās
+                            $fail(Text(154));
+                        } 
+                        else if (!$modelClass::query()->where('id', $value)->exists()) {
+                            $fail(Text(155));
+                        }
                     }
                 },
             ],
@@ -31,11 +38,10 @@ class SpecificEntry extends FormRequest
     public function messages()
     {
         return [
-            'table.required' => text(105),
-            'table.integer' => text(106),
-            'id.required' => text(107),
-            'id.integer' => text(108),
+            'table.required' => Text(105),
+            'table.integer' => Text(106),
+            'id.required' => Text(107),
+            'id.integer' => Text(108),
         ];
     }
-
 }

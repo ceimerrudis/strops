@@ -11,20 +11,8 @@
     <span class="adimn_alert">{{ $message }}</span>
 @enderror
 
-<label class="admin_edit_label" for="usagetype">Lietojuma veids</label>
-<select class="admin_edit_input" id="type" name="usagetype" id="usagetype">
-    @php 
+@php 
     use App\Enums\VehicleUsageTypes;
     $usagetypes = VehicleUsageTypes::GetAllEnums();
-    @endphp
-    @foreach($usagetypes as $usagetype)
-        @if(old('usagetype', $entry->usagetype) == $usagetype['value'])
-            <option selected="selected" value="{{ $usagetype['value'] }}">{{ $usagetype['name'] }}</option>
-        @else 
-            <option value="{{ $usagetype['value'] }}">{{ $usagetype['name'] }}</option>
-        @endif
-    @endforeach
-</select>
-@error('usagetype')
-    <span class="adimn_alert">{{ $message }}</span>
-@enderror
+@endphp
+@include('dropdown', ['text' => 'Lietojuma veids', 'fieldName' => 'usage_type', 'options' => $usagetypes, 'visualName' => 'name', 'key' => 'value'])

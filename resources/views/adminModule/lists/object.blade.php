@@ -1,11 +1,11 @@
 <td>
-    {{ $object->code }}
+    {{ $entry->code }}
 </td>
 <td>
-    {{ $object->name }}    
+    {{ $entry->name }}    
 </td>
 <td>
-    @if($object->active)
+    @if($entry->active)
         Aktīvs
     @else
         Slēgts

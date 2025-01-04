@@ -35,11 +35,11 @@ class UserController extends Controller
             return redirect(route("calendar"));
         }
         
-        $msg = Text(100);
-        return redirect()->route('login')->withInput()->with('msg', $msg);
+        AddMessage(Text(100), "k");
+        return redirect()->route('login');
     }
 
-    //Funkcijas PTKT lapas atvēršanas funkcija
+    //Funkcijas PTKT lapas atvēršanas funkcijav
     public function ViewLoginPage(Request $request)
     {     
         //Ja lietotājs jau ir pieteicies tad aizved viņu uz galveno strops lapu
@@ -52,15 +52,13 @@ class UserController extends Controller
         $entryToken = Cookie::get('entryToken');
         if($entryToken != null)
         {
-            $user = RememberMeToken::where('token', '=', $entryToken)->select('user')->first()->user;
+            $user = RememberMeToken::where('token', '=', $entryToken)->select('user')->first();
             if($user != null)
             {
-                Auth::login($user);
+                Auth::loginUsingId($user->user);
                 return redirect(route("calendar"));
             }
         }
-
-        AddMessage(Text(144), "k");
 
         return view("userModule.login");
     }

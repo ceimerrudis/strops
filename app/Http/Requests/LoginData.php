@@ -11,7 +11,6 @@ class LoginData extends FormRequest
         $rules = [
             'username' => 'required|exists:users,username',
             'password' => 'required',
-            'rememberMe' => 'bool',
        ];
         return $rules;
     }

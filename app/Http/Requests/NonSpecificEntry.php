@@ -3,8 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-
-use Illuminate\Validation\Rule; 
+use Illuminate\Validation\Rules\Enum;
 use App\Enums\EntryTypes; 
 
 class NonSpecificEntry extends FormRequest
@@ -15,7 +14,7 @@ class NonSpecificEntry extends FormRequest
             'table' => [
                 'required',
                 'integer',
-                Rule::in(array_column(EntryTypes::cases(), 'value')),//Pārbauda vai padotā vērtība atrodama sarakstā.
+                new Enum(EntryTypes::class),//Pārbauda vai padotā vērtība atrodama enumeratorā.
             ],
         ];
     }

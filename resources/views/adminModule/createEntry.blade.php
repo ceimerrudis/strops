@@ -1,13 +1,14 @@
 @include('base')
 <form 
 @if($entry->id == null)
-    action="{{ route('create', [$table]) }}" 
+    action="{{ route('create') }}" 
 @else
-    action="{{ route('edit', [$table]) }}" 
+    action="{{ route('edit') }}" 
 @endif
 method="post">
     @csrf
         <input type="hidden" name="id" id="id" value="{{ $entry->id }}">
+        <input type="hidden" name="table" id="table" value="{{ $table }}">
 
         @include('adminModule.forms.'.$viewName)
 
@@ -21,15 +22,23 @@ method="post">
     </form>
 
     @if($entry->id != null)
-        <form id="deleteForm" action="{{ route('delete', [$table]) }}" method="POST">
+        <form id="deleteForm" action="{{ route('delete') }}" method="POST">
         @csrf
             <input type="hidden" name="id" id="id" value="{{ $entry->id }}">
-            <button type="button" id="deleteButton" class="delete_element_button">DzēstTODO double  check</button>  
+            <input type="hidden" name="table" id="table" value="{{ $table }}">
+            <button type="button" id="deleteButton" class="delete_element_button">Dzēst</button>  
         </form>
         <div id="confirmDeleteWindow">
-            <button id="confirmDeleteButton">Dzēst</button>
-            <button id="cancelButton">Atcelt</button>
+            <div id="confirmDeleteWindowBackground"></div>
+            <div id="confirmDeleteWindowBox">
+                <p>Vai dzēst šo objektu?</p>
+                <div id="buttons">
+                    <button id="confirmDeleteButton">Dzēst</button>
+                    <button id="cancelButton">Atcelt</button>
+                </div>
+            </div>
         </div>
+        
         <script>
             $(document).ready(function() {
                 $("#deleteButton").on("click", function(){
@@ -45,5 +54,5 @@ method="post">
             });
         </script>
     @endif
-
+<div class="spacer"></div>
 @include('footer')

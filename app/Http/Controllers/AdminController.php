@@ -10,7 +10,7 @@ use App\Models\VehicleUse;
 use App\Models\Vehicle;
 use App\Models\Error;
 
-use Illuminate\Validation\Rule; 
+use Illuminate\Validation\Rules\Enum;
 use Illuminate\Http\Request;
 use App\Http\Requests\SpecificEntry;
 use App\Http\Requests\NonSpecificEntry;
@@ -19,6 +19,7 @@ use App\Enums\EntryTypes;
 use App\Enums\UserTypes;
 use App\Enums\VehicleUsageTypes;
 use App\Services\SharedMethods;
+use Illuminate\Validation\Rule;
 
 class AdminController extends Controller
 {
@@ -26,18 +27,28 @@ class AdminController extends Controller
     public function ViewCreateEntryPage(NonSpecificEntry $request)
     { 
         $table = $request->input('table');
+        $entry = new (GetModelFromEnum($table))([]);
+        return $this->EditPage($table, $entry);
+    }
+
+    public function EditPage($table, $entry)
+    {
         $viewName = EntryTypes::GetName($table);
-        $entry = new (GetModelFromEnum($table))([]);//Izveido tukšu elementu 
-        return view("adminModule.createEntry", compact('table', 'viewName', 'entry'));
+        //Izveido tukšu elementu 
+        //Šie trīs saraksti nepieciešami izvēlnēm
+        $vehicles = Vehicle::orderBy('name', 'asc')->select('id', 'name', 'usage_type')->get();
+        $users = User::orderBy('username', 'asc')->select('id', 'username')->get();
+        $objects = ObjectModel::orderBy('code', 'asc')->select('id', 'code')->get();
+        return view("adminModule.createEntry", compact('table', 'viewName', 'entry', 'users', 'vehicles', 'objects'));
     }
 
     //Funkcija PVIR.
     public function CreateEntry(NonSpecificEntry $request)
     { 
-        ValidateEntry($request);
-        $data = $request->all();
-        $model = GetModelFromEnum($data['table']);
-        if($data['table'] === EntryTypes::Report)
+        $data = $this->ValidateEntry($request, false);
+        $table = $request->input('table');
+        $model = GetModelFromEnum($table);
+        if($table === EntryTypes::REPORT->value)
         {
             //Nedrīkst izveidot divus atskaites ierakstus vienā un tajā pašā mēnesī vienam objektam. 
             $date = $data['date'];
@@ -48,7 +59,6 @@ class AdminController extends Controller
                 return redirect()->back();//Atgriežamies izveidošanas lapā
             }
         }
-
         $model::create($data);//Izmanto konkrētā modeļa fillable laukus      
         return redirect()->route('viewAllEntries', ['table' => $table]);        
     }
@@ -56,43 +66,41 @@ class AdminController extends Controller
     //Funkcija RDIR.
     public function ViewUpdateEntryPage(SpecificEntry $request)
     { 
-        $id = $request->input('id');
         $table = $request->input('table');
+        $id = $request->input('id');
         $entry = GetModelFromEnum($table)::findOrFail($id);
-        return view("adminModule.createEntry", compact('entry', '$request->table'));
+        return $this->EditPage($table, $entry);
     }
 
     //Funkcija RDIR.
     public function UpdateEntry(SpecificEntry $request)
     {
-        $data = $request->validated();
-        ValidateEntry($request);
-        $table = $request->$table;
+        $data = $this->ValidateEntry($request, true);//data satur tikai ieraksta datus
+        $table = $request->input('table');
         $model = GetModelFromEnum($table);
-
-        $entry = $model::findOrFail($data['id']);
-     
-        switch($table)
+        $entry = $model::findOrFail($request->input('id'));
+        
+        switch((int)$table)
         {
-            case EntryTypes::USER:
+            case EntryTypes::USER->value:
                 $entry->username = $data['username'] ?? $entry->username; 
                 $entry->password = $data['password'] ?? $entry->password;
                 $entry->name = $data['name'] ?? $entry->name; 
                 $entry->lname = $data['lname'] ?? $entry->lname;
                 $entry->type = $data['type'] ?? $entry->type;
                 break;
-            case EntryTypes::VEHICLE:
+            case EntryTypes::VEHICLE->value:
                 $entry->name = $data['name'] ?? $entry->name;
                 $entry->usage = $data['usage'] ?? $entry->usage;
-                $entry->usagetype = $data['usagetype'] ?? $entry->usagetype;
+                $entry->usage_type = $data['usage_type'] ?? $entry->usage_type;
                 break;
-            case EntryTypes::OBJECT:
+            case EntryTypes::OBJECT->value:
                 $entry->code = $data['code'] ?? $entry->code;
                 $entry->name = $data['name'] ?? $entry->name;
-                $entry->closed = $data['closed'] ?? $entry->closed;
-                $entry->userInCharge = $data['userInCharge'] ?? $entry->userInCharge;
+                $entry->active = $data['active'] ?? $entry->active;
+                $entry->user_in_charge = $data['user_in_charge'] ?? $entry->user_in_charge;
                 break;
-            case EntryTypes::REPORT:
+            case EntryTypes::REPORT->value:
                 $entry->progress = $data['progress'] ?? $entry->progress;
                 $entry->object = $data['object'] ?? $entry->object;
                 if(!empty($data['date'])){
@@ -100,17 +108,17 @@ class AdminController extends Controller
                     AddMessage(Text(111), "w");
                 }
                 break;
-            case EntryTypes::RESERVATION:
+            case EntryTypes::RESERVATION->value:
                 $entry->from = $data['from'] ?? $entry->from;
                 $entry->until = $data['until'] ?? $entry->until;
                 $entry->user = $data['user'] ?? $entry->user;
                 $entry->vehicle = $data['vehicle'] ?? $entry->vehicle;
                 break;
-            case EntryTypes::VEHICLE_USE:
+            case EntryTypes::VEHICLE_USE->value:
                 $entry->from = $data['from'] ?? $entry->from;
                 $entry->until = $data['until'] ?? $entry->until;
-                $entry->usageBefore = $data['usageBefore'] ?? $entry->usageBefore;
-                $entry->usageAfter = $data['usageAfter'] ?? $entry->usageAfter;
+                $entry->usage_before = $data['usage_before'] ?? $entry->usage_before;
+                $entry->usage_after = $data['usage_after'] ?? $entry->usage_after;
                 $entry->user = $data['user'] ?? $entry->user;
                 $entry->vehicle = $data['vehicle'] ?? $entry->vehicle;
                 $entry->object = $data['object'] ?? $entry->object;
@@ -121,14 +129,17 @@ class AdminController extends Controller
         }
 
         $entry->save();
-        return redirect()->route("viewAllEntries")->with('table', $table);
+        return redirect()->route("viewAllEntries", ['table' => $table]);
     }
 
     //Funkcija DZIR.
     public function DeleteEntry(SpecificEntry $request)
     { 
         //GetModelFromEnum nevar atgriezt false jo SpecificEntry jau ir to pārbaudījis
-        GetModelFromEnum($request->table)::deleteAt($request->id);
+        $model = GetModelFromEnum($request->table);
+        $entry = $model::find($request->id);
+        $entry->delete($entry);
+        return redirect()->route("viewAllEntries", ['table' => $request->table]);
     }
 
     //Funkcija APIR.
@@ -184,55 +195,69 @@ class AdminController extends Controller
     }
 
     //Šī palīgfunkcija pārbauda lietotāju datu atbilstību nepieciešamajam formātam.
-    public function ValidateEntry(Request $request)
+    public function ValidateEntry(Request $request, bool $update)
     {
         //Vispirms nodefinē noteikumus tad paziņojumus par kļūdām, 
         //tad, ja padota pareiza tabulas vērtība, veic pārbaudi.
+        $passwordRequired = 'required';
+        if($update){
+            $passwordRequired = 'nullable';
+        }
+        //Web formu standartu veidotāji uzskata ka false === null. Šī iemesla dēļ tagad jāčakarējas
+        //Laravel veidotāji neprot pārbaudīt bool vērtības tapēc tas jādara manuāli
+        $request->merge(['active' => (bool)$request->has('active')]);
 
         $validationRules = [
-            EntryTypes::USER => [
-                'username' => 'required|unique:users,username|string',
-                'password' => 'string',
+            EntryTypes::USER->value => [
+                'username' => 
+                    ['required',
+                    'string',
+                    Rule::unique('users', 'username')->ignore($request->id)],//id var būt null. Šajā gadījumā tiks skatīti visi lietotājvārdi
+                'password' => 'string|'.$passwordRequired,//Parole nepieciešama tikai izveidojot. un tā kā paroli nevar sūtīt lietotājam lauks būs tukšs
                 'name' => 'required|string',
                 'lname' => 'required|string',
                 'type' => [ 
                     'required',
                     'integer',
-                    Rule::in(array_column(UserTypes::cases(), 'value')),//Pārbauda vai padotā vērtība atrodama sarakstā.
+                    new Enum(UserTypes::class),//Pārbauda vai padotā vērtība atrodama enumeratorā.
                 ],
             ],
-            EntryTypes::OBJECT => [
-                'code' => 'required|min:1|max:10|unique:objects,code',
+            EntryTypes::OBJECT->value => [
+                'code' => 
+                    ['required',
+                    'min:1',
+                    'max:10',
+                    Rule::unique('objects', 'code')->ignore($request->id)],//id var būt null. Šajā gadījumā tiks skatīti visi kodi
                 'name' => 'required|string',
-                'closed' => 'required|boolean',
-                'userInCharge' => 'exists:users,id',
+                'active' => 'nullable',
+                'user_in_charge' => 'exists:users,id',
             ],
-            EntryTypes::VEHICLE => [
+            EntryTypes::VEHICLE->value => [
                 'name' => 'required|string',
                 'usage' => 'required|numeric|min:0',
-                'usagetype' => [
+                'usage_type' => [
                     'required',
                     'numeric',
                     'integer', 
-                    Rule::in(array_column(VehicleUsageTypes::cases(), 'value')),//Pārbauda vai padotā vērtība atrodama sarakstā.
+                    new Enum(VehicleUsageTypes::class),//Pārbauda vai padotā vērtība atrodama enumeratorā.
                 ],
             ],
-            EntryTypes::RESERVATION => [
+            EntryTypes::RESERVATION->value => [
                 'from' => 'required|date',
                 'until' => 'required|date',
                 'user' => 'required|numeric|exists:users,id',
                 'vehicle' => 'required|numeric|exists:vehicles,id',
             ],
-            EntryTypes::REPORT => [
+            EntryTypes::REPORT->value => [
                 'progress' => 'required|numeric|min:0',
                 'object' => 'required|exists:objects,id',
                 'date' => 'required|date',
             ],
-            EntryTypes::VEHICLE_USE => [
+            EntryTypes::VEHICLE_USE->value => [
                 'from' => 'required|date',
                 'until' => 'nullable|date',
-                'usageBefore' => 'required|numeric|min:0',
-                'usageAfter' => 'nullable|numeric|min:0',
+                'usage_before' => 'required|numeric|min:0',
+                'usage_after' => 'nullable|numeric|min:0',
                 'user' => 'required|exists:users,id',
                 'vehicle' => 'required|exists:vehicles,id',
                 'object' => 'required|exists:objects,id',
@@ -240,91 +265,88 @@ class AdminController extends Controller
             ],
         ];
 
-        //TODO export text
         $messages = [
-            EntryTypes::USER => [
-                'username.required' => 'Lūdzu ievadiet lietotājvārdu.',
-                'username.unique' => 'Lietotājvārds jau eksistē.',
-                'username.string' => 'Lietotājvārds jābūt teksta vērtībai.',
-                'password.string' => 'Parole jābūt teksta vērtībai.',
-                'name.required' => 'Lūdzu ievadiet vārdu.',
-                'name.string' => 'Vārds jābūt teksta vērtībai.',
-                'lname.required' => 'Lūdzu ievadiet uzvārdu.',
-                'lname.string' => 'Uzvārds jābūt teksta vērtībai.',
-                'type.required' => 'Lūdzu izvēlieties lietotāja veidu.',
-                'type.integer' => 'Lietotāja veids jābūt vesels skaitlis.',
-                'type.in' => 'Izvēlētais lietotāja veids nav derīgs.',
+            EntryTypes::USER->value => [
+                'username.required' => Text(156),
+                'username.unique' => Text(157),
+                'username.string' => Text(158),
+                'password.string' => Text(159),
+                'name.required' => Text(160),
+                'name.string' => Text(161),
+                'lname.required' => Text(162),
+                'lname.string' => Text(163),
+                'type.required' => Text(164),
+                'type.integer' => Text(165),
+                'type.in' => Text(166),
             ],
-            EntryTypes::OBJECT => [
-                'code.required' => 'Lūdzu ievadiet kodu.',
-                'code.min' => 'Koda garumam jābūt vismaz 1 rakstzīmei.',
-                'code.max' => 'Koda garumam nedrīkst pārsniegt 10 rakstzīmes.',
-                'code.unique' => 'Šāds kods jau eksistē.',
-                'name.required' => 'Lūdzu ievadiet nosaukumu.',
-                'name.string' => 'Nosaukumam jābūt teksta vērtībai.',
-                'closed.required' => 'Lūdzu norādiet, vai objekts ir slēgts.',
-                'closed.boolean' => 'Statusam jābūt true vai false.',
-                'userInCharge.exists' => 'Norādītais lietotājs nav atrasts.',
+            EntryTypes::OBJECT->value => [
+                'code.required' => Text(167),
+                'code.min' => Text(168),
+                'code.max' => Text(169),
+                'code.unique' => Text(170),
+                'name.required' => Text(171),
+                'name.string' => Text(172),
+                'user_in_charge.exists' => Text(175),
             ],
-            EntryTypes::VEHICLE => [
-                'name.required' => 'Lūdzu ievadiet nosaukumu.',
-                'name.string' => 'Nosaukumam jābūt teksta vērtībai.',
-                'usage.required' => 'Lūdzu ievadiet lietojuma daudzumu.',
-                'usage.numeric' => 'Lietojumam jābūt skaitliskai vērtībai.',
-                'usage.min' => 'Lietojumam jābūt vismaz 0.',
-                'usagetype.required' => 'Lūdzu izvēlieties lietošanas veidu.',
-                'usagetype.numeric' => 'Lietošanas veidam jābūt skaitliskai vērtībai.',
-                'usagetype.integer' => 'Lietošanas veidam jābūt veselam skaitlim.',
-                'usagetype.in' => 'Izvēlētais lietošanas veids nav derīgs.',
+            EntryTypes::VEHICLE->value => [
+                'name.required' => Text(176),
+                'name.string' => Text(177),
+                'usage.required' => Text(178),
+                'usage.numeric' => Text(179),
+                'usage.min' => Text(180),
+                'usage_type.required' => Text(181),
+                'usage_type.numeric' => Text(182),
+                'usage_type.integer' => Text(183),
+                'usage_type.in' => Text(184),
             ],
-            EntryTypes::RESERVATION => [
-                'from.required' => 'Lūdzu izvēlieties sākuma datumu.',
-                'from.date' => 'Sākuma datumam jābūt derīgam datuma formātā.',
-                'until.required' => 'Lūdzu izvēlieties beigu datumu.',
-                'until.date' => 'Beigu datumam jābūt derīgam datuma formātā.',
-                'user.required' => 'Lūdzu izvēlieties lietotāju.',
-                'user.numeric' => 'Lietotājam jābūt skaitliskai vērtībai.',
-                'user.exists' => 'Norādītais lietotājs nav atrasts.',
-                'vehicle.required' => 'Lūdzu izvēlieties transportlīdzekli.',
-                'vehicle.numeric' => 'Transportlīdzeklim jābūt skaitliskai vērtībai.',
-                'vehicle.exists' => 'Norādītais transportlīdzeklis nav atrasts.',
+            EntryTypes::RESERVATION->value => [
+                'from.required' => Text(185),
+                'from.date' => Text(186),
+                'until.required' => Text(187),
+                'until.date' => Text(188),
+                'user.required' => Text(189),
+                'user.numeric' => Text(190),
+                'user.exists' => Text(191),
+                'vehicle.required' => Text(192),
+                'vehicle.numeric' => Text(193),
+                'vehicle.exists' => Text(194),
             ],
-            EntryTypes::REPORT => [
-                'progress.required' => 'Lūdzu ievadiet progresu.',
-                'progress.numeric' => 'Progresam jābūt skaitliskai vērtībai.',
-                'progress.min' => 'Progresam jābūt vismaz 0.',
-                'date.required' => 'Lūdzu ievadiet datumu.',
-                'date.date' => 'Datumam jābūt derīgam datuma formātā.',
-                'object.required' => 'Objektam jābūt norādītam.',
-                'object.exists' => 'Objekts netika atrasts datu bāzē.',
+            EntryTypes::REPORT->value => [
+                'progress.required' => Text(195),
+                'progress.numeric' => Text(196),
+                'progress.min' => Text(197),
+                'date.required' => Text(198),
+                'date.date' => Text(199),
+                'object.required' => Text(200),
+                'object.exists' => Text(201),
             ],
-            EntryTypes::VEHICLE_USE => [
-                'from.required' => 'Lūdzu izvēlieties sākuma datumu.',
-                'from.date' => 'Sākuma datumam jābūt derīgam datuma formātā.',
-                'until.nullable' => 'Beigu datums ir izvēles lauks.',
-                'until.date' => 'Beigu datumam jābūt derīgam datuma formātā.',
-                'usageBefore.required' => 'Lūdzu ievadiet lietojuma daudzumu pirms.',
-                'usageBefore.numeric' => 'Lietojuma daudzumam jābūt skaitliskai vērtībai.',
-                'usageBefore.min' => 'Lietojuma daudzumam jābūt vismaz 0.',
-                'usageAfter.nullable' => 'Lūdzu ievadiet lietojuma daudzumu pēc.',
-                'usageAfter.numeric' => 'Lietojuma daudzumam jābūt skaitliskai vērtībai.',
-                'usageAfter.min' => 'Lietojuma daudzumam jābūt vismaz 0.',
-                'user.required' => 'Lūdzu izvēlieties lietotāju.',
-                'user.exists' => 'Norādītais lietotājs nav atrasts.',
-                'vehicle.required' => 'Lūdzu izvēlieties transportlīdzekli.',
-                'vehicle.exists' => 'Norādītais transportlīdzeklis nav atrasts.',
-                'object.required' => 'Lūdzu izvēlieties objektu.',
-                'object.exists' => 'Norādītais objekts nav atrasts.',
-                'comment.string' => 'Komentāram jābūt teksta vērtībai.',
+            EntryTypes::VEHICLE_USE->value => [
+                'from.required' => Text(202),
+                'from.date' => Text(203),
+                'until.nullable' => Text(204),
+                'until.date' => Text(205),
+                'usage_before.required' => Text(206),
+                'usage_before.numeric' => Text(207),
+                'usage_before.min' => Text(208),
+                'usage_after.nullable' => Text(209),
+                'usage_after.numeric' => Text(210),
+                'usage_after.min' => Text(211),
+                'user.required' => Text(212),
+                'user.exists' => Text(213),
+                'vehicle.required' => Text(214),
+                'vehicle.exists' => Text(215),
+                'object.required' => Text(216),
+                'object.exists' => Text(217),
+                'comment.string' => Text(218),
             ],
         ];
-    
+
         $table = $request->input('table');
-    
+
         if (!array_key_exists($table, $validationRules)) {
             return response()->json(['error' => ''], 400);
         }
-    
+
         return $request->validate($validationRules[$table], $messages[$table]);
     }
 }

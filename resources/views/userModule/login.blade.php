@@ -29,7 +29,7 @@
                 </div>
             </div>
             <div class="login_input_divider_box">
-                <input id="rememberMe" class="show_pass" type="checkbox">
+                <input id="rememberMe" name="rememberMe" class="show_pass" type="checkbox">
                 <label for="rememberMe" class="show_pass_label">Automātiski pieteikties</label>
                 <br>
             </div>

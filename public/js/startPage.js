@@ -13,9 +13,9 @@ $( document ).ready(function() {
     $("#collapsor").on( "click", function() {
         $("#collapse_content").toggle();
         if($("#collapse_content").is(":hidden")){
-            $("#collapsor").html("<span class='collapse_label'>{{Text(152);}}</span>");
+            $("#collapsor").html("<span class='collapse_label'>Veikt inventāra rezervāciju +</span>");
         }else{
-            $("#collapsor").html("<span class='collapse_label'>{{Text(153);}}</span>");
+            $("#collapsor").html("<span class='collapse_label'>Veikt inventāra rezervāciju -</span>");
         }
     });
 
@@ -337,9 +337,9 @@ function SelectDate()
 function SetDate(id)
 {
     //Vizuālais indikators
-    $("#"+selectedDay).removeClass("calendarDateSelected");
+    $("#"+selectedDay).removeClass("calendar_date_selected");
     selectedDay = id;
-    $("#"+selectedDay).addClass("calendarDateSelected");
+    $("#"+selectedDay).addClass("calendar_date_selected");
     createReservationTimelineVisuals();//Nomaina laika līnijas datus
     FillOutDateFields(selectedDay);//Atjauno laiku laukus
 }

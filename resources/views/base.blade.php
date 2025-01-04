@@ -11,6 +11,12 @@
                 <button class="delete_message_button" onclick="hideMessage(this)">x</button> 
             </p>
         @endforeach
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+
     </div>
 
     @php
@@ -110,6 +116,7 @@
                         </span>
                     </a>
                 </div>
+                
                 <div class="nav_link_wrapper">
                     <a class="nav_link" href="apskatitVisus?table={{EntryTypes::RESERVATION->value}}">
                         <span class="nav_link_span_2_lines">

@@ -7,6 +7,69 @@
     max-width: fit-content;
 }
 
+.spacer {
+    height: 50px; 
+    width: 100%;
+}
+
+#buttons{
+    display: flex;
+    justify-content: space-between; 
+    align-items: center; 
+}
+
+#confirmDeleteWindow{
+    display: none;
+    z-index: 1000;
+}
+
+#confirmDeleteWindow #confirmDeleteWindowBackground{
+    background-color: black;
+    opacity: 40%;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    bottom: 0px;
+    right: 0px;
+}
+
+#confirmDeleteWindow #confirmDeleteWindowBox{
+    position: fixed;
+    width: 250px;
+    height: 100px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    border: white 4px solid;
+    border-radius: 4px;
+    padding: 20px;
+}
+
+#confirmDeleteWindow #confirmDeleteWindowBox button{
+    display: inline-block;
+    margin: 10px 5px; 
+    padding: 8px 16px; 
+    background-color: #f44336;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+}
+
+#confirmDeleteWindow #confirmDeleteWindowBox #cancelButton{
+    background-color: gray;
+}
+
+#confirmDeleteWindow #confirmDeleteWindowBox p{
+    display: block; 
+    margin-bottom: 10px; 
+    font-size: 20px;
+    text-align: center;
+}
+
 .message_board{
     position: fixed;
     top: 0;

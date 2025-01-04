@@ -1,11 +1,14 @@
+@php
+use App\Enums\VehicleUsageTypes;
+@endphp
 <td>
     {{ $entry->name }}
 </td>
 <td>
-    {{ VehicleUsageType::GetDisplayVal($entry->usagetype, $entry->usage) }}
+    {{ VehicleUsageTypes::GetDisplayVal($entry->usage_type, $entry->usage) }}
 </td>
 <td>
-    {{ VehicleUsageType::getName($entry->usagetype); }}
+    {{ VehicleUsageTypes::getName($entry->usage_type); }}
 </td>
 <td>
     {{ $entry->id }}

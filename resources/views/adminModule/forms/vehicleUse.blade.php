@@ -1,56 +1,27 @@
-<label class="admin_edit_label" for="user">Rezervētājs</label>
-<select class="admin_edit_input" id="type" name="user" id="user">
-    @foreach($users as $user)
-        @if(old('user', $entry->user) == $user->id)
-            <option selected="selected" value="{{ $user->id }}">{{ $user->username }}</option>
-        @else
-            <option value="{{ $user->id }}">{{ $user->username }}</option>
-        @endif
-    @endforeach
-</select>
-@error('user')
-    <span class="adimn_alert">{{ $message }}</span>
-@enderror
-
-<label class="admin_edit_label" for="vehicle">Inventārs</label>
-<select class="admin_edit_input" id="type" name="vehicle" id="vehicle">
-    @foreach($vehicles as $vehicle)
-        @if(old('vehicle', $entry->vehicle) == $vehicle->id)
-            <option selected="selected" value="{{ $vehicle->id }}">{{ $vehicle->name }}</option>
-        @else
-            <option value="{{ $vehicle->id }}">{{ $vehicle->name }}</option> 
-        @endif
-        <p style="display:none;" id="{{ $vehicle->id }}">{{ $vehicle->usageType }}</p>
-    @endforeach
-</select>
-@error('vehicle')
-    <span class="adimn_alert">{{ $message }}</span>
-@enderror
-
-
-<input id="objectID" name="object" type="hidden" value="{{ old('object', $entry->object) }}">
-<label class="admin_edit_label" for="object">Objekts</label>
-<input class="admin_edit_input" id="object" list="objects" oninput="updateObjectInput()">
-<datalist id="objects">
-    @foreach($objects as $object)
-        <option value="{{ $object->code }}" data-id="{{ $object->id }}"></option>                
-    @endforeach
-</datalist>
-<script>
-    $( document ).ready(function() {
-        var objectInput = $("#objectID");
-        code = $("#objects option[data-id='" + String(Number(objectInput.val())) + "']").val();
-        $("#object").val(code);
-    });
-    function updateObjectInput(){
-        var objectInput = $("#object");
-        id = $("#objects option[value='" + objectInput.val() + "']").data("id");
-        $("#objectID").val(id);
+@php
+    //Šis kods saglabā katram inventāram lietojuma veida nosaukumu lai to dinamiski mainītu atkarīgi no izvēlētā inventāra
+    use App\Enums\VehicleUsageTypes;
+    $usageNames = [];
+    foreach ($vehicles as $vehicle) {
+        $usageNames[$vehicle->id] = VehicleUsageTypes::GetTrueName($vehicle->usage_type);
     }
+@endphp
+
+@include('dropdown', ['text' => 'Lietotājs', 'fieldName' => 'user', 'options' => $users, 'visualName' => 'username', 'key' => 'id'])
+
+@include('dropdown', ['text' => 'Inventārs', 'fieldName' => 'vehicle', 'options' => $vehicles, 'visualName' => 'name', 'key' => 'id'])
+<script>
+    //Šis kods saglabā katram inventāram lietojuma veida nosaukumu lai to dinamiski mainītu atkarīgi no izvēlētā inventāra
+    $(document).ready(function() {
+        const usageNames = @json($usageNames);
+        $('#vehicle').change(function() {
+            const selectedValue = $(this).val();
+            $(".usage_name_display").html(usageNames[selectedValue]);
+        });
+    });
 </script>
-@error('object')
-    <span class="adimn_alert">{{ $message }}</span>
-@enderror
+
+@include('datalist')
 
 <label class="admin_edit_label" for="comment">Komentārs</label>
 <input id="comment" name="comment" type="text" class="admin_edit_input" value="{{ old('comment', $entry->comment) }}">
@@ -58,19 +29,19 @@
     <span class="adimn_alert">{{ $message }}</span>
 @enderror
 
-<label class="admin_edit_label" for="usageBefore">Lietojums sākot
-{{ \App\Enums\VehicleUsageType::GetTrueName($entry->usageType); }}
+<label class="admin_edit_label" for="usage_before">Lietojums sākot
+<span class="usage_name_display"></span>
 </label>
-<input class="admin_edit_input"  type="text" name="usageBefore" id="usageBefore" value="{{ old('usageBefore', $entry->usageBefore) }}">
-@error('usageBefore')
+<input class="admin_edit_input"  type="text" name="usage_before" id="usage_before" value="{{ old('usage_before', $entry->usage_before) }}">
+@error('usage_before')
     <span class="adimn_alert">{{ $message }}</span>
 @enderror
 
-<label class="admin_edit_label" for="usageAfter">Lietojums beidzot
-{{ \App\Enums\VehicleUsageType::GetTrueName($entry->usageType); }}
+<label class="admin_edit_label" for="usage_after">Lietojums beidzot
+<span class="usage_name_display"></span>
 </label>
-<input class="admin_edit_input"  type="text" name="usageAfter" id="usageAfter" value="{{ old('usageAfter', $entry->usageAfter) }}">
-@error('usageAfter')
+<input class="admin_edit_input"  type="text" name="usage_after" id="usage_after" value="{{ old('usage_after', $entry->usage_after) }}">
+@error('usage_after')
     <span class="adimn_alert">{{ $message }}</span>
 @enderror
 
@@ -79,7 +50,6 @@
 @error('from')
     <span class="adimn_alert">{{ $message }}</span>
 @enderror
-
 
 <label class="admin_edit_label" for="until">Līdz</label>
 <input class="admin_edit_input" type="datetime-local" name="until" id="until" value="{{ old('until', $entry->until) }}">

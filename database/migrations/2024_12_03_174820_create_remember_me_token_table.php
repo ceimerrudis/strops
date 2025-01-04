@@ -17,6 +17,7 @@ return new class extends Migration
             $table->unsignedBigInteger('user')->nullable(false);
             $table->foreign('user')->references('id')->on('users');
             $table->string('token');
+            $table->timestamps();
         });
     }
     

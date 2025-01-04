@@ -25,20 +25,7 @@
     <span class="adimn_alert">{{ $message }}</span>
 @enderror
 
-<label class="admin_edit_label" for="type">Loma</label>
-<select class="admin_edit_input" id="type" name="type" id="type">
-    @php 
-    use App\Enums\UserType;
-    $types = UserType::GetAllEnums();
-    @endphp
-    @foreach($types as $type)
-        @if(old('type', $entry->type) == $type['value'])
-            <option selected="selected" value="{{ $type['value'] }}">{{ $type['name'] }}</option>
-        @else 
-            <option value="{{ $type['value'] }}">{{ $type['name'] }}</option>
-        @endif
-    @endforeach
-</select>
-@error('type')
-    <span class="adimn_alert">{{ $message }}</span>
-@enderror
+@php 
+    $types = App\Enums\UserTypes::GetAllEnums();
+@endphp
+@include('dropdown', ['text' => 'Loma', 'fieldName' => 'type', 'options' => $types, 'visualName' => 'name', 'key' => 'value'])
