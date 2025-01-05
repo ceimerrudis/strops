@@ -16,3 +16,10 @@ function updateMessageBoard() {
 $(document).ready(function() {
     updateMessageBoard();
 });
+
+
+function AddMessage(msg, status)
+{
+    $("#messageBoard").append("<p class='alert "  + status + "'>" + msg + 
+        " <button class='delete_message_button' onclick='hideMessage(this)'>x</button> </p>");
+}

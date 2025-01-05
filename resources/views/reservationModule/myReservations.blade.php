@@ -10,11 +10,12 @@
 </tr>
 @php
 use Illuminate\Support\Carbon;
+use App\Enums\EntryTypes;
 @endphp
 @foreach($myreservations as $reservation)
     <tr>
         <td>
-            {{ $reservation->vehicle }}
+            {{ $reservation->name }}
         </td>
         <td>
             {{ Carbon::parse($reservation->from)->translatedFormat('d-M') }}
@@ -27,10 +28,11 @@ use Illuminate\Support\Carbon;
             {{ Carbon::parse($reservation->until)->translatedFormat('H:i') }}
         </td>
         <td>    
-        <form method="POST" action="{{ route('removeReservation') }}">
+        <form method="POST" action="{{ route('deleteMyReservation') }}">
             @csrf
+            <input type="hidden" name="table" value="{{EntryTypes::RESERVATION->value}}">
             <input type="hidden" name="id" value="{{$reservation->id}}">
-            <button type="submit">
+            <button type="submit" class="deletebtn">
                 Izdzēst
             </button>
         </form>

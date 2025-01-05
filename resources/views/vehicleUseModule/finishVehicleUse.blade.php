@@ -1,20 +1,20 @@
 @include('base')
 
 @php
-    use App\Enums\VehicleUsageType;
+    use App\Enums\VehicleUsageTypes;
 @endphp
 
-<form action="beigtLietojumu" method="post">
+<form action="beigtLietojumuArLietojumu" method="post">
 @csrf
     <input type="hidden" name="id" id="id" value="{{$id}}">
 
     <label class="current_usage_label" for="from">
-    @if($type == VehicleUsageType::MOTOR_HOURS->value)
+    @if($usage_type == VehicleUsageTypes::MOTOR_HOURS->value)
         Kādas ir pašreizējās motorstundas?
-    @elseif($type == VehicleUsageType::KILOMETERS->value)
+    @elseif($usage_type == VehicleUsageTypes::KILOMETERS->value)
         Kāds ir pašreizējais nobraukums?
     @else
-        Notika sistēmas kļūda.<!-- TODO add error id-->
+        Notika sistēmas kļūda.
     @endif
     </label>
     <input class="admin_edit_input" type="numeric" name="usage" id="usage" value="{{ old('usage') }}">

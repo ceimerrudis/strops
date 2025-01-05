@@ -15,13 +15,17 @@ use Illuminate\Support\Carbon;
 @foreach($uses as $vehicleUse)
     <tr>
         <td>
-            <a method="GET" href="{{ route('beigtLietojumu', ['vehicleUse' => $vehicleUse->id]) }}">Pārtraukt lietot</a>
+            <form method="post" action="{{ route('endUse') }}">
+                @csrf
+                <input type="hidden" name="vehicleUse" id="vehicleUse" value="{{$vehicleUse->id}}">
+                <button type="submit" class="">Pārtraukt lietot</button>
+            </form>
         </td>
         <td>
-            {{ $vehicleUse->vehicle }}
+            {{ $vehicleUse->name }}
         </td>
         <td>
-            {{ $vehicleUse->object }}
+            {{ $vehicleUse->code }}
         </td>
         <td>
             {{ Carbon::parse($vehicleUse->from)->translatedFormat('d-M') }}

@@ -1,5 +1,8 @@
 @include('header')
 <body class="background">
+    <div id="loadingWrapper" class="loading_wrapper">
+        <div class="overlay"></div>
+    </div>    
     <div id="messageBoard" class="message_board">
         @php
             $messages = DeleteMessages();

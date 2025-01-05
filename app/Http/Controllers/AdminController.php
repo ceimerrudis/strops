@@ -33,7 +33,7 @@ class AdminController extends Controller
 
     public function EditPage($table, $entry)
     {
-        $viewName = EntryTypes::GetName($table);
+        $viewName = EntryTypes::GetViewName($table);
         //Izveido tukšu elementu 
         //Šie trīs saraksti nepieciešami izvēlnēm
         $vehicles = Vehicle::orderBy('name', 'asc')->select('id', 'name', 'usage_type')->get();
@@ -56,7 +56,7 @@ class AdminController extends Controller
             if($exists)
             {
                 addMessage(Text(112), "e");
-                return redirect()->back();//Atgriežamies izveidošanas lapā
+                return redirect()->back()->withInput();
             }
         }
         $model::create($data);//Izmanto konkrētā modeļa fillable laukus      
@@ -163,7 +163,7 @@ class AdminController extends Controller
             EntryTypes::OBJECT->value => ["Objekta Nr.", "Nosaukums", "Aktīvs / Slēgts"],
             EntryTypes::REPORT->value => ["Objekts", "Progress", "Datums"],
             EntryTypes::RESERVATION->value => ["Lietotājs", "Inventārs", "Datums/laiks no","Datums/laiks līdz"],
-            EntryTypes::VEHICLE_USE->value => ["Lietotājs", "Inventārs", "Objekts, Lietojums", "Lietojums sākot / beidzot", "Datums/laiks no", "Datums/laiks līdz", "Komentārs"],
+            EntryTypes::VEHICLE_USE->value => ["Lietotājs", "Inventārs", "Objekts", "Lietojums sākot", "Lietojums beidzot", "Datums/laiks no", "Datums/laiks līdz", "Komentārs"],
             EntryTypes::ERROR->value => ["Komentārs", "Laiks", "Rezervācija", "Lietojums", "Nolietojums pirms", "Nolietojums pēc"],
         ];
 
@@ -176,20 +176,42 @@ class AdminController extends Controller
             EntryTypes::VEHICLE_USE->value => "lietojumu",
             EntryTypes::ERROR->value => "kļūdu",
         ];
-        $viewName = EntryTypes::GetName($table);
+
+        $joinableTables = [
+            EntryTypes::USER->value => [],
+            EntryTypes::VEHICLE->value => [],
+            EntryTypes::OBJECT->value => [],
+            EntryTypes::REPORT->value => [["table" => "objects", "columns" => ["code"]]],
+            EntryTypes::RESERVATION->value => [["table" => "users", "columns" => ["username"]], ["table" => "vehicles", "columns" => ["name"]]],
+            EntryTypes::VEHICLE_USE->value => [["table" => "users", "columns" => ["username"]], ["table" => "vehicles", "columns" => ["name", "usage_type"]], ["table" => "objects", "columns" => ["code"]]],
+            EntryTypes::ERROR->value => [],
+        ];
+
+        $tablesToJoin = $joinableTables[$table];
+        $viewName = EntryTypes::GetViewName($table);
         $headers = $allHeaders[$table];
         $name = $tableName[$table];
-        $allEntryData = GetModelFromEnum($table)::orderBy($sortFieldName[0], $sortFieldName[1])->get();
         //Iegūst visus konkrētā veida ierakstus, sakārto tos vai nu alfabēta secībā pēc nosaukuma, vai arī pēc lauka sākuma laiks.
-        //Atskaites tiek sagrupētas pa objektiem un sakārtotas pēc datumiem.
+        $query = GetModelFromEnum($table)::orderBy($sortFieldName[0], $sortFieldName[1])->select(EntryTypes::GetName($table).'.*');
+        foreach ($tablesToJoin as $joinedTable) {
+            $query->join($joinedTable['table'], substr($joinedTable['table'], 0, -1), $joinedTable['table'].'.id');//Sagadīšanās pēc var izmantot tabulas nosaukumu bez pēdējā burta
+            foreach ($joinedTable['columns'] as $column) {
+                $query->addSelect($joinedTable['table'] . '.' . $column . ' as ' . $joinedTable['table'] . '_' . $column);
+            }
+        }
+        $allEntryData = $query->get();
+
+        //Atskaites tiek sagrupētas pa objektiem un sakārtotas pēc datumiem. TODO
         return view('adminModule.allEntries', compact('table', 'allEntryData', 'name', 'headers', 'viewName'));
     }
 
     //funkcija RKLT
     public function RecalculateTime(TimeCalculationRequest $request)
     { 
+        $timeInMinutes = SharedMethods::RecalculateTimeCalculation($request->input("from"), $request->input("until"));
+        $timeInDays = $timeInMinutes / 60 /24;
         $data = [
-            'time' => SharedMethods::RecalculateTimeCalculation($request->$from, $request->$until),//TODO format in days
+            'time' => $timeInDays,
         ];
         return response()->json($data);
     }

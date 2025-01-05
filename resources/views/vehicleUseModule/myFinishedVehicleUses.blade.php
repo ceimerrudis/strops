@@ -1,31 +1,43 @@
 @include('base')
 <div class="table_container">
-<table class="table columns_6">
+<table class="table columns_8">
 
 <tr>
     <th>Inventārs</th>
     <th>Objekts</th>
     <th>Lietojums</th>
+    <th>Lietojums pirms</th>
+    <th>Lietojums pēc</th>
     <th>Datums/laiks no</th>
     <th>Datums/laiks līdz</th>
 </tr>
 
 @php
 use Illuminate\Support\Carbon;
-use \App\Enums\VehicleUsageType;
+use \App\Enums\VehicleUsageTypes;
 @endphp
 @foreach($uses as $vehicleUse)
     <tr>
         <td>
-            {{ $vehicleUse->vehicle }}
+            {{ $vehicleUse->name }}
         </td>
         <td>
-            {{ $vehicleUse->object }}
+            {{ $vehicleUse->code }}
         </td>
         <td>
-            {{ VehicleUsageType::GetDisplayVal($vehicleUse->usageType, $vehicleUse->usage); }}    
+            {{ VehicleUsageTypes::GetDisplayVal($vehicleUse->usage_type, $vehicleUse->usage_after - $vehicleUse->usage_before); }}    
             <br>
-            {{ VehicleUsageType::getName($vehicleUse->usageType); }}
+            {{ VehicleUsageTypes::getName($vehicleUse->usage_type); }}
+        </td>
+        <td>
+            {{ VehicleUsageTypes::GetDisplayVal($vehicleUse->usage_type, $vehicleUse->usage_before); }}    
+            <br>
+            {{ VehicleUsageTypes::getName($vehicleUse->usage_type); }}
+        </td>
+        <td>
+            {{ VehicleUsageTypes::GetDisplayVal($vehicleUse->usage_type, $vehicleUse->usage_after); }}    
+            <br>
+            {{ VehicleUsageTypes::getName($vehicleUse->usage_type); }}
         </td>
         <td>
             {{ Carbon::parse($vehicleUse->from)->translatedFormat('d-M') }}

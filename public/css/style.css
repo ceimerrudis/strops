@@ -80,6 +80,21 @@
     box-sizing: border-box;
 }
 
+.recalculate_time_button{
+    width: 80%;
+    margin-top: 20px;
+    margin-right: auto;
+    margin-left: auto;
+    padding: 10px;
+    font-size: 18px;
+    background-color: lightgreen;
+    border-radius: 5px;
+    border: 1px black solid;
+    border-right: 2px solid black;
+    border-bottom: 2px solid black;
+    display: block;
+}
+
 #messageBoard:empty {
     display: none;
 }
@@ -663,10 +678,6 @@
       clear: both;
   }
   
-  #getNextPart{
-      clear:left;
-      display: block;
-  }
   #my-qr-reader{
       width: 80%;
       min-width: 400px;
@@ -710,7 +721,20 @@
       height: 40px;
       font-size: 18px;
       padding-bottom: 10;
+      clear:left;
+      display: block;
   }
+  #beginUse{
+    margin:auto;
+    margin-top: 10px;
+    width: 80%;
+    padding-top: 10;
+    height: 40px;
+    font-size: 18px;
+    padding-bottom: 10;
+    clear:left;
+    display: block;
+}
   .make_vehicle_use_label{
       margin-left: 10px;
       margin-right: 10px;

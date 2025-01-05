@@ -1,6 +1,6 @@
 <input id="objectID" name="object" type="hidden" value="{{ old('object', $entry->object) }}">
 <label class="admin_edit_label" for="object">Objekts</label>
-<input class="admin_edit_input" id="object" list="objects" oninput="updateObjectInput()">
+<input autocomplete="off" class="admin_edit_input" id="object" list="objects" oninput="updateObjectInput()">
 <datalist id="objects">
     @foreach($objects as $object)
         <option value="{{ $object->code }}" data-id="{{ $object->id }}"></option>                

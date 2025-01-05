@@ -9,7 +9,7 @@ class RememberMeToken extends Model
 {
     use HasFactory;
 
-    protected $table = 'remember_me_token';
+    protected $table = 'remember_me_tokens';
     protected $primaryKey = 'id';
 
     protected $guarded = ['id'];

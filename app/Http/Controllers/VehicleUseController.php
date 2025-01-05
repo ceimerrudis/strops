@@ -5,22 +5,25 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\VehicleUse;
 use App\Models\Reservation;
+use App\Models\Vehicle;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\StartVehicleUse;
 use App\Http\Requests\StartVehicleUseCalendarData;
 use App\Http\Requests\EndVehicleUse;
 use App\Http\Requests\ViewVehicleUse;
 use App\Services\SharedMethods;
+use App\Enums\VehicleUsageTypes;
+use Carbon\Carbon;
 
 class VehicleUseController extends Controller
 {
     //Funkcija LTSK (LTSK sākums)
-    //GET
     public function ViewStartVehicleUsePage(StartVehicleUseCalendarData $request)
     {
         //Pieprasījums nāk no kalendāra lapas
         $data = $request->all();
-        $vehicleId = $request->$vehicle;
+        $vehicleId = $data["vehicle"];
 
         return SharedMethods::StartVehicleUse($vehicleId);
     }
@@ -32,17 +35,9 @@ class VehicleUseController extends Controller
     }
 
     //Funkcija LTSK (LTSK nobeigums)
-    //POST
     public function StartVehicleUse(StartVehicleUse $request)
     {
         $data = $request->validated();
-
-        //Ja norādīts ka jābeidz iepriekšējais lietojums vai ka lietojums ir nepareizs tad lietojumam JĀBŪT norādītam.
-        if(($data['endCurrentUsage'] == "yes" || $data['usageCorrect'] != "yes") && !isset($data["usage"]))
-        {
-            DeleteReservation($data['reservationToDelete']);
-            return redirect("/kalendars");//TODO
-        }
 
         $vehicle = Vehicle::findOrFail($data['vehicle']);
         //Vispirms pārliecinās ka neviens pašlaik nelieto šo inventāru.
@@ -54,20 +49,23 @@ class VehicleUseController extends Controller
             //Ja neatrod beigt lietojumu karogu tad novirza uz sākumlapu.
             if($data['endCurrentUsage'] == "yes")
             {
+                if(!isset($data["usage"]))
+                {
+                    return redirect()->back()->withData();
+                }
                 $this->StopUsingVehicleLogic($vehicleUse, $vehicle, $data["usage"]);
             }
             else
             {
                 AddMessage(Text(143), "k");
-                DeleteReservation($data['reservationToDelete']);
-                return redirect("/kalendars");//TODO
+                return redirect("sakums");
             }
         }
         
         //Pārraksta nesakrītošo lietojumu
         $createError = false;
         $usageBefore = 0;
-        if($data['usageCorrect'] != "yes")
+        if(isset($data["usage"]) && $data['endCurrentUsage'] != "yes")
         {
             if($vehicle->usage != $data['usage']){
                 $createError = true;
@@ -120,6 +118,11 @@ class VehicleUseController extends Controller
         $user->lastUsedObject = $data['object'];
         $user->lastUsedVehicle = $data['vehicle'];
         $user->save();
+        //Ja viss veiksmīgi izdevies izveido rezervāciju ja padoti tai nepieciešamie dati
+        if(isset($data["from"]) && isset($data["until"]))
+        {
+            SharedMethods::CreateReservationLogic($data['vehicle'], $data['from'], $data['until']);
+        }
 
         return redirect("maniNepabeigtieLietojumi");
     }
@@ -129,7 +132,17 @@ class VehicleUseController extends Controller
     { 
         $data = $request->validated();
         $vehicleUse = VehicleUse::findOrFail($data["vehicleUse"]);
-        return view("vehicleUseModule.finishVehicleUse", compact('vehicleUse'));
+        $vehicle = Vehicle::findOrFail($vehicleUse->vehicle);
+        if($vehicle->usage_type == VehicleUsageTypes::DAYS->value)
+        {
+            $this->StopUsingVehicleLogic($vehicleUse->id, null);//Laikam nav lietojums jo to aprēķina automātiski
+            return redirect("maniNepabeigtieLietojumi");
+        }
+        else{
+            $id = $vehicleUse->id;
+            $usage_type = $vehicle->usage_type;
+            return view("vehicleUseModule.finishVehicleUse", compact('id', 'usage_type'));
+        }
     }
 
 
@@ -155,7 +168,8 @@ class VehicleUseController extends Controller
         
         //Iegūst laika ilgumu starp lietojuma sākumu un pašreizējo brīdi.
         $vehicleUse->until = Carbon::now();
-        $time = SharedMethods::RecalculateTimeCalculation($vehicleUse->from, $vehicleUse->until) / ((float)60);//Iegūst laiku stundās
+        $vehicle = Vehicle::findOrFail($vehicleUse->vehicle);
+        $timeUsed = SharedMethods::RecalculateTimeCalculation($vehicleUse->from, $vehicleUse->until) / ((float)60);//Iegūst laiku stundās
         
         //Pārbaida vai kādam citam darbiniekam pašlaik nav rezervācija uz šo inventāru.
         // Ja ir tad piefiksē kļūdas gadījumu
@@ -175,7 +189,7 @@ class VehicleUseController extends Controller
             ]);       
         }
     
-        if($vehicle->usagetype == VehicleUsageType::MOTOR_HOURS->value)
+        if($vehicle->usage_type == VehicleUsageTypes::MOTOR_HOURS->value)
         {
             if($usage < $vehicle->usage){
                 return Text(135);
@@ -185,7 +199,7 @@ class VehicleUseController extends Controller
                 return Text(136);
             }
             $vehicle->usage = $usage;
-        }else if($vehicle->usagetype == VehicleUsageType::KILOMETERS->value){
+        }else if($vehicle->usage_type == VehicleUsageTypes::KILOMETERS->value){
             if($usage < $vehicle->usage){
                 return Text(137);
             }
@@ -194,12 +208,12 @@ class VehicleUseController extends Controller
                 return Text(138);
             }
             $vehicle->usage = $usage;
-        }else if($vehicle->usagetype == VehicleUsageType::DAYS->value)
+        }else if($vehicle->usage_type == VehicleUsageTypes::DAYS->value)
         {
             $vehicle->usage += $timeUsed/(float)24;//laiks dienās
         }
 
-        $vehicleUse->usageAfter = $vehicle->usage;
+        $vehicleUse->usage_after = $vehicle->usage;
         $vehicleUse->save();
         $vehicle->save();
     }
@@ -207,14 +221,20 @@ class VehicleUseController extends Controller
     //Funkcija LTAP
     public function ViewMyFinishedVehicleUsesPage(Request $request)
     { 
-        $uses = VehicleUse::where('user', Auth::user()->id)->orderBy('from', 'desc')->get();
+        $uses = VehicleUse::where('user', Auth::user()->id)->whereNotNull('until')->orderBy('from', 'desc')
+        ->join("vehicles", "vehicle", "vehicles.id")
+        ->join("objects", "object", "objects.id")
+        ->select("vehicle_uses.*", "vehicles.name", "vehicles.usage_type", "objects.code")->get();
         return view('vehicleUseModule.myFinishedVehicleUses', compact('uses'));
     }
 
     //Funkcija ALTA
     public function ViewMyActiveVehicleUsesPage(Request $request)
     { 
-        $uses = VehicleUse::where('user', Auth::user()->id)->where('until', null)->orderBy('from', 'desc')->get();
+        $uses = VehicleUse::where('user', Auth::user()->id)->where('until', null)->orderBy('from', 'desc')
+        ->join("vehicles", "vehicle", "vehicles.id")
+        ->join("objects", "object", "objects.id")
+        ->select("vehicle_uses.*", "vehicles.name", "vehicles.usage_type", "objects.code")->get();
         return view('vehicleUseModule.myActiveVehicleUses', compact('uses'));
     }
 }

@@ -1,20 +1,23 @@
+@php 
+use App\Enums\VehicleUsageTypes;
+use Carbon\Carbon;
+@endphp
 <td>
-    {{ $entry->user }}
+    {{ $entry->users_username }}
 </td>
 <td>
-    {{ $entry->vehicle }}
+    {{ $entry->vehicles_name }}
 </td>
 <td>
-    {{ $entry->object }}
+    {{ $entry->objects_code }}
 </td>
 <td>
-    {{ \App\Enums\VehicleUsageType::GetDisplayVal($entry->usageType, $entry->usage) }} 
-    <br>
-    {{ \App\Enums\VehicleUsageType::getName($entry->usageType); }}
+    {{ VehicleUsageTypes::GetDisplayVal($entry->vehicles_usage_type, $entry->usage_before) }}
+    <br>{{ VehicleUsageTypes::getName($entry->vehicles_usage_type); }}
 </td>
 <td>
-    {{ \App\Enums\VehicleUsageType::GetDisplayVal($entry->usageType, $entry->usageBefore) }}  /
-    {{ \App\Enums\VehicleUsageType::GetDisplayVal($entry->usageType, $entry->usageAfter) }}  
+    {{ VehicleUsageTypes::GetDisplayVal($entry->vehicles_usage_type, $entry->usage_after) }}  
+    <br>{{ VehicleUsageTypes::getName($entry->vehicles_usage_type); }}
 </td>
 <td>
     {{ Carbon::parse($entry->from)->translatedFormat('d-M') }}

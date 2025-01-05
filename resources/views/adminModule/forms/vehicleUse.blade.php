@@ -3,7 +3,8 @@
     use App\Enums\VehicleUsageTypes;
     $usageNames = [];
     foreach ($vehicles as $vehicle) {
-        $usageNames[$vehicle->id] = VehicleUsageTypes::GetTrueName($vehicle->usage_type);
+        //Mark  usage so it can be entered in before field
+        $usageNames[$vehicle->id] = ['name' => VehicleUsageTypes::GetName($vehicle->usage_type), 'value' => $vehicle->usage_type];
     }
 @endphp
 
@@ -16,7 +17,41 @@
         const usageNames = @json($usageNames);
         $('#vehicle').change(function() {
             const selectedValue = $(this).val();
-            $(".usage_name_display").html(usageNames[selectedValue]);
+            $(".usage_name_display").html(usageNames[selectedValue].name);
+            if(usageNames[$("#vehicle").val()].value == @json(VehicleUsageTypes::DAYS))
+            {
+                $("#recalculateTimeButton").show();
+            }else
+            {
+                $("#recalculateTimeButton").hide();
+            }
+        });
+        if(usageNames[$("#vehicle").val()].value == @json(VehicleUsageTypes::DAYS))
+        {
+            $("#recalculateTimeButton").show();
+        }else
+        {
+            $("#recalculateTimeButton").hide();
+        }
+
+        $(".usage_name_display").html(usageNames[$('#vehicle').val()].name);
+        $('#recalculateTimeButton').on('click', function() {
+            if(usageNames[$("#vehicle").val()].value == @json(VehicleUsageTypes::DAYS))
+            {
+                $.ajax({
+                    type: "GET",
+                    url: "parrekinatlaiku", 
+                    data: { 
+                        from: $("#from").val()+":00Z", 
+                        until: $("#until").val()+":00Z", 
+                    },
+                    success: function(result){
+                        $("#usage_after").val((parseFloat($("#usage_before").val()) + parseFloat(result.time)).toFixed(2));
+                        AddMessage("Laiks aprēķināts!", "info");
+                    }
+                });  
+                
+            }
         });
     });
 </script>
@@ -30,7 +65,7 @@
 @enderror
 
 <label class="admin_edit_label" for="usage_before">Lietojums sākot
-<span class="usage_name_display"></span>
+(<span class="usage_name_display"></span>)
 </label>
 <input class="admin_edit_input"  type="text" name="usage_before" id="usage_before" value="{{ old('usage_before', $entry->usage_before) }}">
 @error('usage_before')
@@ -38,7 +73,7 @@
 @enderror
 
 <label class="admin_edit_label" for="usage_after">Lietojums beidzot
-<span class="usage_name_display"></span>
+(<span class="usage_name_display"></span>)
 </label>
 <input class="admin_edit_input"  type="text" name="usage_after" id="usage_after" value="{{ old('usage_after', $entry->usage_after) }}">
 @error('usage_after')
@@ -56,3 +91,5 @@
 @error('until')
     <span class="adimn_alert">{{ $message }}</span>
 @enderror
+
+<button type="button" id="recalculateTimeButton" class="recalculate_time_button">aprēķināt laika lietojumu</button>

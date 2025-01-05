@@ -12,7 +12,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('remember_me_token', function (Blueprint $table) {
+        Schema::create('remember_me_tokens', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user')->nullable(false);
             $table->foreign('user')->references('id')->on('users');

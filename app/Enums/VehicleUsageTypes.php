@@ -33,17 +33,8 @@ enum VehicleUsageTypes: int
     {
         return match($type) {
             self::MOTOR_HOURS->value => round($usage, 2),
-            self::DAYS->value => round($usage / 9, 2),
+            self::DAYS->value => round($usage, 2),
             self::KILOMETERS->value => round($usage, 2),
-        };
-    }
-
-    public static function GetTrueName($type)
-    {
-        return match($type) {
-            self::MOTOR_HOURS->value => 'motorstundas',
-            self::DAYS->value => 'stundas',
-            self::KILOMETERS->value => 'kilometri',                  
         };
     }
 }

@@ -62,7 +62,7 @@ class ObjectController extends Controller
                 AddMessage(Text(151), "k");
             }
         }
-        return redirect("ViewReports");//TODO
+        return redirect("apskatitatskaites");
     }
 
     //Funkcija RDAT
@@ -72,7 +72,7 @@ class ObjectController extends Controller
         $reportId = $request->input("report");
         if(!ObjectModel::where("id", $objectId)->where("user_in_charge", Auth::user()->id)->exists())
         {
-            return redirect("ViewReports");//TODO
+            return redirect("apskatitatskaites");
         }
 
         $report = Report::where("id", $reportId)->first();
@@ -93,7 +93,7 @@ class ObjectController extends Controller
         }
 
         $entry->save();
-        return redirect()->route("ViewReports");
+        return redirect("apskatitatskaites");
     }
 
     //Funkcija SVAT

@@ -19,13 +19,12 @@ return new class extends Migration
             $table->foreign('user')->references('id')->on('users');
             $table->foreign('vehicle')->references('id')->on('vehicles');
             $table->foreign('object')->references('id')->on('objects');
-            $table->decimal('usage')->nullable(false)->default(0);
             $table->text('comment')->nullable(true);
             $table->dateTime('deleted_at')->nullable(true); 
             $table->dateTime('from')->nullable(false);
             $table->dateTime('until')->nullable(true);
             $table->decimal('usage_before')->nullable(false)->default(0);
-            $table->decimal('usage_after')->nullable(false)->default(0);
+            $table->decimal('usage_after')->nullable(true)->default(0);
             $table->timestamps();
         });
     }

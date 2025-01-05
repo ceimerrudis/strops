@@ -4,12 +4,12 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class EndVehicleUse extends FormRequest
+class ViewVehicleUse extends FormRequest
 {
     public function rules(): array
     {
         $rules = [
-            'vehicleUse' => 'required|exists:vehicleUses,id',
+            'vehicleUse' => 'required|exists:vehicle_uses,id',
        ];
         return $rules;
     }

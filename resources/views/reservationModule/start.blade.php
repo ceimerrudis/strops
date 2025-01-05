@@ -1,6 +1,9 @@
 @include('base')
 
 <script src="{{ asset('js/startPage.js') }}"></script>
+<p style="display:none" id="reservationUrlHolder">{{route('createReservation')}}</p>
+<p style="display:none" id="reservationAndUseUrlHolder">{{route('createReservationAndUse')}}</p>
+<p style="display:none" id="useUrlHolder">{{route('startUse')}}</p>
 
 <div class="flex_parent">
 
@@ -23,7 +26,7 @@
     <div class="make_reservation_flex_box_item">
         <p id="collapsor" class="make_reservation_title collapsible"><span class='collapse_label'>Veikt inventāra rezervāciju -</span></p>
             <div class="make_reservation_box" id="collapse_content">
-                <form id="make_reservation_form" action="setByJs" method="post">
+                <form id="makeReservationForm">
                     @csrf   
                     <div class="centered">
                         <div class="date_time_input_box">    
@@ -46,11 +49,11 @@
                             <p style="margin-bottom: 15px; width: 210px; display:inline-block;"> Izvēlies inventāru</p><span> Pieejamība </span>
                             <br>
                             @if(old('vehicle') == -1)   
-                            <input style="display: none;" form="make_reservation_form" checked type="radio" name="vehicle" id="all_vehicles" value="-1">
+                            <input style="display: none;" checked type="radio" name="vehicle" id="all_vehicles" value="-1">
                             @elseif(empty(old('vehicle')))
-                            <input style="display: none;" form="make_reservation_form" checked type="radio" name="vehicle" id="all_vehicles" value="-1">
+                            <input style="display: none;" checked type="radio" name="vehicle" id="all_vehicles" value="-1">
                             @else
-                            <input style="display: none;" form="make_reservation_form" type="radio" name="vehicle" id="all_vehicles" value="-1"> 
+                            <input style="display: none;" type="radio" name="vehicle" id="all_vehicles" value="-1"> 
                             @endif
                             @foreach($vehicles as $vehicle)
                                 <p style="display:none;" id="used_{{$vehicle->id}}">
@@ -61,9 +64,9 @@
                                 @endif
                                 </p>
                                 @if(old('vehicle') == $vehicle->id)
-                                    <input class="vehicle_radio" form="make_reservation_form" type="radio" name="vehicle" id="{{ $vehicle->name }}" value="{{ $vehicle->id }}" checked>
+                                    <input class="vehicle_radio" type="radio" name="vehicle" id="{{ $vehicle->name }}" value="{{ $vehicle->id }}" checked>
                                 @else    
-                                    <input class="vehicle_radio" form="make_reservation_form" type="radio" name="vehicle" id="{{ $vehicle->name }}" value="{{ $vehicle->id }}">
+                                    <input class="vehicle_radio" type="radio" name="vehicle" id="{{ $vehicle->name }}" value="{{ $vehicle->id }}">
                                 @endif
 
                             <label class="vehicle_label" for="{{ $vehicle->name }}">{{ $vehicle->name }}   
@@ -83,16 +86,12 @@
                                 <br>
                         </div>
                     </div><!-- vards brivs zaļš lietots sarkans atdalits ar tabulatoru-->
-                    <!-- palielinat datms lauku -->
+
                     <div class="reserve_btn_container">
-                        <button type="button" class="create_vehicle_use_button" id="make_reservation_btn">REZERVĒT</button>
-                        <button type="button" class="create_vehicle_use_button" id="start_using_with_reservation_btn">LIETOT UN REZERVĒT</button>
-                        <button type="button" class="create_vehicle_use_button" id="start_using_btn">LIETOT</button>
+                        <button type="button" class="create_vehicle_use_button" id="makeReservationBtn">REZERVĒT</button>
+                        <button type="button" class="create_vehicle_use_button" id="startUsingWithReservationBtn">LIETOT UN REZERVĒT</button>
+                        <button type="button" class="create_vehicle_use_button" id="startUsingBtn">LIETOT</button>
                     </div>
-                    <input id="type_inp" type="hidden" value="0" name="type">
-                    @error('type')
-                                <span class="alert">{{ $message }}</span>
-                    @enderror
                 </form>
             </div>
         </div>

@@ -12,7 +12,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('error', function (Blueprint $table) {
+        Schema::create('errors', function (Blueprint $table) {
             $table->id();
             $table->decimal('usage_before')->nullable(true)->default(0);
             $table->decimal('usage_after')->nullable(true)->default(0);

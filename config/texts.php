@@ -119,5 +119,6 @@ return [
     216 => 'Lūdzu izvēlieties objektu.',
     217 => 'Norādītais objekts nav atrasts.',
     218 => 'Komentāram jābūt teksta vērtībai.',
+    219 => 'Laiks aprēķināts!',//vehichleUse.blade failā šis strings ir cieti kodēts. Mainot šeit jāmaina tur  
     999 => 'template',
 ];

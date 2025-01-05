@@ -32,8 +32,8 @@ class Reservation extends Model
     protected function casts(): array
     {
         return [
-            'from' => 'datetime:Y-m-d H:i:s',
-            'until' => 'datetime:Y-m-d H:i:s',
+            'from' => 'datetime:Y-m-d H:i',
+            'until' => 'datetime:Y-m-d H:i',
             'created_at' => 'datetime:Y-m-d H:i:s',
             'updated_at' => 'datetime:Y-m-d H:i:s',
             'deleted_at' => 'datetime:Y-m-d H:i:s',

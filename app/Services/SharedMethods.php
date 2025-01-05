@@ -1,17 +1,27 @@
 <?php
 
 namespace App\Services;
+use Carbon\Carbon;
+use App\Models\VehicleUse;
+use App\Models\Vehicle;
+use App\Models\User;
+use App\Models\Reservation;
+use App\Models\ObjectModel;
+use Illuminate\Support\Facades\Auth;
 
 class SharedMethods
 {
     //funkcija RKLT
-    public function RecalculateTimeCalculation($from, $until) : int
+    public static function RecalculateTimeCalculation($from, $until) : int
     { 
         $WORK_DAY_BEGINS = 7;//CONFIG
         $WORK_DAY_BEGINS_STR = "07:00";
         $WORK_DAY_ENDS = 18;
         $WORK_DAY_ENDS_STR = "18:00";
 
+        $datetimeString = '2025-01-04T12:30:00Z';
+        $from = Carbon::parse($from);
+        $until = Carbon::parse($until);
         $fromStr = $from->format('H:i');
         $untilStr = $until->format('H:i');
 
@@ -77,7 +87,80 @@ class SharedMethods
         return $time;//minūtēs
     }
 
-    public function StartVehicleUse($vehicleId, $reservationToDelete = -1)
+    public static function CreateReservationLogic($vehicle, $from, $until)
+    {
+        //Vispirms pārbauda vai rezervācija netiek veikta pagātnē.    
+        //addMinutes(-1) pievienots gadījumiem kad lietotājs sāk lietot un veido rezervāciju reizē
+        if(Carbon::parse($from) < Carbon::now()->addMinutes(-1))
+        {
+            AddMessage(Text(140), "e");
+            return -1;  
+        }
+        
+        //Pārliecinās ka norādītajā laika intervālā inventāram nav rezervāciju. 
+        $reservationExists = Reservation::where('vehicle', $vehicle)
+        ->where(function ($query) use($from, $until) {//Jāizpildās vienai no šīm trim pārbaudēm
+            $query->orwhere(function ($query) use($from, $until) {//Pārklājas ar intervāla beigu galu
+                $query->where('from', '<=', $until)
+                ->where('until', '>=', $until);
+            })
+            ->orWhere(function ($query) use($from, $until) {//Pārklājas ar intervāla sākuma galu
+                $query->where('from', '<=', $from)
+                ->where('until', '>=', $from);
+            })
+            ->orWhere(function ($query) use($from, $until) {//Pārklājas ar intervāla vidu
+                $query->where('from', '>=', $from)
+                ->where('until', '<=', $until);
+            });
+        })
+        ->exists();
+        //Ja pārbaude veiksmīga tad izveido rezervācijas ierakstu datu bāzē.
+        if($reservationExists)
+        {
+            AddMessage(Text(138), "k");
+            return -1;
+        }
+        else
+        {
+            $reservationId = Reservation::create([
+                'user' => Auth::user()->id,
+                'vehicle' => $vehicle,
+                'from' => $from,
+                'until' => $until,
+            ]);
+            
+            //Izveido paziņojumu
+            $vehicleObj = Vehicle::where('id', '=', $vehicle)->select('name')->first();
+            $userObj = User::where('id', '=', Auth::user()->id)->select('name')->first();
+            
+            $monthNames = [
+                1 => 'Janvāra',
+                2 => 'Februāra',
+                3 => 'Marta',
+                4 => 'Aprīļa',
+                5 => 'Maija',
+                6 => 'Jūnija',
+                7 => 'Jūlija',
+                8 => 'Augusta',
+                9 => 'Septembra',
+                10 => 'Oktobra',
+                11 => 'Novembra',
+                12 => 'Decembra',
+            ];
+            
+            $from = Carbon::parse($from );
+            $until = Carbon::parse($until );
+            $fromMonthName = $monthNames[$from->month];
+            $untilMonthName = $monthNames[$until->month];
+            
+            $fromStr = $from->format("d. ") . $fromMonthName . $from->format(" H:i");
+            $untilStr = $until->format("d. ") . $fromMonthName . $until->format(" H:i");
+            AddMessage($userObj->name . ' veiksmīgi rezervējis ' . $vehicleObj->name . '  no ' . $fromStr . ' līdz ' . $untilStr . '.', "info");
+            return $reservationId;
+        }
+    }
+
+    public static function StartVehicleUse($vehicleId, $from = "", $until = "")
     {
         $now = Carbon::now();
         
@@ -87,10 +170,12 @@ class SharedMethods
         ->where('vehicle', '=', $vehicleId)
         ->join('users', 'user', '=', 'users.id')
         ->select('user', 'users.name', 'users.lname')->first();
-        if($vehicleUse->user == Auth::user()->id){
-            $messages[] = ["statuss" => "usedBySelf", "message" => Text(116)];
-        }else{
-            $messages[] = ["statuss" => "used", "message" => Text(117) . $vehicleUse->name . " " . $vehicleUse->lname . "." . Text(118)];
+        if($vehicleUse != null){
+            if($vehicleUse->user == Auth::user()->id){
+                $messages[] = ["statuss" => "usedBySelf", "message" => Text(116)];
+            }else{
+                $messages[] = ["statuss" => "used", "message" => Text(117) . $vehicleUse->name . " " . $vehicleUse->lname . "." . Text(118)];
+            }
         }
         
         //Pārbauda vai lietotājs ir rezervējis inventāru uz  šo brīdi. Ja jā tad pāriet uz soli 5. Ja nē tad turpina ar soli 3.
@@ -98,7 +183,6 @@ class SharedMethods
         ->where('until', '>=', $now)
         ->where('vehicle', '=', $vehicleId)
         ->where('user', '==', Auth::user()->id) 
-        ->select('users.name', 'users.lname', 'until')
         ->exists();
         if(!$myReservationExists){
             $conflictingReservation = Reservation::where('from', '<=', $now->copy()->addMinutes(-30))
@@ -134,9 +218,12 @@ class SharedMethods
     
         $vehicle = Vehicle::findOrFail($vehicleId);
         $usage = $vehicle->usage;
-        $usagetype = $vehicle->usagetype;
+        $usage_type = $vehicle->usage_type;
+        $vehicleId = $vehicle->id;
+        $vehicleName = $vehicle->name;
+        $objects = ObjectModel::get();
         //Iegūst Objektu kurā tiks strādāts kā arī komentāru ja objekts ir “Citi”.
         //Ja izvēlētā inventāra lietojuma  veids ir nolasāms, tad iegūst lietojuma apstiprinājumu vai lietojuma daudzumu. 
-        return view("vehicleUseModule.StartVehicleUse", compact('messages', 'usage', 'usagetype', 'reservationToDelete'));
+        return view("vehicleUseModule.startVehicleUse", compact('messages', 'objects', 'vehicleName', 'vehicleId', 'usage', 'usage_type', 'from', 'until'));
     }
 }

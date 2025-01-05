@@ -1,8 +1,11 @@
+@php 
+use Carbon\Carbon;
+@endphp
 <td>
-    {{ $entry->user }}
+    {{ $entry->users_username }}
 </td>
 <td>
-    {{ $entry->vehicle }}
+    {{ $entry->vehicles_name }}
 </td>
 <td>
     {{ Carbon::parse($entry->from)->translatedFormat('d-M') }}

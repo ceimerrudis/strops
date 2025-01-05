@@ -7,6 +7,10 @@ var selectedDay = -1;
 var freezeFrom = false;
 
 $( document ).ready(function() {
+    setInterval(function() {
+        console.log($("input[name='vehicle']:checked").val());
+    }, 100);
+    
     resizeTimeline();//Uzstāda laika līniju
 
     //Savēršamais logs
@@ -20,16 +24,20 @@ $( document ).ready(function() {
     });
 
     //Rezervēt lietot, rezervēt un lietot pogas
-    $("make_reservation_btn").on("click", function(){
-        $("#make_reservation_form").attr("action", "{{route('startUse')}}");
+    $("#makeReservationBtn").on("click", function(){
+        console.log("asd");
+        $("#makeReservationForm").attr("action", $("#reservationUrlHolder").html());
+        $("#makeReservationForm").attr("method", "post");
         $("#makeReservationForm").submit();
     });
-    $("start_using_with_reservation_btn").on("click", function(){
-        $("#make_reservation_form").attr("action", "{{route('createReservationAndUse')}}");
+    $("#startUsingWithReservationBtn").on("click", function(){
+        $("#makeReservationForm").attr("action", $("#reservationAndUseUrlHolder").html());
+        $("#makeReservationForm").attr("method", "post");
         $("#makeReservationForm").submit();
     });
-    $("start_using_btn").on("click", function(){
-        $("#make_reservation_form").attr("action", "{{route('createReservation')}}");
+    $("#startUsingBtn").on("click", function(){
+        $("#makeReservationForm").attr("action", $("#useUrlHolder").html());
+        $("#makeReservationForm").attr("method", "get");
         $("#makeReservationForm").submit();
     });
     
@@ -117,7 +125,7 @@ function createReservationTimelineVisuals()
     }
     //Iegūst izvēlētā inventāra id
     const selectedVehicle = $('input[name="vehicle"]:checked').val();
-    
+
     const timelineVisualObject = $("#timelineVisual");
     timelineVisualObject.empty();//Nodzēš pašreizējo vizualizāciju
     const selectedDaysObject = $("#data_" + selectedDay);
@@ -133,8 +141,8 @@ function createReservationTimelineVisuals()
         }
 
         const reservationsVehicle = selectedDaysObject.find("#data_day_" + (selectedDay) + "_reservation_" + (i) + "_vehicleID").html();
-        //Ja i'tā rezervācija nav saistīta ar izvēlēto inventāru tad tā tiek izlaista
-        if(parseInt(reservationsVehicle) !== parseInt(selectedVehicle))
+        //Ja i'tā rezervācija nav saistīta ar izvēlēto inventāru tad tā tiek izlaista (-1 ir visas rezervācijas)
+        if(parseInt(reservationsVehicle) !== parseInt(selectedVehicle) && parseInt(selectedVehicle) != -1)
         {
             continue;
         }
@@ -172,7 +180,7 @@ function createReservationTimelineVisuals()
         const text = vehicleName + " - " + userName;
         timelineVisualObject.append(
             //Vizuālā elementa html
-            '<div style="height:0px;"><div class="ReservationVisual reservation"><p class="randomTimelineContainer">' + text + '</p><p class="vehicle" style="display: none;">' + reservationsVehicle + '</p><p class="offset" style="display: none;">' + offset + '</p><p class="length" style="display: none;">' + length +'</p></div></div>'
+            '<div style="height:0px;"><div class="reservation_visual reservation"><p class="random_timeline_container">' + text + '</p><p class="vehicle" style="display: none;">' + reservationsVehicle + '</p><p class="offset" style="display: none;">' + offset + '</p><p class="length" style="display: none;">' + length +'</p></div></div>'
         );
     }
     recalculateReservationVisualsSize();
@@ -213,7 +221,7 @@ function recalculateReservationVisualsSize()
         $(element).width(width - gapFromLeftSide);
         
         if(width < 120){
-            $(element).find(".randomTimelineContainer").css({"display": "none"});
+            $(element).find(".random_timeline_container").css({"display": "none"});
         }
     });
 

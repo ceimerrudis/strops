@@ -42,10 +42,11 @@ Route::middleware(AuthenticationMiddleware::class)->group(function () {
     //Rezervāciju modulis
     //Funkcija AVRZ
     Route::get('/manasRezervacijas', [ReservationController::class, 'ViewMyReservationsPage']);
+    Route::post('/dzestManuRezervaciju', [ReservationController::class, 'DeleteMyReservation'])->name("deleteMyReservation");
     //Funkcija RZKL
-    Route::get('/sakums', [ReservationController::class, 'ViewCalendarPage'])->name("calendar");
+    Route::get('/sakums', [ReservationController::class, 'ViewCalendarPage'])->name("start");
     //Šo lapu izsauc ar ajax (tas atļauj vienā reizē ielādēt tikai viena mēneša rezervācijas)
-    Route::get('/kalendars', [ReservationController::class, 'GetCalendarData'])->name("start");
+    Route::get('/kalendars', [ReservationController::class, 'GetCalendarData'])->name("calendar");
     //Funkcija RZIZ
     Route::post('/izveidotRezervaciju', [ReservationController::class, 'CreateReservation'])->name("createReservation");
     //Funkcija RLIZ
@@ -54,10 +55,10 @@ Route::middleware(AuthenticationMiddleware::class)->group(function () {
     //Lietojumu modulis
     //Funkcija LTSK
     Route::get('/saktLietojumu', [VehicleUseController::class, 'ViewStartVehicleUsePage'])->name("startUse");
-    Route::post('/saktLietojumu', [VehicleUseController::class, 'StartVehicleUse']);
+    Route::post('/saktLietojumu', [VehicleUseController::class, 'StartVehicleUse'])->name("startUsePost");
     //Funkcija LTBG
-    Route::get('/beigtLietojumu', [VehicleUseController::class, 'ViewFinishVehicleUsePage']);
-    Route::post('/beigtLietojumu', [VehicleUseController::class, 'FinishVehicleUse']);
+    Route::post('/beigtLietojumu', [VehicleUseController::class, 'ViewFinishVehicleUsePage'])->name("endUse");
+    Route::post('/beigtLietojumuArLietojumu', [VehicleUseController::class, 'FinishVehicleUse']);
     //Funkcija LTAP
     Route::get('/maniPabeigtieLietojumi', [VehicleUseController::class, 'ViewMyFinishedVehicleUsesPage']);
     //Funkcija ALTA

@@ -15,6 +15,19 @@ enum EntryTypes: int
     public static function GetName($value): string
     {   
         return match((int)$value) {
+            self::USER->value => 'users',
+            self::VEHICLE->value => 'vehicles',
+            self::OBJECT->value => 'objects',
+            self::REPORT->value => 'reports',
+            self::VEHICLE_USE->value => 'vehicle_uses',
+            self::RESERVATION->value => 'reservations',
+            self::ERROR->value => 'errors',
+        };
+    }
+
+    public static function GetViewName($value): string
+    {   
+        return match((int)$value) {
             self::USER->value => 'user',
             self::VEHICLE->value => 'vehicle',
             self::OBJECT->value => 'object',
@@ -22,7 +35,6 @@ enum EntryTypes: int
             self::VEHICLE_USE->value => 'vehicleUse',
             self::RESERVATION->value => 'reservation',
             self::ERROR->value => 'error',
-            default => ""
         };
     }
 }
