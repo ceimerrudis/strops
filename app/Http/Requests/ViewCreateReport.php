@@ -9,7 +9,7 @@ class ViewCreateReport extends FormRequest
     public function rules(): array
     {
         $rules = [
-            'object' => 'required|exists:objects:id',
+            'object' => 'required|exists:objects,id',
        ];
         return $rules;
     }

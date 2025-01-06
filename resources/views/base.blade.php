@@ -14,10 +14,6 @@
                 <button class="delete_message_button" onclick="hideMessage(this)">x</button> 
             </p>
         @endforeach
-
-        @foreach ($errors->all() as $error)
-            <p>{{ $error }}</p>
-        @endforeach
     </div>
 
     @php
@@ -71,11 +67,7 @@
         </div>
 
         <div class="nav_link_wrapper">
-                @if(Auth::user()->type == UserTypes::ADMIN->value) 
-                    <a class="nav_link" href="apskatitVisus?table={{EntryTypes::REPORT->value}}">
-                @else
                     <a class="nav_link" href="apskatitatskaites">
-                @endif
                 <span class="nav_link_span_1_lines">
                     Atskaites
                 </span>

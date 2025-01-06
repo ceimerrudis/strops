@@ -121,5 +121,6 @@ return [
     218 => 'Komentāram jābūt teksta vērtībai.',
     219 => 'Laiks aprēķināts!',//vehichleUse.blade failā šis strings ir cieti kodēts. Mainot šeit jāmaina tur  
     220 => 'Nedrīkst rediģēt atskaites objekta lauku.',
+    221 => 'lietotājvārds drīkst saturēt tikai burtus ciparus un svītras - _',
     999 => 'template',
 ];

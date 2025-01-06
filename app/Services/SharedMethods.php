@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\Reservation;
 use App\Models\ObjectModel;
 use Illuminate\Support\Facades\Auth;
+use App\Enums\EntryTypes;
 
 class SharedMethods
 {
@@ -226,4 +227,46 @@ class SharedMethods
         //Ja izvēlētā inventāra lietojuma  veids ir nolasāms, tad iegūst lietojuma apstiprinājumu vai lietojuma daudzumu. 
         return view("vehicleUseModule.startVehicleUse", compact('messages', 'objects', 'vehicleName', 'vehicleId', 'usage', 'usage_type', 'until'));
     }
+
+    //Funkcija kas atver rediģēšanas lapu jebkurai tabulai (izmanto arī atskaitēm)
+    public static function EditPage($table, $entry)
+    {
+        $viewName = EntryTypes::GetViewName($table);
+        //Izveido tukšu elementu 
+        //Šie trīs saraksti nepieciešami izvēlnēm
+        $vehicles = Vehicle::orderBy('name', 'asc')->select('id', 'name', 'usage_type')->get();
+        $users = User::orderBy('username', 'asc')->select('id', 'username')->get();
+        $objects = ObjectModel::orderBy('code', 'asc')->select('id', 'code')->get();
+        $createRouteName = 'create';
+        $editRouteName = 'edit';
+        if($table == EntryTypes::REPORT->value && isset($entry->object))
+        {
+            $entry->code = ObjectModel::where('id', $entry->object)->first()->code;
+        }
+        //Kļūdas apskatīšanai izvilkt datus ar vairākiem join
+        $errorReservation = null;
+        $errorVehicleUse = null;
+        if($table == EntryTypes::ERROR->value)
+        {
+            //Kļūdām ņem vērā  arī izdzēstos lai vienmēr varētu apskatīt kļūdas cēloni
+            if(isset($entry->reservation)){
+                $errorReservation = Reservation::withTrashed()
+                ->where('reservations.id', '=', $entry->reservation)
+                ->join('users', 'reservations.user', 'users.id')
+                ->select('users.name as reservation_user_name', 'users.lname as reservation_user_lname', 'reservations.*')
+                ->first();
+            }
+            if(isset($entry->vehicle_use)){
+                $errorVehicleUse = VehicleUse::withTrashed()
+                ->where('vehicle_uses.id', '=', $entry->vehicle_use)
+                ->join('vehicles', 'vehicle_uses.vehicle', 'vehicles.id')
+                ->join('users', 'vehicle_uses.user', 'users.id')
+                ->select('users.name as use_user_name', 'users.lname as use_user_lname', 'vehicles.name as use_vehicle_name', 'vehicle_uses.*')
+                ->first();
+            }
+        }
+
+        return view("adminModule.createEntry", compact('createRouteName', 'editRouteName', 'table', 'viewName', 'entry', 'users', 'vehicles', 'objects', 'errorReservation', 'errorVehicleUse'));
+    }
+
 }

@@ -5,12 +5,27 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\ObjectModel;
 use App\Models\Report;
-use App\Requests\CreateReport;
-use App\Requests\ViewCreateReport;
-use App\Requests\ViewReport;
+use App\Http\Requests\CreateReport;
+use App\Http\Requests\ViewCreateReport;
+use App\Http\Requests\ViewReport;
+use Illuminate\Support\Facades\Auth;
+use App\Enums\EntryTypes;
+use App\Services\SharedMethods;
+use App\Http\Requests\NonSpecificEntry;
+use App\Http\Requests\SpecificEntry;
 
 class ObjectController extends Controller
 {    
+    public function GetReportEditPage($entry)
+    {
+        $viewName = 'report';
+        $justReport = true;
+        $table = EntryTypes::REPORT->value;
+        $createRouteName = 'addReport';
+        $editRouteName = 'editReport';
+        return view("adminModule.createEntry", compact('createRouteName', 'editRouteName', 'table', 'viewName', 'entry', 'justReport'));
+    }
+
     //Funkcija ATJO
     public function UpdateObjects(Request $request)
     { 
@@ -25,78 +40,72 @@ class ObjectController extends Controller
     //Funkcija PVAT
     public function ViewCreateReportPage(ViewCreateReport $request)
     { 
-        $object = $request->input("object");
-        $now = Carbon::now();
-        $year = $now->year;
-        $month = $now->month;
-        return view("objectModule.createReport", compact('object', 'year', 'month'));
+        $objId = $request->input('object');
+        
+        $object = ObjectModel::findOrFail($objId);
+        if($object->user_in_charge == Auth::user()->id){
+            $entry = new Report(['object' => $objId]);
+            $entry->code = $object->code;
+            return $this::GetReportEditPage($entry);
+        }
+        return redirect()->back();
     }
 
-    //Funkcija PVAT
-    public function CreateReport(CreateReport $request)
-    { 
-        $data = $request->validated();
-        $year = $data['year'];
-        $month = $data['month'];
-        $object = $data['object'];
+    public function GetRules()
+    {
+        return $rules =[
+            'object' => 'required|exists:objects,id',
+        ];
+    }
 
-        //Ja šim objektam šajā mēnesī nav atskaites izveido atskaiti un aizpilda ar novērtējumu.
-        $reportExists = Report::where('object', $object)
-        ->whereYear('date', $year)
-        ->whereMonth('date', $month)
-        ->exists();
-        if($reportExists)
-        {
-            AddMessage(Text(147), "w");
-            return back();       
-        }else
-        {
-            //Pārbauda vai lietotājs ir objekta atbildīgais.
-            if(ObjectModel::where("id", $object)->where("user_in_charge", Auth::user()->id)->exists())
-            {
-                //Izveido atskaiti.
-                Report::create($data);
-            }
-            else
-            {
-                AddMessage(Text(151), "k");
-            }
+    public function GetMessages()
+    {
+        return $mesages = [
+            'object.required' => Text(145),
+            'object.exists' => Text(146),
+        ];
+    }
+
+
+    //Funkcija PVAT
+    public function CreateReport(Request $request)
+    { 
+        if($this::AllowedToEdit($request)){
+            $NonSpecific = NonSpecificEntry::createFrom($request);
+            return (new AdminController)->CreateEntry($NonSpecific, true);
         }
         return redirect("apskatitatskaites");
     }
 
     //Funkcija RDAT
     public function ViewUpdateReportPage(ViewReport $request)
-    { 
-        $objectId = $request->input("object");
-        $reportId = $request->input("report");
-        if(!ObjectModel::where("id", $objectId)->where("user_in_charge", Auth::user()->id)->exists())
-        {
-            return redirect("apskatitatskaites");
+    {
+        $reportId = $request->input("id");
+        $entry = Report::findOrFail($reportId);
+        $object = ObjectModel::findOrFail($entry->object);
+        if($object->user_in_charge == Auth::user()->id){
+            return $this::GetReportEditPage($entry);
         }
+        return redirect()->back();
+    }
 
-        $report = Report::where("id", $reportId)->first();
-        $update = true;
-        return view("objectModule.createReport", compact('report', 'update'));
+    public function AllowedToEdit(Request $request){
+        $objId = $request->validate($this::GetRules(), $this::GetMessages())['object'];
+        
+        $request->merge([
+            'table' => EntryTypes::REPORT->value,
+        ]);
+        $object = ObjectModel::findOrFail($objId);
+        return $object->user_in_charge == Auth::user()->id;
     }
 
     //Funkcija RDAT
-    public function UpdateReport(CreateReport $request)
+    public function UpdateReport(Request $request)
     { 
-        $data = $request->validated();
-
-        $entry = Report::findOrFail($data['id']);
-        $entry->progress = $data['progress'] ?? $entry->progress;
-        if(!empty($data['object']) && $data['object'] != $entry->object){
-            //Nedrīkst rediģēt atskaites objekta lauku. Saglabā ierakstu datu bāzē. 
-            AddMessage(Text(220), "w");
+        if($this::AllowedToEdit($request)){
+            $Specific = SpecificEntry::createFrom($request);
+            return (new AdminController)->UpdateEntry($Specific, true);
         }
-        if(!empty($data['date']) && !CompareMonths($data['date'], $entry->date)){
-            //Nedrīkst rediģēt atskaites datuma lauku. Saglabā ierakstu datu bāzē. 
-            AddMessage(Text(111), "w");
-        }
-
-        $entry->save();
         return redirect("apskatitatskaites");
     }
 
@@ -105,7 +114,22 @@ class ObjectController extends Controller
     { 
         $objects = ObjectModel::where('user_in_charge', Auth::user()->id)->get();
         $reports = Report::whereIn('object', $objects->pluck('id'))->get();
-        $reportsByObject = $reports->groupBy('object');
-        return view('your-view-name', compact('objects', 'reportsByObject'));
+        
+        //Izveido vienkāršu datu struktūru
+        $reportsByObject = []; 
+        foreach($objects as $object)
+        {
+            $thisObjReports = [];
+            foreach($reports as $report)
+            {
+                if($report->object == $object->id)
+                {
+                    $thisObjReports[] = ['id' => $report->id, 'progress' => $report->progress, 'date' => $report->date];
+                }
+            }
+            $reportsByObject[$object->id] = ['reports' => $thisObjReports, 'id' => $object->id, 'code' => $object->code, 'name' =>$object->name ];
+        }
+
+        return view('objectModule.reports', compact('reportsByObject'));
     }
 }

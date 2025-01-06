@@ -18,12 +18,12 @@ class TimeCalculationRequest extends FormRequest
     public function messages()
     {
         return [
-            'from.required' => text(113),
-            'from.date' => text(114),
+            'from.required' => Text(113),
+            'from.date' => Text(114),
 
-            'until.required' => text(113),
-            'until.date' => text(114),
-            'until.after' => text(115),
+            'until.required' => Text(113),
+            'until.date' => Text(114),
+            'until.after' => Text(115),
         ];
     }
 }

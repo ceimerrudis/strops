@@ -33,13 +33,13 @@ Route::middleware(AuthenticationMiddleware::class)->group(function () {
         //Funkcija ATJO
         Route::get('/atjaunotObjektus', [ObjectController::class, 'UpdateObjects']);
         //Funkcija PVAT
-        Route::get('/pievienotAtskaiti', [ObjectController::class, 'ViewCreateReportPage']);
+        Route::get('/pievienotAtskaiti', [ObjectController::class, 'ViewCreateReportPage'])->name("addReport");
         Route::post('/pievienotAtskaiti', [ObjectController::class, 'CreateReport']);
         //Funkcija RDAT
-        Route::get('/redigetAtskaiti', [ObjectController::class, 'ViewUpdateReportPage']);
+        Route::get('/redigetAtskaiti', [ObjectController::class, 'ViewUpdateReportPage'])->name("editReport");
         Route::post('/redigetAtskaiti', [ObjectController::class, 'UpdateReport']);
         //Funkcija SVAT
-        Route::get('/apskatitatskaites', [ObjectController::class, 'ViewReports']);
+        Route::get('/apskatitatskaites', [ObjectController::class, 'ViewReports'])->name("viewReports");
         
         //Rezervāciju modulis
         //Funkcija AVRZ

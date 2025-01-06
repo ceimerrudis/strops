@@ -9,7 +9,7 @@ class LoginData extends FormRequest
     public function rules(): array
     {
         $rules = [
-            'username' => 'required|exists:users,username',
+            'username' => 'required|alpha_dash:ascii|exists:users,username',
             'password' => 'required',
        ];
         return $rules;
@@ -18,9 +18,10 @@ class LoginData extends FormRequest
     public function messages()
     {
         return [
-            'username.exists' => text(101),
-            'username.required' => text(102),
-            'password.required' => text(103),
+            'username.exists' => Text (101),
+            'username.required' => Text(102),
+            'username.alpha_dash' => Text(221),
+            'password.required' => Text(103),
         ];
     }
 }

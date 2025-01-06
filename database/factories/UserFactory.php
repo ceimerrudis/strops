@@ -15,13 +15,14 @@ class UserFactory extends Factory
 {
     protected $model = User::class;
 
+    private static $counter = 1;
+
     public function definition()
     {
-        $fname = $this->faker->name;
-        $names = explode(" ", $fname);
-        $name = $names[0];
-        $lname = $names[1];
+        $name = "Jhon".(string)self::$counter;
+        $lname = "Doe";
         $username = strtolower($name.$lname);
+        self::$counter= self::$counter+1;
         return [
             'username' => $username,
             'name' => $name,

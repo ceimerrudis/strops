@@ -9,8 +9,7 @@ class ViewReport extends FormRequest
     public function rules(): array
     {
         $rules = [
-            'object' => 'required|exists:objects:id',
-            'report' => 'required|exists:reports:id',
+            'id' => 'required|exists:reports,id',
        ];
         return $rules;
     }
@@ -18,8 +17,6 @@ class ViewReport extends FormRequest
     public function messages()
     {
         return [
-            'object.required' => Text(145),
-            'object.exists' => Text(146),
         ];
     }
 }

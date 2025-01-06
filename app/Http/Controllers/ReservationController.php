@@ -26,12 +26,12 @@ class ReservationController extends Controller
         $vehicles = [];
         if(Auth::user()->type != UserTypes::ADMIN->value){
             $excludes = [];
-            if(Auth::user()->username != "JānisS")
-                $excludes[] = 425314055;
-            if(Auth::user()->username != "Armīns")
-                $excludes[] = 425314056;
-            if(Auth::user()->username != "GuntarsG")
-                $excludes[] = 425314057;
+            if(Auth::user()->username != "name1")//Cieti kodēti lietotāji un inventāri
+                $excludes[] = -1;
+            if(Auth::user()->username != "name2")
+                $excludes[] = -1;
+            if(Auth::user()->username != "name3")
+                $excludes[] = -1;
             
             $vehicles = Vehicle::whereNotIn('id', $excludes)
                 ->orderBy('name', 'asc')

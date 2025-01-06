@@ -29,47 +29,11 @@ class AdminController extends Controller
     { 
         $table = $request->input('table');
         $entry = new (GetModelFromEnum($table))([]);
-        return $this->EditPage($table, $entry);
-    }
-
-    public function EditPage($table, $entry)
-    {
-        $viewName = EntryTypes::GetViewName($table);
-        //Izveido tukšu elementu 
-        //Šie trīs saraksti nepieciešami izvēlnēm
-        $vehicles = Vehicle::orderBy('name', 'asc')->select('id', 'name', 'usage_type')->get();
-        $users = User::orderBy('username', 'asc')->select('id', 'username')->get();
-        $objects = ObjectModel::orderBy('code', 'asc')->select('id', 'code')->get();
-
-        //Kļūdas apskatīšanai izvilkt datus ar vairākiem join
-        $errorReservation = null;
-        $errorVehicleUse = null;
-        if($table == EntryTypes::ERROR->value)
-        {
-            //Kļūdām ņem vērā  arī izdzēstos lai vienmēr varētu apskatīt kļūdas cēloni
-            if(isset($entry->reservation)){
-                $errorReservation = Reservation::withTrashed()
-                ->where('reservations.id', '=', $entry->reservation)
-                ->join('users', 'reservations.user', 'users.id')
-                ->select('users.name as reservation_user_name', 'users.lname as reservation_user_lname', 'reservations.*')
-                ->first();
-    
-            }
-            if(isset($entry->vehicle_use)){
-                $errorVehicleUse = VehicleUse::withTrashed()
-                ->where('vehicle_uses.id', '=', $entry->vehicle_use)
-                ->join('vehicles', 'vehicle_uses.vehicle', 'vehicles.id')
-                ->join('users', 'vehicle_uses.user', 'users.id')
-                ->select('users.name as use_user_name', 'users.lname as use_user_lname', 'vehicles.name as use_vehicle_name', 'vehicle_uses.*')
-                ->first();
-            }
-        }
-
-        return view("adminModule.createEntry", compact('table', 'viewName', 'entry', 'users', 'vehicles', 'objects', 'errorReservation', 'errorVehicleUse'));
+        return SharedMethods::EditPage($table, $entry);
     }
 
     //Funkcija PVIR.
-    public function CreateEntry(NonSpecificEntry $request)
+    public function CreateEntry(NonSpecificEntry $request, $redirectToReports = false)
     { 
         $data = $this->ValidateEntry($request, false);
         $table = $request->input('table');
@@ -86,7 +50,14 @@ class AdminController extends Controller
             }
         }
         $model::create($data);//Izmanto konkrētā modeļa fillable laukus      
-        return redirect()->route('viewAllEntries', ['table' => $table]);        
+        
+        if($redirectToReports)
+        {
+            return redirect()->route('viewReports');
+        }else
+        {
+            return redirect()->route('viewAllEntries', ['table' => $table]);  
+        }      
     }
 
     //Funkcija RDIR.
@@ -95,11 +66,11 @@ class AdminController extends Controller
         $table = $request->input('table');
         $id = $request->input('id');
         $entry = GetModelFromEnum($table)::findOrFail($id);
-        return $this->EditPage($table, $entry);
+        return SharedMethods::EditPage($table, $entry);
     }
 
     //Funkcija RDIR.
-    public function UpdateEntry(SpecificEntry $request)
+    public function UpdateEntry(SpecificEntry $request, $redirectToReports = false)
     {
         $data = $this->ValidateEntry($request, true);//data satur tikai ieraksta datus
         $table = $request->input('table');
@@ -158,7 +129,13 @@ class AdminController extends Controller
         }
 
         $entry->save();
-        return redirect()->route("viewAllEntries", ['table' => $table]);
+        if($redirectToReports)
+        {
+            return redirect()->route('viewReports');
+        }else
+        {
+            return redirect()->route("viewAllEntries", ['table' => $table]);
+        }
     }
 
     //Funkcija DZIR.
@@ -269,6 +246,7 @@ class AdminController extends Controller
                 'username' => 
                     ['required',
                     'string',
+                    'alpha_dash:ascii',
                     Rule::unique('users', 'username')->ignore($request->id)],//id var būt null. Šajā gadījumā tiks skatīti visi lietotājvārdi
                 'password' => 'string|'.$passwordRequired,//Parole nepieciešama tikai izveidojot. un tā kā paroli nevar sūtīt lietotājam lauks būs tukšs
                 'name' => 'required|string',
@@ -327,6 +305,7 @@ class AdminController extends Controller
                 'username.required' => Text(156),
                 'username.unique' => Text(157),
                 'username.string' => Text(158),
+                'username.alpha_dash' => Text(221),
                 'password.string' => Text(159),
                 'name.required' => Text(160),
                 'name.string' => Text(161),

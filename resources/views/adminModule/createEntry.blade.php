@@ -1,9 +1,9 @@
 @include('base')
 <form 
 @if($entry->id == null)
-    action="{{ route('create') }}" 
+    action="{{ route($createRouteName) }}" 
 @else
-    action="{{ route('edit') }}" 
+    action="{{ route($editRouteName) }}" 
 @endif
 method="post">
     @csrf
@@ -23,7 +23,8 @@ method="post">
         @endif
     </form>
 
-    @if($entry->id != null)
+    
+    @if($entry->id != null && !isset($justReport))
         <form id="deleteForm" action="{{ route('delete') }}" method="POST">
         @csrf
             <input type="hidden" name="id" id="id" value="{{ $entry->id }}">

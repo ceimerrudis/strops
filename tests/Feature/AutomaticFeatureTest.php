@@ -47,12 +47,11 @@ class AutomaticFeatureTest extends TestCase
     //pieteikšanās loģikas tests
     public function test_loginLogic()
     {
-        $user = User::factory()->create(['type' => UserTypes::ADMIN->value]);
+        $user = User::factory()->create([]);
         $response = $this->post('/pieteikties', [
             'username' => $user->username,
             'password' => "parole",
         ]);
-
         $this->assertAuthenticatedAs($user);
     }
 
@@ -131,7 +130,6 @@ class AutomaticFeatureTest extends TestCase
         $until = $from->copy()->addMinutes(60);
         $reservation = Reservation::factory()->create(['vehicle' => $vehicle->id, 'user' => $user2->id, 'from' => $from, 'until' => $until]);
         $object = ObjectModel::factory()->create([]);
-        
         $this->actingAs($user);
         $this->post('/saktLietojumu', [
             'vehicle' => $vehicle->id,
@@ -165,7 +163,6 @@ class AutomaticFeatureTest extends TestCase
         $user = User::factory()->create([]);
         $vehicle = Vehicle::factory()->create([]);
         $object = ObjectModel::factory()->create([]);
-
         $this->actingAs($user);
         $this->post('/saktLietojumu', [
             'vehicle' => $vehicle->id,
@@ -185,7 +182,6 @@ class AutomaticFeatureTest extends TestCase
         $vehicle = Vehicle::factory()->create(['usage_type' => VehicleUsageTypes::DAYS->value]);
         $object = ObjectModel::factory()->create([]);
         $use = VehicleUse::factory()->create(['object' => $object->id, 'vehicle' => $vehicle->id, 'usage_before' => $vehicle->usage, 'until' => null]);
-
         $this->actingAs($user);
         $this->post('/beigtLietojumu', [
             'vehicle_use' => $use->id,
@@ -202,7 +198,6 @@ class AutomaticFeatureTest extends TestCase
         $vehicle = Vehicle::factory()->create(['usage_type' => VehicleUsageTypes::MOTOR_HOURS->value]);
         $until = Carbon::now()->addMinutes(60);
         $object = ObjectModel::factory()->create([]);
-
         $this->actingAs($user);
         $response = $this->post('/saktLietojumu', [
             'vehicle' => $vehicle->id,
