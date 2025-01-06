@@ -14,7 +14,7 @@ class ObjectController extends Controller
     //Funkcija ATJO
     public function UpdateObjects(Request $request)
     { 
-        $code = Artisan::call('app:fetch-excel-object-data');
+        $code = Artisan::call('app:synchronize-object-data');
         $output = Artisan::output();
         $str = Text(110);
         if($code === 0)
@@ -87,7 +87,11 @@ class ObjectController extends Controller
 
         $entry = Report::findOrFail($data['id']);
         $entry->progress = $data['progress'] ?? $entry->progress;
-        if(!empty($data['date'])){
+        if(!empty($data['object']) && $data['object'] != $entry->object){
+            //Nedrīkst rediģēt atskaites objekta lauku. Saglabā ierakstu datu bāzē. 
+            AddMessage(Text(220), "w");
+        }
+        if(!empty($data['date']) && !CompareMonths($data['date'], $entry->date)){
             //Nedrīkst rediģēt atskaites datuma lauku. Saglabā ierakstu datu bāzē. 
             AddMessage(Text(111), "w");
         }

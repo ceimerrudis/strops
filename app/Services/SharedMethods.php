@@ -19,7 +19,6 @@ class SharedMethods
         $WORK_DAY_ENDS = 18;
         $WORK_DAY_ENDS_STR = "18:00";
 
-        $datetimeString = '2025-01-04T12:30:00Z';
         $from = Carbon::parse($from);
         $until = Carbon::parse($until);
         $fromStr = $from->format('H:i');
@@ -91,7 +90,9 @@ class SharedMethods
     {
         //Vispirms pārbauda vai rezervācija netiek veikta pagātnē.    
         //addMinutes(-1) pievienots gadījumiem kad lietotājs sāk lietot un veido rezervāciju reizē
-        if(Carbon::parse($from) < Carbon::now()->addMinutes(-1))
+        $from = Carbon::parse($from);
+        $until = Carbon::parse($until);
+        if($from < Carbon::now()->addMinutes(-1))
         {
             AddMessage(Text(140), "e");
             return -1;  
@@ -117,7 +118,7 @@ class SharedMethods
         //Ja pārbaude veiksmīga tad izveido rezervācijas ierakstu datu bāzē.
         if($reservationExists)
         {
-            AddMessage(Text(138), "k");
+            AddMessage(Text(139), "k");
             return -1;
         }
         else
@@ -148,8 +149,6 @@ class SharedMethods
                 12 => 'Decembra',
             ];
             
-            $from = Carbon::parse($from );
-            $until = Carbon::parse($until );
             $fromMonthName = $monthNames[$from->month];
             $untilMonthName = $monthNames[$until->month];
             
@@ -160,7 +159,7 @@ class SharedMethods
         }
     }
 
-    public static function StartVehicleUse($vehicleId, $from = "", $until = "")
+    public static function StartVehicleUse($vehicleId, $until = "")
     {
         $now = Carbon::now();
         
@@ -172,7 +171,8 @@ class SharedMethods
         ->select('user', 'users.name', 'users.lname')->first();
         if($vehicleUse != null){
             if($vehicleUse->user == Auth::user()->id){
-                $messages[] = ["statuss" => "usedBySelf", "message" => Text(116)];
+                AddMessage(Text(116), "info");
+                return redirect("sakums");
             }else{
                 $messages[] = ["statuss" => "used", "message" => Text(117) . $vehicleUse->name . " " . $vehicleUse->lname . "." . Text(118)];
             }
@@ -224,6 +224,6 @@ class SharedMethods
         $objects = ObjectModel::get();
         //Iegūst Objektu kurā tiks strādāts kā arī komentāru ja objekts ir “Citi”.
         //Ja izvēlētā inventāra lietojuma  veids ir nolasāms, tad iegūst lietojuma apstiprinājumu vai lietojuma daudzumu. 
-        return view("vehicleUseModule.startVehicleUse", compact('messages', 'objects', 'vehicleName', 'vehicleId', 'usage', 'usage_type', 'from', 'until'));
+        return view("vehicleUseModule.startVehicleUse", compact('messages', 'objects', 'vehicleName', 'vehicleId', 'usage', 'usage_type', 'until'));
     }
 }

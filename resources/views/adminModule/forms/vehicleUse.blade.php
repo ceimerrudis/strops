@@ -42,8 +42,8 @@
                     type: "GET",
                     url: "parrekinatlaiku", 
                     data: { 
-                        from: $("#from").val()+":00Z", 
-                        until: $("#until").val()+":00Z", 
+                        from: $("#from").val(), 
+                        until: $("#until").val(), 
                     },
                     success: function(result){
                         $("#usage_after").val((parseFloat($("#usage_before").val()) + parseFloat(result.time)).toFixed(2));

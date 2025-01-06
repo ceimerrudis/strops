@@ -252,7 +252,7 @@ class ReservationController extends Controller
     //Funkcija RZIZ
     public function CreateReservation(MakeReservation $request)
     {     
-        $data = $request->validated();      
+        $data = $request->validated();
         SharedMethods::CreateReservationLogic($data['vehicle'], $data['from'], $data['until']);
         return redirect("sakums");
     }
@@ -262,6 +262,6 @@ class ReservationController extends Controller
     {     
         $data = $request->validated();
         //Izveido lietojumu lietojums izveidos rezervāciju ja padoti fro  un until
-        return SharedMethods::StartVehicleUse($data['vehicle'], $data['from'], $data['until']);
+        return SharedMethods::StartVehicleUse($data['vehicle'], $data['until']);
     }
 }

@@ -9,7 +9,7 @@ class ViewVehicleUse extends FormRequest
     public function rules(): array
     {
         $rules = [
-            'vehicleUse' => 'required|exists:vehicle_uses,id',
+            'vehicle_use' => 'required|exists:vehicle_uses,id',
        ];
         return $rules;
     }
@@ -17,8 +17,8 @@ class ViewVehicleUse extends FormRequest
     public function messages()
     {
         return [
-            'vehicleUse.required' => Text(131),
-            'vehicleUse.exists' => Text(132),
+            'vehicle_use.required' => Text(131),
+            'vehicle_use.exists' => Text(132),
         ];
     }
 }

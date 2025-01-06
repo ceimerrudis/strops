@@ -4,13 +4,12 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StartVehicleUse extends FormRequest
+class StartVehicleUseFullData extends FormRequest
 {
     public function rules(): array
     {
         $rules = [
-            'from' => 'nullable|date',
-            'until' => 'nullable|date|after:from',
+            'until' => 'nullable|date|after:now',
             'endCurrentUsage' => 'required|string',
             'vehicle' => 'required|exists:vehicles,id',
             'object' => 'required|exists:objects,id',
@@ -29,8 +28,6 @@ class StartVehicleUse extends FormRequest
             'object.required' =>Text(126),
             'object.exists' =>  Text(127),
             'comment.string' => Text(128),
-
-            'from.date' => Text(114),
 
             'until.date' => Text(114),
             'until.after' => Text(115),

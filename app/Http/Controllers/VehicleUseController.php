@@ -7,8 +7,9 @@ use App\Models\VehicleUse;
 use App\Models\Reservation;
 use App\Models\Vehicle;
 use App\Models\User;
+use App\Models\Error;
 use Illuminate\Support\Facades\Auth;
-use App\Http\Requests\StartVehicleUse;
+use App\Http\Requests\StartVehicleUseFullData;
 use App\Http\Requests\StartVehicleUseCalendarData;
 use App\Http\Requests\EndVehicleUse;
 use App\Http\Requests\ViewVehicleUse;
@@ -35,7 +36,7 @@ class VehicleUseController extends Controller
     }
 
     //Funkcija LTSK (LTSK nobeigums)
-    public function StartVehicleUse(StartVehicleUse $request)
+    public function EndOfStartVehicleUse(StartVehicleUseFullData $request)
     {
         $data = $request->validated();
 
@@ -49,11 +50,12 @@ class VehicleUseController extends Controller
             //Ja neatrod beigt lietojumu karogu tad novirza uz sākumlapu.
             if($data['endCurrentUsage'] == "yes")
             {
+                
                 if(!isset($data["usage"]))
                 {
                     return redirect()->back()->withData();
                 }
-                $this->StopUsingVehicleLogic($vehicleUse, $vehicle, $data["usage"]);
+                $msg = $this->StopUsingVehicleLogic($vehicleUse->id, $data["usage"]);
             }
             else
             {
@@ -61,7 +63,7 @@ class VehicleUseController extends Controller
                 return redirect("sakums");
             }
         }
-        
+
         //Pārraksta nesakrītošo lietojumu
         $createError = false;
         $usageBefore = 0;
@@ -74,28 +76,27 @@ class VehicleUseController extends Controller
                 $vehicle->save();
             }
         }
-         
+        
         //Izveido lietojumu
         $newVehicleUse = VehicleUse::create([
             'user' => Auth::user()->id,
             'vehicle' => $data['vehicle'],
             'object' => $data['object'],
             'comment' => $data['comment'],
-            'usageBefore' => $vehicle->usage,//Nesajaukt ar kļūdas usageBefore
+            'usage_before' => $vehicle->usage,//Nesajaukt ar kļūdas usageBefore
             'from' => Carbon::now(),
         ]);
-
-        //Reģistrē kļūdas situāciju – “Lietojums  sākts citas  personas rezervācijas laikā.” 
+        
+        //Reģistrē kļūdas situāciju – Nesakrītoši lietojumi
         if($createError)
         {
             $errorID = Error::create([
                 'comment' => Text(129),
-                'usagebefore' => $usageBefore,
-                'vehicleUse' => $newVehicleUse->id,
-                'usageafter' => $data['usage'],
+                'usage_before' => $usageBefore,
+                'vehicle_use' => $newVehicleUse->id,
+                'usage_after' => $data['usage'],
                 'time' => Carbon::now(),
             ]);
-            //TODO send mail
         }
 
         //Pārbauda un izveido kļūdu
@@ -105,10 +106,11 @@ class VehicleUseController extends Controller
         ->where('user', '!=', Auth::user()->id)
         ->select('id', 'user')
         ->first();
+        //Kļūda “Lietojums  sākts citas  personas rezervācijas laikā.” 
         if($conflictingReservation !=  null){
             Error::create([
-                'vehicleUse' => $newVehicleUse->id,
-                'comment' => "",
+                'vehicle_use' => $newVehicleUse->id,
+                'comment' => Text(130),
                 'reservation' => $conflictingReservation->id,
                 'time' => Carbon::now(),
             ]);    
@@ -119,9 +121,9 @@ class VehicleUseController extends Controller
         $user->lastUsedVehicle = $data['vehicle'];
         $user->save();
         //Ja viss veiksmīgi izdevies izveido rezervāciju ja padoti tai nepieciešamie dati
-        if(isset($data["from"]) && isset($data["until"]))
+        if(isset($data["until"]))
         {
-            SharedMethods::CreateReservationLogic($data['vehicle'], $data['from'], $data['until']);
+            SharedMethods::CreateReservationLogic($data['vehicle'], Carbon::now(), $data['until']);
         }
 
         return redirect("maniNepabeigtieLietojumi");
@@ -131,7 +133,24 @@ class VehicleUseController extends Controller
     public function ViewFinishVehicleUsePage(ViewVehicleUse $request)
     { 
         $data = $request->validated();
-        $vehicleUse = VehicleUse::findOrFail($data["vehicleUse"]);
+        $vehicleUse = VehicleUse::findOrFail($data["vehicle_use"]);
+        $vehicle = Vehicle::findOrFail($vehicleUse->vehicle);
+        if($vehicle->usage_type == VehicleUsageTypes::DAYS->value)
+        {
+            //Šim nevajadzētu notikt
+            AddMessage(Text(142), "warning");
+            return redirect("maniNepabeigtieLietojumi");
+        }
+        $id = $vehicleUse->id;
+        $usage_type = $vehicle->usage_type;
+        return view("vehicleUseModule.finishVehicleUse", compact('id', 'usage_type'));
+    }
+
+    //Funkcija LTBG
+    public function FinishVehicleUseShortcut(ViewVehicleUse $request)
+    { 
+        $data = $request->validated();
+        $vehicleUse = VehicleUse::findOrFail($data["vehicle_use"]);
         $vehicle = Vehicle::findOrFail($vehicleUse->vehicle);
         if($vehicle->usage_type == VehicleUsageTypes::DAYS->value)
         {
@@ -139,18 +158,17 @@ class VehicleUseController extends Controller
             return redirect("maniNepabeigtieLietojumi");
         }
         else{
-            $id = $vehicleUse->id;
-            $usage_type = $vehicle->usage_type;
-            return view("vehicleUseModule.finishVehicleUse", compact('id', 'usage_type'));
+            //Šim nevajadzētu notikt
+            AddMessage(Text(142), "warning");
+            return redirect("maniNepabeigtieLietojumi");
         }
     }
-
 
     //Funkcija LTBG
     public function FinishVehicleUse(EndVehicleUse $request)
     { 
         $data = $request->validated();
-        $msg = $this->StopUsingVehicleLogic($data['vehicleUse'], $data['usage']);
+        $msg = $this->StopUsingVehicleLogic($data['vehicle_use'], $data['usage']);
         if($msg != ""){
             return back()->with('msg', $msg);
         }
@@ -182,7 +200,7 @@ class VehicleUseController extends Controller
         if($conflictingReservation != null)
         {
             Error::create([
-                'vehicleUse' => $vehicleUse->id,
+                'vehicle_use' => $vehicleUse->id,
                 'comment' => Text(134),
                 'reservation' => $conflictingReservation->id,
                 'time' => Carbon::now(),
@@ -216,6 +234,7 @@ class VehicleUseController extends Controller
         $vehicleUse->usage_after = $vehicle->usage;
         $vehicleUse->save();
         $vehicle->save();
+        return  "";
     }
 
     //Funkcija LTAP
@@ -230,7 +249,7 @@ class VehicleUseController extends Controller
 
     //Funkcija ALTA
     public function ViewMyActiveVehicleUsesPage(Request $request)
-    { 
+    {   
         $uses = VehicleUse::where('user', Auth::user()->id)->where('until', null)->orderBy('from', 'desc')
         ->join("vehicles", "vehicle", "vehicles.id")
         ->join("objects", "object", "objects.id")

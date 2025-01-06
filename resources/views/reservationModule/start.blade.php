@@ -36,7 +36,7 @@
                                 <span class="alert">{{ $message }}</span>
                             @enderror
                             <br>
-                            <input id="freeze_checkbox" type="checkbox" name="freeze_checkbox"></input> <label class="freeze_label" for="freeze_checkbox">Iesaldēt sākuma laiku</label>
+                            <input id="freezeCheckbox" type="checkbox" name="freeze_checkbox"></input> <label class="freeze_label" for="freeze_checkbox">Iesaldēt sākuma laiku</label>
                             <br>
 
                             <label class="date_time_label" for="until">Līdz</label>

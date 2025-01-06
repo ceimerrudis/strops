@@ -12,23 +12,23 @@
     @endif
 </td>
 <td>
-    @if($entry->vehicleUse == null)    
+    @if($entry->vehicle_use == null)    
         -
     @else
-        {{ $entry->vehicleUse }}
+        {{ $entry->vehicle_use }}
     @endif
 </td>
 <td>
-    @if($entry->usagebefore == $entry->usageafter && $entry->usageafter == 0)    
+    @if($entry->usage_before == $entry->usage_after && $entry->usage_after == 0)    
         -
     @else
-        {{ $entry->usagebefore }}
+        {{ $entry->usage_before }}
     @endif
 </td>
 <td>
-    @if($entry->usagebefore == $entry->usageafter && $entry->usageafter == 0)    
+    @if($entry->usage_before == $entry->usage_after && $entry->usage_after == 0)    
         -  
     @else
-        {{ $entry->usageafter }}
+        {{ $entry->usage_after }}
     @endif
 </td>

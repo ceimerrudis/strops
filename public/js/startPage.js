@@ -7,10 +7,6 @@ var selectedDay = -1;
 var freezeFrom = false;
 
 $( document ).ready(function() {
-    setInterval(function() {
-        console.log($("input[name='vehicle']:checked").val());
-    }, 100);
-    
     resizeTimeline();//Uzstāda laika līniju
 
     //Savēršamais logs
@@ -25,7 +21,6 @@ $( document ).ready(function() {
 
     //Rezervēt lietot, rezervēt un lietot pogas
     $("#makeReservationBtn").on("click", function(){
-        console.log("asd");
         $("#makeReservationForm").attr("action", $("#reservationUrlHolder").html());
         $("#makeReservationForm").attr("method", "post");
         $("#makeReservationForm").submit();

@@ -16,6 +16,6 @@ class AuthenticationMiddleware
         if($request->user())
             return $next($request);
         
-        return response()->view('unauthorized', [], 403);
+        return redirect('pieteikties');
     }
 }

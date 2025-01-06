@@ -6,6 +6,8 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 
 class MultipleRequestProtectionMiddleware
 {
@@ -13,25 +15,24 @@ class MultipleRequestProtectionMiddleware
     Šī pārbaude tiek veikta katram POST pieprasījumam lai nodrošinātu ka 2 vienādi pieprasījumi netiek izpildīti.
     Šī pārbaude paļaujas ka lietotājs ir pieteicies sistēmā
     */
-    public function handle($request, Closure $next)
+    public function handle(Request $request, Closure $next)
     {
         //Veic šo pārbaudi tikai datu sūtīšanai
         // jo pastāv liela iespēja ka lietotājs tiešām gribēs pieprasīt vienu un to pašu lapu vairākas reizes, 
         // bet ir maza iespēja ka viņš vēlas saglabāt divus vienādus datus dažu sekunžu laikā.
         //Ja nav zināms sūtītājs  tad nevaram pārbaudīt vai šis ir duplikāt pieprasījums.
-        if (!$request->isMethod('post') || $request->user() == null)
+        if ($request->isMethod('get') || Auth::user() == null)
             return $next($request);
-
-        $userId = $request->user()->id;
+    
+        $userId = Auth::user()->id;
         //Lai neglabātu visu pieprasījumu izmanto jaucējfunkciju
         $hash = md5($userId . '|' . $request->fullUrl() . '|' . json_encode($request->all()));
-
+        
         if (Cache::has($hash)) {
-            return response()->json(['message' => 'Duplicate request detected'], 429);
+            return redirect("kluda");
         }
-
         //Saglabā šo pieprasījumu 10 sekundes
-        Cache::put($hash, true, now()->addSeconds(10));
+        Cache::put($hash, true, $seconds = 10);
 
         return $next($request);
     }

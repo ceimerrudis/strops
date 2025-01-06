@@ -11,13 +11,18 @@
 
 @php
 use Illuminate\Support\Carbon;
+use App\Enums\VehicleUsageTypes;
 @endphp
 @foreach($uses as $vehicleUse)
     <tr>
         <td>
-            <form method="post" action="{{ route('endUse') }}">
+            @if($vehicleUse->usage_type == VehicleUsageTypes::DAYS->value)
+            <form method="post" action="{{ route('endUseShortcut') }}">
+            @else
+            <form method="get" action="{{ route('endUse') }}">
+            @endif
                 @csrf
-                <input type="hidden" name="vehicleUse" id="vehicleUse" value="{{$vehicleUse->id}}">
+                <input type="hidden" name="vehicle_use" id="vehicle_use" value="{{$vehicleUse->id}}">
                 <button type="submit" class="">Pārtraukt lietot</button>
             </form>
         </td>

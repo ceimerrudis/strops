@@ -1,5 +1,6 @@
 <?php
 use App\Enums\EntryTypes;
+use Carbon\Carbon;
 
 //Šis fails tiek automātiski pievienots vairākās vietās tapēc veic duplikācijas pārbaudi.
 function Text($key)
@@ -56,4 +57,12 @@ function GetModelFromEnum($entryType)
     }
 
     return $modelMap[$entryType];
+}
+
+//Šī funkcija salīdzina 2 datumu (jebkāda formāta) datumus un gadus ja vienādi atgriež true
+function CompareMonths($date1, $date2) : bool
+{
+    $date1 = $date1 instanceof Carbon ? $date1 : Carbon::parse($date1);
+    $date2 = $date2 instanceof Carbon ? $date2 : Carbon::parse($date2);
+    return $date1->format('Y-m') === $date2->format('Y-m');
 }

@@ -32,7 +32,7 @@ class UserController extends Controller
                     'token' => $entryToken,
                 ]);
             }
-            return redirect(route("start"));
+            return redirect("sakums");
         }
         
         AddMessage(Text(100), "k");
@@ -45,7 +45,7 @@ class UserController extends Controller
         //Ja lietotājs jau ir pieteicies tad aizved viņu uz galveno strops lapu
         if(Auth::check())
         {
-            return redirect("start");
+            return redirect("sakums");
         }
         
         //Pārbauda vai lietotājam ir derīgs pieteikšanās cepums.
@@ -56,7 +56,7 @@ class UserController extends Controller
             if($user != null)
             {
                 Auth::loginUsingId($user->user);
-                return redirect("start");
+                return redirect("sakums");
             }
         }
 

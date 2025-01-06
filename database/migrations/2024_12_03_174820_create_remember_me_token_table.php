@@ -23,6 +23,6 @@ return new class extends Migration
     
     public function down(): void
     {
-        Schema::dropIfExists('remember_me_token');
+        Schema::dropIfExists('remember_me_tokens');
     }
 };

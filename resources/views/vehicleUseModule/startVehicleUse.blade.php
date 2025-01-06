@@ -13,7 +13,6 @@
 <form id="makeVehicleUseForm" action="{{ route('startUsePost') }}" method="post">
 @csrf
     <input type="hidden" name="endCurrentUsage" id="endCurrentUsage" value="no">
-    <input type="hidden" name="from" id="from" value="{{$from}}">
     <input type="hidden" name="until" id="until" value="{{$until}}">
     <input type="hidden" name="vehicle" id="vehicle" value="{{ $vehicleId }}">
     @error('vehicle')
@@ -66,14 +65,14 @@
         <button type='submit' id="yes_btn" class='begin_use_btn'>jā / Sākt lietot</button>
 
         <div id='correctUsageBox' style="display: none;">   
-            <label for='usage' class="wrongMotorHLabel"> 
+            <label for='usage' class="wrong_motorh_label"> 
                 @if($usage_type == VehicleUsageTypes::MOTOR_HOURS->value)
                     Ievadi pašreizējās motorstundas
                 @elseif($usage_type == VehicleUsageTypes::KILOMETERS->value)
                     Ievadi pašreizējo nobraukumu
                 @endif   
             </label>    
-            <input class="adminEditInput" type='numeric' name='usage' id='usage' value='{{$usage}}'>
+            <input class="admin_edit_input" type='numeric' name='usage' id='usage' value='{{$usage}}'>
             
         </div>
         @error('usage')
@@ -81,7 +80,7 @@
         @enderror
 
     </div>
-    <button type='submit' id="beginUse" class='getNextPart'>Sākt lietot</button>
+    <button type='submit' id="beginUse" class='get_next_part'>Sākt lietot</button>
     <!-- Izsauc objektu sinhronizāciju -->
     <button class="sync_objects_link" type="button" id="syncBtn">Atjaunot objektu sarakstu</button>
     <p id="syncText"></p>
@@ -92,14 +91,14 @@
 <!-- Dialoga logs kas pārliecinās ka lietotājs zin par konfliktējošajiem lietojumiem un rezervācijām. -->
 <div id="confirmWrapper" class="confirm_wrapper">
     <div class="overlay"></div>
-    <div id="overrideReservationConfirm" class="confirmation_box">
-        <p><span id="confirmText"></span></p>
+    <div style="display:none" id="overrideReservationConfirm" class="confirmation_box">
+        <p><span id="overrideReservationConfirmText"></span></p>
         <button type="button" id="Reservation_NOBTN" class="no_btn">Atcelt</button>
         <button type="button" id="Reservation_OKBTN" class="ok_btn">Izveidot lietojumu tik un tā</button>
     </div>
 
-    <div id="endCurrentUsageConfirm" class="confirmation_box">
-        <p><span id="confirmText"></span></p>
+    <div style="display:none" id="endCurrentUsageConfirm" class="confirmation_box">
+        <p><span id="endCurrentUsageConfirmText"></span></p>
         <button type="button" id="EndUse_NOBTN" class="no_btn">Atcelt</button>
         <button type="button" id="EndUse_OKBTN" class="ok_btn">Pārtraukt pašreizējo lietojumu</button>
     </div>

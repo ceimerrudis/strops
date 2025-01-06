@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\AuthenticationMiddleware;
+use App\Http\Middleware\MultipleRequestProtectionMiddleware;
 use App\Http\Middleware\IsAdminMiddleware;
 
 use App\Http\Controllers\VehicleUseController;
@@ -11,63 +12,66 @@ use App\Http\Controllers\AdminController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(AuthenticationMiddleware::class)->group(function () {
-    Route::middleware(IsAdminMiddleware::class)->group(function () {
-        //Administratoru modulis
-        //Funkcija PVIR.
-        Route::get('/izveidot', [AdminController::class, 'ViewCreateEntryPage'])->name("viewcreate");  
-        Route::post('/izveidot', [AdminController::class, 'CreateEntry'])->name("create");  
-        //Funkcija RDIR.
-        Route::get('/rediget', [AdminController::class, 'ViewUpdateEntryPage'])->name("viewEdit"); 
-        Route::post('/rediget', [AdminController::class, 'UpdateEntry'])->name("edit");
-        //Funkcija DZIR.
-        Route::post('/dzest', [AdminController::class, 'DeleteEntry'])->name("delete");  //add  error
-        //Funkcija APIR.
-        Route::get('/apskatitVisus', [AdminController::class, 'ViewAllEntriesPage'])->name("viewAllEntries"); //add error
-        //funkcija RKLT izpildīta ar jquery un ajax
-        Route::get('/parrekinatlaiku', [AdminController::class, 'RecalculateTime']);
+    Route::middleware(MultipleRequestProtectionMiddleware::class)->group(function () {
+        Route::middleware(IsAdminMiddleware::class)->group(function () {
+            //Administratoru modulis
+            //Funkcija PVIR.
+            Route::get('/izveidot', [AdminController::class, 'ViewCreateEntryPage'])->name("viewcreate");  
+            Route::post('/izveidot', [AdminController::class, 'CreateEntry'])->name("create");  
+            //Funkcija RDIR.
+            Route::get('/rediget', [AdminController::class, 'ViewUpdateEntryPage'])->name("viewEdit"); 
+            Route::post('/rediget', [AdminController::class, 'UpdateEntry'])->name("edit");
+            //Funkcija DZIR.
+            Route::post('/dzest', [AdminController::class, 'DeleteEntry'])->name("delete");  //add  error
+            //Funkcija APIR.
+            Route::get('/apskatitVisus', [AdminController::class, 'ViewAllEntriesPage'])->name("viewAllEntries"); //add error
+            //funkcija RKLT izpildīta ar jquery un ajax
+            Route::get('/parrekinatlaiku', [AdminController::class, 'RecalculateTime']);
+        });
+
+        //Objektu modulis
+        //Funkcija ATJO
+        Route::get('/atjaunotObjektus', [ObjectController::class, 'UpdateObjects']);
+        //Funkcija PVAT
+        Route::get('/pievienotAtskaiti', [ObjectController::class, 'ViewCreateReportPage']);
+        Route::post('/pievienotAtskaiti', [ObjectController::class, 'CreateReport']);
+        //Funkcija RDAT
+        Route::get('/redigetAtskaiti', [ObjectController::class, 'ViewUpdateReportPage']);
+        Route::post('/redigetAtskaiti', [ObjectController::class, 'UpdateReport']);
+        //Funkcija SVAT
+        Route::get('/apskatitatskaites', [ObjectController::class, 'ViewReports']);
+        
+        //Rezervāciju modulis
+        //Funkcija AVRZ
+        Route::get('/manasRezervacijas', [ReservationController::class, 'ViewMyReservationsPage']);
+        Route::post('/dzestManuRezervaciju', [ReservationController::class, 'DeleteMyReservation'])->name("deleteMyReservation");
+        //Funkcija RZKL
+        Route::get('/sakums', [ReservationController::class, 'ViewCalendarPage'])->name("start");
+        //Šo lapu izsauc ar ajax (tas atļauj vienā reizē ielādēt tikai viena mēneša rezervācijas)
+        Route::get('/kalendars', [ReservationController::class, 'GetCalendarData'])->name("calendar");
+        //Funkcija RZIZ
+        Route::post('/izveidotRezervaciju', [ReservationController::class, 'CreateReservation'])->name("createReservation");
+        //Funkcija RLIZ
+        Route::post('/izveidotRezervacijuUnLietojumu', [ReservationController::class, 'CreateReservationAndUse'])->name("createReservationAndUse");
+
+        //Lietojumu modulis
+        //Funkcija LTSK
+        Route::get('/saktLietojumu', [VehicleUseController::class, 'ViewStartVehicleUsePage'])->name("startUse");
+        Route::post('/saktLietojumu', [VehicleUseController::class, 'EndOfStartVehicleUse'])->name("startUsePost");
+        //Funkcija LTBG
+        Route::get('/beigtLietojumu', [VehicleUseController::class, 'ViewFinishVehicleUsePage'])->name("endUse");
+        Route::post('/beigtLietojumu', [VehicleUseController::class, 'FinishVehicleUseShortcut'])->name("endUseShortcut");
+        Route::post('/beigtLietojumuNoradotLietojumu', [VehicleUseController::class, 'FinishVehicleUse']);
+        //Funkcija LTAP
+        Route::get('/maniPabeigtieLietojumi', [VehicleUseController::class, 'ViewMyFinishedVehicleUsesPage']);
+        //Funkcija ALTA
+        Route::get('/maniNepabeigtieLietojumi', [VehicleUseController::class, 'ViewMyActiveVehicleUsesPage']);
+
+        //Lietotāju modulis
+        //Funkcija ATKT
+        Route::get('/logout', function () { return redirect('/atteikties'); });
+        Route::get('/atteikties', [UserController::class, 'Logout']);
     });
-
-    //Objektu modulis
-    //Funkcija ATJO
-    Route::get('/atjaunotObjektus', [ObjectController::class, 'UpdateObjects']);
-    //Funkcija PVAT
-    Route::get('/pievienotAtskaiti', [ObjectController::class, 'ViewCreateReportPage']);
-    Route::post('/pievienotAtskaiti', [ObjectController::class, 'CreateReport']);
-    //Funkcija RDAT
-    Route::get('/redigetAtskaiti', [ObjectController::class, 'ViewUpdateReportPage']);
-    Route::post('/redigetAtskaiti', [ObjectController::class, 'UpdateReport']);
-    //Funkcija SVAT
-    Route::get('/apskatitatskaites', [ObjectController::class, 'ViewReports']);
-    
-    //Rezervāciju modulis
-    //Funkcija AVRZ
-    Route::get('/manasRezervacijas', [ReservationController::class, 'ViewMyReservationsPage']);
-    Route::post('/dzestManuRezervaciju', [ReservationController::class, 'DeleteMyReservation'])->name("deleteMyReservation");
-    //Funkcija RZKL
-    Route::get('/sakums', [ReservationController::class, 'ViewCalendarPage'])->name("start");
-    //Šo lapu izsauc ar ajax (tas atļauj vienā reizē ielādēt tikai viena mēneša rezervācijas)
-    Route::get('/kalendars', [ReservationController::class, 'GetCalendarData'])->name("calendar");
-    //Funkcija RZIZ
-    Route::post('/izveidotRezervaciju', [ReservationController::class, 'CreateReservation'])->name("createReservation");
-    //Funkcija RLIZ
-    Route::post('/izveidotRezervacijuUnLietojumu', [ReservationController::class, 'CreateReservationAndUse'])->name("createReservationAndUse");
-
-    //Lietojumu modulis
-    //Funkcija LTSK
-    Route::get('/saktLietojumu', [VehicleUseController::class, 'ViewStartVehicleUsePage'])->name("startUse");
-    Route::post('/saktLietojumu', [VehicleUseController::class, 'StartVehicleUse'])->name("startUsePost");
-    //Funkcija LTBG
-    Route::post('/beigtLietojumu', [VehicleUseController::class, 'ViewFinishVehicleUsePage'])->name("endUse");
-    Route::post('/beigtLietojumuArLietojumu', [VehicleUseController::class, 'FinishVehicleUse']);
-    //Funkcija LTAP
-    Route::get('/maniPabeigtieLietojumi', [VehicleUseController::class, 'ViewMyFinishedVehicleUsesPage']);
-    //Funkcija ALTA
-    Route::get('/maniNepabeigtieLietojumi', [VehicleUseController::class, 'ViewMyActiveVehicleUsesPage']);
-
-    //Lietotāju modulis
-    //Funkcija ATKT
-    Route::get('/logout', function () { return redirect('/atteikties'); });
-    Route::get('/atteikties', [UserController::class, 'Logout']);
 });
 //Funkcijas PTKT ceļi
 //Pievienošanās ceļš nosaukts arī angliski lai vieglāk piekļūt lapai

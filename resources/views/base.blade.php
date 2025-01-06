@@ -14,12 +14,10 @@
                 <button class="delete_message_button" onclick="hideMessage(this)">x</button> 
             </p>
         @endforeach
-        <ul>
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
 
+        @foreach ($errors->all() as $error)
+            <p>{{ $error }}</p>
+        @endforeach
     </div>
 
     @php
@@ -74,7 +72,7 @@
 
         <div class="nav_link_wrapper">
                 @if(Auth::user()->type == UserTypes::ADMIN->value) 
-                    <a class="nav_link" href="href="apskatitVisus?table={{EntryTypes::REPORT->value}}"">
+                    <a class="nav_link" href="apskatitVisus?table={{EntryTypes::REPORT->value}}">
                 @else
                     <a class="nav_link" href="apskatitatskaites">
                 @endif
@@ -83,18 +81,18 @@
                 </span>
             </a>
         </div>
-    
-        <div class="nav_link_wrapper">
-                    <a class="nav_link" >
-                        <span class="nav_link_span_2_lines">
-                            Visas 
-                            <br>atskaites
-                        </span>
-                    </a>
-                </div>
 
+        <div class="nav_link_wrapper">
+            <a class="nav_link" id="logoffButton" href="atteikties">
+                <span class="nav_link_span_1_lines">
+                    Iziet
+                </span>
+            </a>
+        </div>
+    
         @if(Auth::check())
             @if(Auth::user()->type == UserTypes::ADMIN->value) 
+                
                 <div class="nav_link_wrapper">
                     <a class="nav_link" href="apskatitVisus?table={{EntryTypes::USER->value}}">
                         <span class="nav_link_span_2_lines">
@@ -121,6 +119,15 @@
                 </div>
                 
                 <div class="nav_link_wrapper">
+                    <a class="nav_link" href="apskatitVisus?table={{EntryTypes::REPORT->value}}">
+                        <span class="nav_link_span_2_lines">
+                            Visas 
+                            <br>atskaites
+                        </span>
+                    </a>
+                </div>
+
+                <div class="nav_link_wrapper">
                     <a class="nav_link" href="apskatitVisus?table={{EntryTypes::RESERVATION->value}}">
                         <span class="nav_link_span_2_lines">
                             Visas 
@@ -146,11 +153,5 @@
             @endif
         @endif
 
-        <div class="nav_link_wrapper">
-            <a class="nav_link" id="logoffButton" href="atteikties">
-                <span class="nav_link_span_1_lines">
-                    Iziet
-                </span>
-            </a>
-        </div>
+        
     </div>

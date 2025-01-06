@@ -10,6 +10,7 @@ use App\Models\VehicleUse;
 use App\Models\Vehicle;
 use App\Models\Error;
 
+use Carbon\Carbon;
 use Illuminate\Validation\Rules\Enum;
 use Illuminate\Http\Request;
 use App\Http\Requests\SpecificEntry;
@@ -39,7 +40,32 @@ class AdminController extends Controller
         $vehicles = Vehicle::orderBy('name', 'asc')->select('id', 'name', 'usage_type')->get();
         $users = User::orderBy('username', 'asc')->select('id', 'username')->get();
         $objects = ObjectModel::orderBy('code', 'asc')->select('id', 'code')->get();
-        return view("adminModule.createEntry", compact('table', 'viewName', 'entry', 'users', 'vehicles', 'objects'));
+
+        //Kļūdas apskatīšanai izvilkt datus ar vairākiem join
+        $errorReservation = null;
+        $errorVehicleUse = null;
+        if($table == EntryTypes::ERROR->value)
+        {
+            //Kļūdām ņem vērā  arī izdzēstos lai vienmēr varētu apskatīt kļūdas cēloni
+            if(isset($entry->reservation)){
+                $errorReservation = Reservation::withTrashed()
+                ->where('reservations.id', '=', $entry->reservation)
+                ->join('users', 'reservations.user', 'users.id')
+                ->select('users.name as reservation_user_name', 'users.lname as reservation_user_lname', 'reservations.*')
+                ->first();
+    
+            }
+            if(isset($entry->vehicle_use)){
+                $errorVehicleUse = VehicleUse::withTrashed()
+                ->where('vehicle_uses.id', '=', $entry->vehicle_use)
+                ->join('vehicles', 'vehicle_uses.vehicle', 'vehicles.id')
+                ->join('users', 'vehicle_uses.user', 'users.id')
+                ->select('users.name as use_user_name', 'users.lname as use_user_lname', 'vehicles.name as use_vehicle_name', 'vehicle_uses.*')
+                ->first();
+            }
+        }
+
+        return view("adminModule.createEntry", compact('table', 'viewName', 'entry', 'users', 'vehicles', 'objects', 'errorReservation', 'errorVehicleUse'));
     }
 
     //Funkcija PVIR.
@@ -48,11 +74,11 @@ class AdminController extends Controller
         $data = $this->ValidateEntry($request, false);
         $table = $request->input('table');
         $model = GetModelFromEnum($table);
-        if($table === EntryTypes::REPORT->value)
+        if($table == EntryTypes::REPORT->value)
         {
             //Nedrīkst izveidot divus atskaites ierakstus vienā un tajā pašā mēnesī vienam objektam. 
-            $date = $data['date'];
-            $exists = $model::whereDate('date', $date)->exists();
+            $date = Carbon::parse($data['date']);
+            $exists = $model::where('object', $data['object'])->whereMonth('date', $date->month)->whereYear('date', $date->year)->exists();
             if($exists)
             {
                 addMessage(Text(112), "e");
@@ -102,8 +128,11 @@ class AdminController extends Controller
                 break;
             case EntryTypes::REPORT->value:
                 $entry->progress = $data['progress'] ?? $entry->progress;
-                $entry->object = $data['object'] ?? $entry->object;
-                if(!empty($data['date'])){
+                if(!empty($data['object']) && $data['object'] != $entry->object){
+                    //Nedrīkst rediģēt atskaites objekta lauku. Saglabā ierakstu datu bāzē. 
+                    AddMessage(Text(220), "w");
+                }
+                if(!empty($data['date']) && !CompareMonths($data['date'], $entry->date)){
                     //Nedrīkst rediģēt atskaites datuma lauku. Saglabā ierakstu datu bāzē. 
                     AddMessage(Text(111), "w");
                 }
@@ -193,15 +222,19 @@ class AdminController extends Controller
         $name = $tableName[$table];
         //Iegūst visus konkrētā veida ierakstus, sakārto tos vai nu alfabēta secībā pēc nosaukuma, vai arī pēc lauka sākuma laiks.
         $query = GetModelFromEnum($table)::orderBy($sortFieldName[0], $sortFieldName[1])->select(EntryTypes::GetName($table).'.*');
+        
         foreach ($tablesToJoin as $joinedTable) {
             $query->join($joinedTable['table'], substr($joinedTable['table'], 0, -1), $joinedTable['table'].'.id');//Sagadīšanās pēc var izmantot tabulas nosaukumu bez pēdējā burta
             foreach ($joinedTable['columns'] as $column) {
                 $query->addSelect($joinedTable['table'] . '.' . $column . ' as ' . $joinedTable['table'] . '_' . $column);
             }
         }
+
         $allEntryData = $query->get();
 
         //Atskaites tiek sagrupētas pa objektiem un sakārtotas pēc datumiem. TODO
+
+
         return view('adminModule.allEntries', compact('table', 'allEntryData', 'name', 'headers', 'viewName'));
     }
 
@@ -222,7 +255,9 @@ class AdminController extends Controller
         //Vispirms nodefinē noteikumus tad paziņojumus par kļūdām, 
         //tad, ja padota pareiza tabulas vērtība, veic pārbaudi.
         $passwordRequired = 'required';
+        $reportFieldsRequired = 'required';
         if($update){
+            $reportFieldsRequired = 'nullable';
             $passwordRequired = 'nullable';
         }
         //Web formu standartu veidotāji uzskata ka false === null. Šī iemesla dēļ tagad jāčakarējas
@@ -252,7 +287,7 @@ class AdminController extends Controller
                     Rule::unique('objects', 'code')->ignore($request->id)],//id var būt null. Šajā gadījumā tiks skatīti visi kodi
                 'name' => 'required|string',
                 'active' => 'nullable',
-                'user_in_charge' => 'exists:users,id',
+                'user_in_charge' => 'nullable|exists:users,id',
             ],
             EntryTypes::VEHICLE->value => [
                 'name' => 'required|string',
@@ -271,9 +306,9 @@ class AdminController extends Controller
                 'vehicle' => 'required|numeric|exists:vehicles,id',
             ],
             EntryTypes::REPORT->value => [
-                'progress' => 'required|numeric|min:0',
-                'object' => 'required|exists:objects,id',
-                'date' => 'required|date',
+                'progress' => 'required|numeric|min:0|max:100',
+                'object' => $reportFieldsRequired.'|exists:objects,id',
+                'date' => $reportFieldsRequired.'|date',
             ],
             EntryTypes::VEHICLE_USE->value => [
                 'from' => 'required|date',

@@ -12,13 +12,15 @@ method="post">
 
         @include('adminModule.forms.'.$viewName)
 
-        <button type="submit" class="create_element_button">
-            @if($entry->id == null)
-                Izveidot
-            @else
-                Mainīt
-            @endif
-        </button>
+        @if($table != App\Enums\EntryTypes::ERROR->value)
+            <button type="submit" class="create_element_button">
+                @if($entry->id == null)
+                    Izveidot
+                @else
+                    Mainīt
+                @endif
+            </button>
+        @endif
     </form>
 
     @if($entry->id != null)

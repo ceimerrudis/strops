@@ -39,7 +39,7 @@ return [
     136 => 'Ievadīto motorstundu skaits ir pārāk liels, pārliecinies ka dati ievadīti pareizi.',
     137 => 'Ievadītais nobraukums ir mazāks par datu bāzē esošo.',
     138 => 'Ievadītais nobraukums ir pārāk liels, pārliecinies ka dati ievadīti pareizi.',
-    139 => 'Inventārs šajā laikā jau ir rezervēts!',
+    139 => 'Rezervācija netika veikta! Inventārs šajā laikā jau ir rezervēts!',
     140 => 'Nevar veikt rezervāciju pagātnē!',
     141 => 'Nav norādīts inventārs.',
     142 => 'Notikusi kļūda',
@@ -120,5 +120,6 @@ return [
     217 => 'Norādītais objekts nav atrasts.',
     218 => 'Komentāram jābūt teksta vērtībai.',
     219 => 'Laiks aprēķināts!',//vehichleUse.blade failā šis strings ir cieti kodēts. Mainot šeit jāmaina tur  
+    220 => 'Nedrīkst rediģēt atskaites objekta lauku.',
     999 => 'template',
 ];

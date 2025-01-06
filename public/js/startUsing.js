@@ -52,13 +52,11 @@ function CheckMessages(){
     messages.shift();
     let statuss = message.statuss;
     if(statuss == "used"){
-        OpenConfirmWindow(message.message);
-    }else if(statuss == "usedBySelf"){
-        AddMessage(message.message, "info")
+        OpenEndUsageConfirmWindow(message.message);
     }else if(statuss == "reservedInFuture"){
-        OpenConfirmWindow(message.message);
+        OpenOverrideReservationConfirmWindow(message.message);
     }else if(statuss == "reserved"){
-        OpenConfirmWindow(message.message);
+        OpenOverrideReservationConfirmWindow(message.message);
     }
 }
 
@@ -107,15 +105,15 @@ function ToggleComment(id)
 }
 
 function OpenOverrideReservationConfirmWindow(message){
-    $("#confirmText").html(message);
-    $("#confirmWrapper").show();
-    $("#overrideReservation").show();
+     $("#confirmWrapper").show();
+    $("#overrideReservationConfirm").show();
+    $("#overrideReservationConfirmText").html(message)
 }
 
 function OpenEndUsageConfirmWindow(message){
-    $("#confirmText").html(message);
     $("#confirmWrapper").show();
-    $("#endUsage").show();
+    $("#endCurrentUsageConfirm").show();
+    $("#endCurrentUsageConfirmText").html(message);
 }
 
 function Reservation_AnswYes(){
@@ -126,8 +124,9 @@ function Reservation_AnswYes(){
 
 function EndUse_AnswYes(){
     $("#confirmWrapper").hide();
-    $("#endCurrentUsageConfirm").val("yes");
-    if(usage_type == dayEnumValue)
+    $("#endCurrentUsageConfirm").hide();
+    $("#endCurrentUsage").val("yes");
+    if(usage_type != dayEnumValue)
     {
         AskForUsage();
     } 
