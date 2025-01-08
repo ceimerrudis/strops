@@ -25,7 +25,6 @@ $( document ).ready(function() {
                 //close loading window
                 $("#loadingWrapper").hide();
                 $("#syncText").html(result.message);
-                location.reload();
             },
             error: function(XMLHttpRequest, textStatus, errorThrown) { 
                 $("#loadingWrapper").hide();
@@ -44,6 +43,7 @@ function AskForUsage(){
 }
 
 function CheckMessages(){
+    //Var būt vairāks ziņas ar jā nē atbildēm šī funkcija tās uzmet vienu pa vienai.
     if(messages.length < 1)
     {
         return;
@@ -88,8 +88,8 @@ function updateObjectInput(){
 //Šī funkcija aizstāj objekta nosaukumu ar komentāru vai otrādāk (atkarībā no izvēlētā objekta)
 function ToggleComment(id)
 {
-    if(id == 0){
-        //Objekts ar id 0 ir objekts Cits šis ir īpašs objekts kam  nepieciešams komentārs
+    if(id == 1){
+        //Objekts ar id 1 ir objekts Cits šis ir īpašs objekts kam  nepieciešams komentārs
         $("#objectNameLabel").hide();
         $("#objectName").hide();   
 

@@ -122,5 +122,6 @@ return [
     219 => 'Laiks aprēķināts!',//vehichleUse.blade failā šis strings ir cieti kodēts. Mainot šeit jāmaina tur  
     220 => 'Nedrīkst rediģēt atskaites objekta lauku.',
     221 => 'lietotājvārds drīkst saturēt tikai burtus ciparus un svītras - _',
+    222 => 'Objektu saraksts atjaunināts!',
     999 => 'template',
 ];

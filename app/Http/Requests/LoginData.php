@@ -9,7 +9,7 @@ class LoginData extends FormRequest
     public function rules(): array
     {
         $rules = [
-            'username' => 'required|alpha_dash:ascii|exists:users,username',
+            'username' => 'required|regex:/^[\p{L}\p{M}\p{N}_-]+$/u|exists:users,username',
             'password' => 'required',
        ];
         return $rules;
@@ -20,7 +20,7 @@ class LoginData extends FormRequest
         return [
             'username.exists' => Text (101),
             'username.required' => Text(102),
-            'username.alpha_dash' => Text(221),
+            'username.regex' => Text(221),
             'password.required' => Text(103),
         ];
     }

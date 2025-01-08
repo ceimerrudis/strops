@@ -1100,7 +1100,7 @@
     height: 50px; 
     border: 1px solid #ccc;
     font-size: 24px; 
-    display: flex; 
+    display: flex;
     justify-content: center; 
     display: flex;
     align-items: center; 
@@ -1134,3 +1134,25 @@
     display: flex; 
     flex: 0 0 30%;
   }
+
+  .large_message
+  {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+    padding: 20px;
+    border-radius: 5px;
+    max-width: 500px;
+    margin: 20px auto;
+    font-family: Arial, sans-serif;
+  }
+
+  .large_message p b button {
+    border: none;
+    width: 100%;
+    padding: 8px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-top: 10px;
+    }

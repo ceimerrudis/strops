@@ -15,7 +15,7 @@
 @enderror
 <label class="admin_edit_label" for="date">Līdz</label>
 <input class="admin_edit_input" type="datetime-local" name="date" id="date" 
-@if(!isset($justReport) && $entry->code != null)
+@if((!isset($CreatingNew) || !$CreatingNew) && $entry->code != null)
 readonly
 @endif
 value="{{ old('date', $entry->date) }}">

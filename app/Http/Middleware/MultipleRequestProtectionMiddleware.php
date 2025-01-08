@@ -29,10 +29,10 @@ class MultipleRequestProtectionMiddleware
         $hash = md5($userId . '|' . $request->fullUrl() . '|' . json_encode($request->all()));
         
         if (Cache::has($hash)) {
-            return redirect("kluda");
+            return redirect("dubultPieprasijums");
         }
         //Saglabā šo pieprasījumu 10 sekundes
-        Cache::put($hash, true, $seconds = 10);
+        Cache::put($hash, true, $seconds = 4);
 
         return $next($request);
     }

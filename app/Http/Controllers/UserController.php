@@ -52,10 +52,10 @@ class UserController extends Controller
         $entryToken = Cookie::get('entryToken');
         if($entryToken != null)
         {
-            $user = RememberMeToken::where('token', '=', $entryToken)->select('user')->first();
-            if($user != null)
+            $token = RememberMeToken::where('token', '=', $entryToken)->select('user')->first();
+            if($usetokenr != null)
             {
-                Auth::loginUsingId($user->user);
+                Auth::loginUsingId($token->user);
                 return redirect("sakums");
             }
         }

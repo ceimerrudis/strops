@@ -1,16 +1,19 @@
 @include("base")
 <br>    
+    @if(count($reportsByObject) == 0)
+    <p style="padding-left: 10px;">Jūs neesat atbildīgs par navienu objektu. </p>
+    @endif
     @foreach($reportsByObject as $object)
         <div class="report_tables">
             <div class="report_button_container">
-                <button class="collapsor" code="{{ $object['code'] }}">{{ $object['code'] }} - {{ $object['name'] }} -</button>
+                <button class="collapsor" id_holder="{{ $object['id'] }}">{{ $object['code'] }} - {{ $object['name'] }} -</button>
             
                 <form class="create_report_button_form" action="{{ route('addReport') }}" method="get">
                     <input type="hidden" name="object" value="{{$object['id']}}">
                     <button class="create_report_btn" code="{{ $object['code'] }}">Pievienot jaunu atskaiti</button>
                 </form>
             </div>
-            <div id="{{ $object['code'] }}" class="content">
+            <div id="{{ $object['id'] }}" class="content">
                 <div class="table_container">
                     <table class="table columns_3">
                         <thead>
@@ -46,17 +49,18 @@
 <script>
     $(document).ready(function() {
         $('.collapsor').click(function() {
-            let code = $(this).attr('code');
+            let id = $(this).attr('id_holder');
+            console.log(id);
             let html = $(this).html();
-
-            if($("#"+code).css('display') !== 'none')
+            let reportsTable = $("#"+id);
+            if(reportsTable.css('display') !== 'none')
             {
-                $("#"+code).hide();
+                reportsTable.hide();
                 $(this).html(html.slice(0, -1) + '+');
             }
             else
             {
-                $("#"+code).show();
+                reportsTable.show();
                 $(this).html(html.slice(0, -1) + '-');
             }
         });

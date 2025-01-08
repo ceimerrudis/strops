@@ -17,7 +17,7 @@ class SynchronizeObjectData extends Command
     public function handle()
     {
         $year = Carbon::now()->year;
-        $path = '/volume1/Makonis/Atskaites/Objekti darbinieki stundas/Objekti_' . $year . '.xlsx';
+        $path = '/volume1/Makonis/Atskaites/Objekti_' . $year . '.xlsx';
         if (!file_exists($path)) {
             Log::error("Excel file does not exist:" . $path);
             $this->error("Excel file does not exist: ". $path);
@@ -32,6 +32,6 @@ class SynchronizeObjectData extends Command
             Log::error("Falied oppenningn file. - ". $e->getMessage());
             throw new \Exception("Object sync failure.");
         }
-        return 'Objektu saraksts atjaunināts!';
+        return Text(222);
     }
 }

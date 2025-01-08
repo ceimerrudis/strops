@@ -71,6 +71,7 @@ Route::middleware(AuthenticationMiddleware::class)->group(function () {
         //Funkcija ATKT
         Route::get('/logout', function () { return redirect('/atteikties'); });
         Route::get('/atteikties', [UserController::class, 'Logout']);
+
     });
 });
 //Funkcijas PTKT ceļi
@@ -87,3 +88,5 @@ Route::view('/', 'publicPage')->name("public");
 //Šī ir sistēmas kļūdas lapa ko redz pēc tam kad veikts pieprasījums bez nepieciešamajām tiesībām. 
 Route::view('/unauthorized', 'unauthorized')->name("unauthorized");
 Route::view('/kluda', 'kluda')->name("kluda");
+//Šī ir lapa ko redz ja izpilda  divus vienādus post pieprāsījumus pēc kārtas
+Route::view('/dubultPieprasijums', 'multipleRequestError')->name("dubultPieprasijums");

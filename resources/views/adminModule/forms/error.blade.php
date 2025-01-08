@@ -4,8 +4,8 @@
 <p class="error_view_info">Kļūdas komentārs:<br> {{ $entry->comment }}</p>
 <p class="error_view_info">Kļūdas transportlīdzeklis: <br>{{ $errorVehicleUse->use_vehicle_name }}</p>
 @if($errorReservation == null)
-    <p class="error_view_info">Lietojums pirms:<br> {{ $entry->usagebefore }}</p>
-    <p class="error_view_info">Lietojums pēc:<br> {{ $entry->usageafter }}</p>
+    <p class="error_view_info">Lietojums pirms:<br> {{ $entry->usage_before }}</p>
+    <p class="error_view_info">Lietojums pēc:<br> {{ $entry->usage_after }}</p>
 @else
     <p class="error_view_info">Kļūdas rezervācijas lietotājs: <br>{{ $errorReservation->reservation_user_name }} {{ $errorReservation->reservation_user_lname }}</p>
     <p class="error_view_info">Kļūdas rezervācija no: <br>{{ $errorReservation->from }}</p>

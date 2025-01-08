@@ -13,19 +13,10 @@ use App\Enums\EntryTypes;
 use App\Services\SharedMethods;
 use App\Http\Requests\NonSpecificEntry;
 use App\Http\Requests\SpecificEntry;
+use Illuminate\Support\Facades\Artisan;
 
 class ObjectController extends Controller
-{    
-    public function GetReportEditPage($entry)
-    {
-        $viewName = 'report';
-        $justReport = true;
-        $table = EntryTypes::REPORT->value;
-        $createRouteName = 'addReport';
-        $editRouteName = 'editReport';
-        return view("adminModule.createEntry", compact('createRouteName', 'editRouteName', 'table', 'viewName', 'entry', 'justReport'));
-    }
-
+{   
     //Funkcija ATJO
     public function UpdateObjects(Request $request)
     { 
@@ -35,22 +26,20 @@ class ObjectController extends Controller
         if($code === 0)
             $str = Text(109);
         return response()->json(['message' => $str, 'output' => $output]);
+    } 
+
+    //PVAT un RDAT
+    public function GetReportEditPage($entry, $CreatingNew)
+    {
+        $viewName = 'report';
+        $justReport = true;
+        $table = EntryTypes::REPORT->value;
+        $createRouteName = 'addReport';
+        $editRouteName = 'editReport';
+        return view("adminModule.createEntry", compact('createRouteName', 'editRouteName', 'table', 'viewName', 'entry', 'justReport', 'CreatingNew'));
     }
 
-    //Funkcija PVAT
-    public function ViewCreateReportPage(ViewCreateReport $request)
-    { 
-        $objId = $request->input('object');
-        
-        $object = ObjectModel::findOrFail($objId);
-        if($object->user_in_charge == Auth::user()->id){
-            $entry = new Report(['object' => $objId]);
-            $entry->code = $object->code;
-            return $this::GetReportEditPage($entry);
-        }
-        return redirect()->back();
-    }
-
+    //PVAT un RDAT
     public function GetRules()
     {
         return $rules =[
@@ -58,6 +47,7 @@ class ObjectController extends Controller
         ];
     }
 
+    //PVAT un RDAT
     public function GetMessages()
     {
         return $mesages = [
@@ -66,6 +56,29 @@ class ObjectController extends Controller
         ];
     }
 
+    //PVAT un RDAT
+    public function AllowedToEdit(Request $request){
+        $objId = $request->validate($this::GetRules(), $this::GetMessages())['object'];
+        
+        $request->merge([
+            'table' => EntryTypes::REPORT->value,
+        ]);
+        $object = ObjectModel::findOrFail($objId);
+        return $object->user_in_charge == Auth::user()->id;
+    }
+
+    //Funkcija PVAT
+    public function ViewCreateReportPage(ViewCreateReport $request)
+    { 
+        $objId = $request->input('object');
+        $object = ObjectModel::findOrFail($objId);
+        $entry = new Report(['object' => $objId]);
+        $entry->code = $object->code;
+        if($object->user_in_charge == Auth::user()->id){
+            return $this::GetReportEditPage($entry, true);
+        }
+        return redirect()->back();
+    }
 
     //Funkcija PVAT
     public function CreateReport(Request $request)
@@ -83,20 +96,11 @@ class ObjectController extends Controller
         $reportId = $request->input("id");
         $entry = Report::findOrFail($reportId);
         $object = ObjectModel::findOrFail($entry->object);
+        $entry->code = $object->code;
         if($object->user_in_charge == Auth::user()->id){
-            return $this::GetReportEditPage($entry);
+            return $this::GetReportEditPage($entry, false);
         }
         return redirect()->back();
-    }
-
-    public function AllowedToEdit(Request $request){
-        $objId = $request->validate($this::GetRules(), $this::GetMessages())['object'];
-        
-        $request->merge([
-            'table' => EntryTypes::REPORT->value,
-        ]);
-        $object = ObjectModel::findOrFail($objId);
-        return $object->user_in_charge == Auth::user()->id;
     }
 
     //Funkcija RDAT
@@ -111,7 +115,7 @@ class ObjectController extends Controller
 
     //Funkcija SVAT
     public function ViewReports(Request $request)
-    { 
+    {
         $objects = ObjectModel::where('user_in_charge', Auth::user()->id)->get();
         $reports = Report::whereIn('object', $objects->pluck('id'))->get();
         

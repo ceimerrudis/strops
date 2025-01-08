@@ -246,7 +246,7 @@ class AdminController extends Controller
                 'username' => 
                     ['required',
                     'string',
-                    'alpha_dash:ascii',
+                    'regex:/^[\p{L}\p{M}\p{N}_-]+$/u',
                     Rule::unique('users', 'username')->ignore($request->id)],//id var būt null. Šajā gadījumā tiks skatīti visi lietotājvārdi
                 'password' => 'string|'.$passwordRequired,//Parole nepieciešama tikai izveidojot. un tā kā paroli nevar sūtīt lietotājam lauks būs tukšs
                 'name' => 'required|string',
@@ -305,7 +305,7 @@ class AdminController extends Controller
                 'username.required' => Text(156),
                 'username.unique' => Text(157),
                 'username.string' => Text(158),
-                'username.alpha_dash' => Text(221),
+                'username.regex' => Text(221),
                 'password.string' => Text(159),
                 'name.required' => Text(160),
                 'name.string' => Text(161),
