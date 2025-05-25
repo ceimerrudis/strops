@@ -47,7 +47,7 @@
                     },
                     success: function(result){
                         $("#usage_after").val((parseFloat($("#usage_before").val()) + parseFloat(result.time)).toFixed(2));
-                        AddMessage("Laiks aprēķināts!", "info");
+                        AddMessage("Laiks aprēķināts! Lai neizmainītu citu lietojumu datus paša inventāra nolietojums netika mainīts.", "info");
                     }
                 });  
                 

@@ -56,29 +56,33 @@
                             <input style="display: none;" type="radio" name="vehicle" id="all_vehicles" value="-1"> 
                             @endif
                             @foreach($vehicles as $vehicle)
-                                <p style="display:none;" id="used_{{$vehicle->id}}">
-                                @if($vehicle->usedby == "")
-                                    0
-                                @else
-                                    1
-                                @endif
-                                </p>
-                                @if(old('vehicle') == $vehicle->id)
-                                    <input class="vehicle_radio" type="radio" name="vehicle" id="{{ $vehicle->name }}" value="{{ $vehicle->id }}" checked>
-                                @else    
-                                    <input class="vehicle_radio" type="radio" name="vehicle" id="{{ $vehicle->name }}" value="{{ $vehicle->id }}">
-                                @endif
+                                <div class="vehicle_choice_container">    
+                                    <p style="display:none;" id="used_{{$vehicle->id}}">
+                                    @if($vehicle->usedby == "")
+                                        0
+                                    @else
+                                        1
+                                    @endif
+                                    </p>
+                                    @if(old('vehicle') == $vehicle->id)
+                                        <input class="vehicle_radio" type="radio" name="vehicle" id="{{ $vehicle->name }}" value="{{ $vehicle->id }}" checked>
+                                    @else    
+                                        <input class="vehicle_radio" type="radio" name="vehicle" id="{{ $vehicle->name }}" value="{{ $vehicle->id }}">
+                                    @endif
 
-                            <label class="vehicle_label" for="{{ $vehicle->name }}">{{ $vehicle->name }}   
-                            </label>
-                            
+                                
+                                    <label class="vehicle_label" for="{{ $vehicle->name }}">
+                                        <span class="usedby_name_label"> {{ $vehicle->name }}   </span>
+                                        
+                                        @if($vehicle->usedby == "")
+                                        <span class="usedby_label usedby_label_green">brīvs</span>
+                                        @else
+                                        <span class="usedby_label usedby_label_red">{!! $vehicle->usedby !!}</span>
+                                        @endif 
+                                    </label>
+                                </div>
 
-                            @if($vehicle->usedby == "")
-                            <span class="usedby_label usedby_label_green">brīvs</span>
-                            @else
-                            <span class="usedby_label usedby_label_red">{{$vehicle->usedby}}</span>
-                            @endif 
-                            <hr>
+                                <hr>
                             @endforeach
                             @error('vehicle')
                                 <span class="alert">{{ $message }}</span>

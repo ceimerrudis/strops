@@ -14,6 +14,7 @@ use App\Services\SharedMethods;
 use App\Http\Requests\NonSpecificEntry;
 use App\Http\Requests\SpecificEntry;
 use Illuminate\Support\Facades\Artisan;
+use Carbon\Carbon;
 
 class ObjectController extends Controller
 {   
@@ -36,6 +37,7 @@ class ObjectController extends Controller
         $table = EntryTypes::REPORT->value;
         $createRouteName = 'addReport';
         $editRouteName = 'editReport';
+        $entry["currentYear"] = Carbon::now()->year;
         return view("adminModule.createEntry", compact('createRouteName', 'editRouteName', 'table', 'viewName', 'entry', 'justReport', 'CreatingNew'));
     }
 
@@ -128,7 +130,7 @@ class ObjectController extends Controller
             {
                 if($report->object == $object->id)
                 {
-                    $thisObjReports[] = ['id' => $report->id, 'progress' => $report->progress, 'date' => $report->date];
+                    $thisObjReports[] = ['id' => $report->id, 'progress' => $report->progress, 'year' => $report->year, 'month' => $report->month];
                 }
             }
             $reportsByObject[$object->id] = ['reports' => $thisObjReports, 'id' => $object->id, 'code' => $object->code, 'name' =>$object->name ];

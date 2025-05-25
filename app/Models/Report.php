@@ -25,13 +25,13 @@ class Report extends Model
     protected $fillable = [
         'object',
         'progress',
-        'date',
+        'year',
+        'month',
     ];
 
     protected function casts(): array
     {
         return [
-            'date' => 'datetime:Y-m',
             'created_at' => 'datetime:Y-m-d H:i:s',
             'updated_at' => 'datetime:Y-m-d H:i:s',
             'deleted_at' => 'datetime:Y-m-d H:i:s',

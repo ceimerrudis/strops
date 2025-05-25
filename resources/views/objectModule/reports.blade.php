@@ -19,7 +19,8 @@
                         <thead>
                             <tr>
                                 <th>Progress</th>
-                                <th>Datums</th>
+                                <th>Gads</th>
+                                <th>Mēnesis</th>
                                 <th>Rediģēt</th>
                             </tr>
                         </thead>
@@ -27,7 +28,8 @@
                             @foreach($object['reports'] as $report)
                                 <tr>
                                     <td>{{ $report['progress'] }}</td>
-                                    <td>{{ $report['date'] }}</td>
+                                    <td>{{ $report['year'] }}</td>
+                                    <td>{{ $report['month'] }}</td>
                                     <td>
                                         <form action="{{ route('editReport') }}" method="get">
                                             <input value="{{ $report['id'] }}" type="hidden" name="id"> 

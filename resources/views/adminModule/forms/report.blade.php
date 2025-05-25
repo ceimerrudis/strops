@@ -8,17 +8,28 @@
 <input type="hidden" name="object" value="{{ $entry->object }}">
 @endif
 
-<label class="admin_edit_label" for="progress">Progress</label>
-<input class="admin_edit_input" type="number" id="progress" name="progress" step="0.01" min="0" max="100" value="{{ old('progress', $entry->progress) }}">
+<label class="admin_edit_label" for="progress">Progress <output id="output">{{ round(old('progress', $entry->progress)) }}</output>%</label>
+<input class="admin_edit_input" type="range" id="progress" name="progress" min="0" max="100" value="{{ old('progress', $entry->progress ?? 0) }}" oninput="output.value = progress.value">
 @error('progress')
     <span class="adimn_alert">{{ $message }}</span>
 @enderror
-<label class="admin_edit_label" for="date">Līdz</label>
-<input class="admin_edit_input" type="datetime-local" name="date" id="date" 
+
+<label class="admin_edit_label" for="year">Gads</label>
+<input class="admin_edit_input" type="number" id="year" 
 @if((!isset($CreatingNew) || !$CreatingNew) && $entry->code != null)
 readonly
 @endif
-value="{{ old('date', $entry->date) }}">
-@error('date')
+name="year" min="2020" max="2100" placeholder="YYYY" value="{{ old('year', $entry->year ?? $entry->currentYear) }}">
+@error('year')
+    <span class="adimn_alert">{{ $message }}</span>
+@enderror
+
+<label class="admin_edit_label" for="month">Mēnesis (1 = janvāris, 12 = decembris)</label>
+<input class="admin_edit_input" type="number" id="month"
+@if((!isset($CreatingNew) || !$CreatingNew) && $entry->code != null)
+readonly
+@endif
+name="month" min="1" max="12" placeholder="MM" value="{{ old('month', $entry->month) }}">
+@error('month')
     <span class="adimn_alert">{{ $message }}</span>
 @enderror

@@ -47,19 +47,21 @@ class ReservationController extends Controller
         ->select('vehicle_uses.vehicle', 'users.name', 'users.lname')->get();
         
         //Iegūst pašlaik notiekošās rezervācijas un to rezervētājus.
-        $reservations = Reservation::where('from', '<=', Carbon::now())
+        
+        $reservations = Reservation::
+        where('from', '<=', Carbon::now())
         ->where('until', '>=', Carbon::now())
         ->join('users', 'user', 'users.id')
         ->select('reservations.vehicle', 'users.name', 'users.lname')->get();
-        
+
         //Atzīmē kuri inventāri pašlaik tiek lietoti un kuri uz šo brīdi ir rezervēti.
         foreach ($vehicles as $vehicle) {
             $found = false;
             
             //Lietojums ir svarīgāks par rezervāciju tapēc ja tas tiks atrasts tad $vehicle->usedby lauks tiks pārrakstīts
-            foreach ($reservations as $reservation) {
+            foreach ($reservations as $reservation) {    
                 if ($vehicle->id == $reservation->vehicle) {
-                    $usedBy = $reservation->name . '.' . substr($reservation->lname, 0, 1);
+                    $usedBy =  'ir rezervējis<br>' . $reservation->name . '.' . substr($reservation->lname, 0, 1);
                     $vehicle->usedby = $usedBy;
                     $found = true;
                     break; 
@@ -68,7 +70,7 @@ class ReservationController extends Controller
 
             foreach ($vehicleUses as $vehicleUse) {
                 if ($vehicle->id == $vehicleUse->vehicle) {
-                    $usedBy = $vehicleUse->name . '.' . substr($vehicleUse->lname, 0, 1);
+                    $usedBy = 'lieto<br>' . $vehicleUse->name . '.' . substr($vehicleUse->lname, 0, 1);
                     $vehicle->usedby = $usedBy;
                     $found = true;
                     break; 
@@ -226,12 +228,12 @@ class ReservationController extends Controller
     //Funkcija AVRZ
     public function ViewMyReservationsPage(Request $request)
     {     
-        $myreservations = Reservation::where('user', Auth::user()->id)->orderBy('from', 'desc')
+        $myreservations = Reservation::where('user', Auth::user()->id)->orderBy('from', 'asc')//TODO desc limit
         ->join("vehicles", "vehicle", "vehicles.id")->get();
         return view('reservationModule.myReservations', compact('myreservations'));
     }
     
-    //Funkcija kas ļauj izdzēst savas rezervācijas
+    //Funkcija RZDZ
     public function DeleteMyReservation(SpecificEntry $request)
     {     
         $table = $request->input("table");

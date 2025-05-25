@@ -117,8 +117,8 @@ class VehicleUseController extends Controller
         }
 
         $user = User::findOrFail(Auth::user()->id);
-        $user->lastUsedObject = $data['object'];
-        $user->lastUsedVehicle = $data['vehicle'];
+        $user->last_used_object = $data['object'];
+        $user->last_used_vehicle = $data['vehicle'];
         $user->save();
         //Ja viss veiksmīgi izdevies izveido rezervāciju ja padoti tai nepieciešamie dati
         if(isset($data["until"]))
@@ -234,13 +234,14 @@ class VehicleUseController extends Controller
         $vehicleUse->usage_after = $vehicle->usage;
         $vehicleUse->save();
         $vehicle->save();
+        addMessage(Text(227), "info");
         return  "";
     }
 
     //Funkcija LTAP
     public function ViewMyFinishedVehicleUsesPage(Request $request)
     { 
-        $uses = VehicleUse::where('user', Auth::user()->id)->whereNotNull('until')->orderBy('from', 'desc')
+        $uses = VehicleUse::where('user', Auth::user()->id)->whereNotNull('until')->orderBy('from', 'desc')//TODO only last 30 days
         ->join("vehicles", "vehicle", "vehicles.id")
         ->join("objects", "object", "objects.id")
         ->select("vehicle_uses.*", "vehicles.name", "vehicles.usage_type", "objects.code")->get();

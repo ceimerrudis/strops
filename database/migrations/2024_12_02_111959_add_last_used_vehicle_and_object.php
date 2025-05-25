@@ -12,21 +12,21 @@ return new class extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->unsignedBigInteger('lastUsedVehicle')->nullable(true);
-            $table->unsignedBigInteger('lastUsedObject')->nullable(true);
-            $table->foreign('lastUsedVehicle')->references('id')->on('vehicles');
-            $table->foreign('lastUsedObject')->references('id')->on('objects');
+            $table->unsignedBigInteger('last_used_vehicle')->nullable(true);
+            $table->unsignedBigInteger('last_used_object')->nullable(true);
+            $table->foreign('last_used_vehicle')->references('id')->on('vehicles');
+            $table->foreign('last_used_object')->references('id')->on('objects');
         });
     }
 
     public function down()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropForeign(['lastUsedVehicle']);
-            $table->dropForeign(['lastUsedObject']);
+            $table->dropForeign(['last_used_vehicle']);
+            $table->dropForeign(['last_used_object']);
 
-            $table->dropColumn('lastUsedVehicle');
-            $table->dropColumn('lastUsedObject');
+            $table->dropColumn('last_used_vehicle');
+            $table->dropColumn('last_used_object');
         });
     }
 };

@@ -1,5 +1,5 @@
 @include("header")
-
+@include("messages")
 <body class="background">
     <script src="{{ asset('js/login.js') }}"></script>
     <div class="login_box">

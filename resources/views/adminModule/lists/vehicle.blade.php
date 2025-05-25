@@ -10,6 +10,3 @@ use App\Enums\VehicleUsageTypes;
 <td>
     {{ VehicleUsageTypes::getName($entry->usage_type); }}
 </td>
-<td>
-    {{ $entry->id }}
-</td>

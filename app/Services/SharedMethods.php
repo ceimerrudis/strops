@@ -103,12 +103,12 @@ class SharedMethods
         $reservationExists = Reservation::where('vehicle', $vehicle)
         ->where(function ($query) use($from, $until) {//Jāizpildās vienai no šīm trim pārbaudēm
             $query->orwhere(function ($query) use($from, $until) {//Pārklājas ar intervāla beigu galu
-                $query->where('from', '<=', $until)
+                $query->where('from', '<', $until)
                 ->where('until', '>=', $until);
             })
             ->orWhere(function ($query) use($from, $until) {//Pārklājas ar intervāla sākuma galu
                 $query->where('from', '<=', $from)
-                ->where('until', '>=', $from);
+                ->where('until', '>', $from);
             })
             ->orWhere(function ($query) use($from, $until) {//Pārklājas ar intervāla vidu
                 $query->where('from', '>=', $from)

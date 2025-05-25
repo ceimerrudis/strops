@@ -5,7 +5,10 @@
     {{ $entry->progress }}    
 </td>
 <td>
-    {{ $entry->date }}
+    {{ $entry->year }}
+</td>
+<td>
+    {{ $entry->month }}
 </td>
 
             

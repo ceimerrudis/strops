@@ -229,7 +229,7 @@ function recalculateReservationVisualsSize()
 
     //Izmaina kolonu augstumu
     timelineVisualObject.css({"top": (Math.round(70 + (numberOfDifferentVehicles * RESERVATION_VISUAL_HEIGHT)) + "px")});
-    $('.timelineBackgroundPillar').height(98 + (numberOfDifferentVehicles * RESERVATION_VISUAL_HEIGHT));
+    $('.timeline_background_pillar').height(98 + (numberOfDifferentVehicles * RESERVATION_VISUAL_HEIGHT));
 }
 
 //Funkcija kas konkrētam inventāram piešķir, atkarībā no padotā indeksa, tā inventāra  gaišo vai tumšo krāsu

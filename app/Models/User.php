@@ -29,8 +29,8 @@ class User extends Authenticatable
         'name',
         'lname',
         'type',
-        'lastUsedVehicle',
-        'lastUsedObject',
+        'last_used_vehicle',
+        'last_used_object',
     ];
 
     protected function casts(): array

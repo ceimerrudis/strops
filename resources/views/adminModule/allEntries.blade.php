@@ -33,7 +33,9 @@
 
     </table>
 </div>
-<a href="{{route('viewcreate', ['table' => $table])}}" class="create_new_btn">Izveidot jaunu {{$name}}</a>
+@if($table != EntryTypes::ERROR->value)
+    <a href="{{route('viewcreate', ['table' => $table])}}" class="create_new_btn">Izveidot jaunu {{$name}}</a>
+@endif
 <div style="color: white; height:100px"> _</div>
 
 @include('footer')

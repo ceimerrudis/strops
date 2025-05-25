@@ -29,6 +29,10 @@ class AdminController extends Controller
     { 
         $table = $request->input('table');
         $entry = new (GetModelFromEnum($table))([]);
+        if($table == EntryTypes::REPORT->value)
+        {
+            $entry["currentYear"] = Carbon::now()->year;
+        }
         return SharedMethods::EditPage($table, $entry);
     }
 
@@ -41,8 +45,7 @@ class AdminController extends Controller
         if($table == EntryTypes::REPORT->value)
         {
             //Nedrīkst izveidot divus atskaites ierakstus vienā un tajā pašā mēnesī vienam objektam. 
-            $date = Carbon::parse($data['date']);
-            $exists = $model::where('object', $data['object'])->whereMonth('date', $date->month)->whereYear('date', $date->year)->exists();
+            $exists = $model::where('object', $data['object'])->where('year', $data['year'])->where('month', $data['month'])->exists();
             if($exists)
             {
                 addMessage(Text(112), "e");
@@ -103,7 +106,11 @@ class AdminController extends Controller
                     //Nedrīkst rediģēt atskaites objekta lauku. Saglabā ierakstu datu bāzē. 
                     AddMessage(Text(220), "w");
                 }
-                if(!empty($data['date']) && !CompareMonths($data['date'], $entry->date)){
+                if(!empty($data['year']) && $data['year'] != $entry->year){
+                    //Nedrīkst rediģēt atskaites datuma lauku. Saglabā ierakstu datu bāzē. 
+                    AddMessage(Text(111), "w");
+                }
+                if(!empty($data['month']) && $data['month'] != $entry->month){
                     //Nedrīkst rediģēt atskaites datuma lauku. Saglabā ierakstu datu bāzē. 
                     AddMessage(Text(111), "w");
                 }
@@ -153,23 +160,23 @@ class AdminController extends Controller
     { 
         $table = $request->table;
         $sortFields = [
-            EntryTypes::USER->value => ['name', 'asc'],
-            EntryTypes::VEHICLE->value => ['name', 'asc'],
-            EntryTypes::OBJECT->value => ['name', 'asc'],
-            EntryTypes::REPORT->value => ['date', 'desc'],
-            EntryTypes::RESERVATION->value => ['from', 'desc'],
-            EntryTypes::VEHICLE_USE->value => ['from', 'desc'],
-            EntryTypes::ERROR->value => ['time', 'desc'],
+            EntryTypes::USER->value => [['name', 'asc']],
+            EntryTypes::VEHICLE->value => [['name', 'asc']],
+            EntryTypes::OBJECT->value => [['name', 'asc']],
+            EntryTypes::REPORT->value => [['object', 'desc'], ['year', 'desc'], ['month', 'desc']],
+            EntryTypes::RESERVATION->value => [['from', 'desc']],
+            EntryTypes::VEHICLE_USE->value => [['from', 'desc']],
+            EntryTypes::ERROR->value => [['time', 'desc']],
         ];
         $sortFieldName = $sortFields[$table];
 
         $allHeaders = [//Tabulas galvene
             EntryTypes::USER->value => ["Lietotājvārds", "Vārds", "Uzvārds", "Loma"],
-            EntryTypes::VEHICLE->value => ["Inventāra nosaukums", "Nolietojums", "Lietojuma veids", "Id"],
-            EntryTypes::OBJECT->value => ["Objekta Nr.", "Nosaukums", "Aktīvs / Slēgts"],
-            EntryTypes::REPORT->value => ["Objekts", "Progress", "Datums"],
+            EntryTypes::VEHICLE->value => ["Inventāra nosaukums", "Nolietojums", "Lietojuma veids"],//, "Id"
+            EntryTypes::OBJECT->value => ["Objekta Nr.", "Nosaukums", "Atbildīgais", "Aktīvs / Slēgts"],
+            EntryTypes::REPORT->value => ["Objekts", "Progress", "Gads", "Mēnesis"],
             EntryTypes::RESERVATION->value => ["Lietotājs", "Inventārs", "Datums/laiks no","Datums/laiks līdz"],
-            EntryTypes::VEHICLE_USE->value => ["Lietotājs", "Inventārs", "Objekts", "Lietojums sākot", "Lietojums beidzot", "Datums/laiks no", "Datums/laiks līdz", "Komentārs"],
+            EntryTypes::VEHICLE_USE->value => ["Lietotājs", "Inventārs", "Objekts", "Lietojums", "Datums/laiks no", "Datums/laiks līdz", "Komentārs"],
             EntryTypes::ERROR->value => ["Komentārs", "Laiks", "Rezervācija", "Lietojums", "Nolietojums pirms", "Nolietojums pēc"],
         ];
 
@@ -186,7 +193,7 @@ class AdminController extends Controller
         $joinableTables = [
             EntryTypes::USER->value => [],
             EntryTypes::VEHICLE->value => [],
-            EntryTypes::OBJECT->value => [],
+            EntryTypes::OBJECT->value => [["table" => "users", "columns" => ["name", "lname"], "joinOn" => ["user_in_charge", "id"]]],
             EntryTypes::REPORT->value => [["table" => "objects", "columns" => ["code"]]],
             EntryTypes::RESERVATION->value => [["table" => "users", "columns" => ["username"]], ["table" => "vehicles", "columns" => ["name"]]],
             EntryTypes::VEHICLE_USE->value => [["table" => "users", "columns" => ["username"]], ["table" => "vehicles", "columns" => ["name", "usage_type"]], ["table" => "objects", "columns" => ["code"]]],
@@ -198,10 +205,20 @@ class AdminController extends Controller
         $headers = $allHeaders[$table];
         $name = $tableName[$table];
         //Iegūst visus konkrētā veida ierakstus, sakārto tos vai nu alfabēta secībā pēc nosaukuma, vai arī pēc lauka sākuma laiks.
-        $query = GetModelFromEnum($table)::orderBy($sortFieldName[0], $sortFieldName[1])->select(EntryTypes::GetName($table).'.*');
-        
+        $query = GetModelFromEnum($table)::select(EntryTypes::GetName($table).'.*');
+        foreach ($sortFieldName as [$column, $direction]) {
+            $query->orderBy($column, $direction);
+        }
+
         foreach ($tablesToJoin as $joinedTable) {
-            $query->join($joinedTable['table'], substr($joinedTable['table'], 0, -1), $joinedTable['table'].'.id');//Sagadīšanās pēc var izmantot tabulas nosaukumu bez pēdējā burta
+            $joinFrom = substr($joinedTable['table'], 0, -1);//Sagadīšanās pēc bieži var izmantot tabulas nosaukumu bez pēdējā burta
+            $joinTo = $joinedTable['table'].'.id';
+            if(isset($joinedTable["joinOn"]))
+            {
+                $joinFrom = $joinedTable["joinOn"][0];
+                $joinTo = $joinedTable['table'].".".$joinedTable["joinOn"][1];
+            }
+            $query->leftJoin($joinedTable['table'], $joinFrom, $joinTo);
             foreach ($joinedTable['columns'] as $column) {
                 $query->addSelect($joinedTable['table'] . '.' . $column . ' as ' . $joinedTable['table'] . '_' . $column);
             }
@@ -210,7 +227,6 @@ class AdminController extends Controller
         $allEntryData = $query->get();
 
         //Atskaites tiek sagrupētas pa objektiem un sakārtotas pēc datumiem. TODO
-
 
         return view('adminModule.allEntries', compact('table', 'allEntryData', 'name', 'headers', 'viewName'));
     }
@@ -286,7 +302,8 @@ class AdminController extends Controller
             EntryTypes::REPORT->value => [
                 'progress' => 'required|numeric|min:0|max:100',
                 'object' => $reportFieldsRequired.'|exists:objects,id',
-                'date' => $reportFieldsRequired.'|date',
+                'year' => $reportFieldsRequired.'|integer|min:2020|max:2100',
+                'month' => $reportFieldsRequired.'|integer|min:1|max:12',
             ],
             EntryTypes::VEHICLE_USE->value => [
                 'from' => 'required|date',
@@ -351,8 +368,14 @@ class AdminController extends Controller
                 'progress.required' => Text(195),
                 'progress.numeric' => Text(196),
                 'progress.min' => Text(197),
-                'date.required' => Text(198),
-                'date.date' => Text(199),
+                'year.required' => Text(198),
+                'year.integer' => Text(199),
+                'year.min' => Text(223),
+                'year.max' => Text(223),
+                'month.required' => Text(225),
+                'month.integer' => Text(226),
+                'month.min' => Text(224),
+                'month.max' => Text(224),
                 'object.required' => Text(200),
                 'object.exists' => Text(201),
             ],

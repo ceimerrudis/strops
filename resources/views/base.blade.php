@@ -3,19 +3,8 @@
     <div id="loadingWrapper" class="loading_wrapper">
         <div class="overlay"></div>
     </div>    
-    <div id="messageBoard" class="message_board">
-        @php
-            $messages = DeleteMessages();
-        @endphp
-
-        @foreach ($messages as $message)
-            <p class="alert {{ $message['status'] }}">
-                {{ $message['text'] }}
-                <button class="delete_message_button" onclick="hideMessage(this)">x</button> 
-            </p>
-        @endforeach
-    </div>
-
+    @include('messages')
+    
     @php
         use App\Enums\UserTypes;
         use App\Enums\EntryTypes;
@@ -46,22 +35,27 @@
             </a>
         </div>
 
+        <div class="mobile_visible nav_link_wrapper">
+            <a class="nav_link" id="logoffButton" href="atteikties">
+                <span class="nav_link_span_1_lines">
+                    Iziet
+                </span>
+            </a>
+        </div>
+
         <div class="nav_link_wrapper">
             <a class="nav_link" href="maniPabeigtieLietojumi">
-                <span class="nav_link_span_2_lines">
-                    Mani 
-                    <br>lietojumi
+                <span class="nav_link_span_1_lines">
+                    lietojumi
                 </span>
             </a>
         </div>
 
         <div class="nav_link_wrapper">
             <a class="nav_link" href="maniNepabeigtieLietojumi">
-                <span class="nav_link_span_4_lines">
-                    Mani
-                    <br> pašlaik
-                    <br> lietotie
-                    <br>inventāri
+                <span class="nav_link_span_2_lines">
+                    pašreizējie
+                    <br>lietojumi
                 </span>
             </a>
         </div>
@@ -74,14 +68,6 @@
             </a>
         </div>
 
-        <div class="nav_link_wrapper">
-            <a class="nav_link" id="logoffButton" href="atteikties">
-                <span class="nav_link_span_1_lines">
-                    Iziet
-                </span>
-            </a>
-        </div>
-    
         @if(Auth::check())
             @if(Auth::user()->type == UserTypes::ADMIN->value) 
                 
@@ -93,6 +79,19 @@
                         </span>
                     </a>
                 </div>
+                @endif
+        @endif
+
+        <div class="mobile_invisible nav_link_wrapper">
+            <a class="nav_link" id="logoffButton" href="atteikties">
+                <span class="nav_link_span_1_lines">
+                    Iziet
+                </span>
+            </a>
+        </div>
+    
+        @if(Auth::check())
+            @if(Auth::user()->type == UserTypes::ADMIN->value) 
                 <div class="nav_link_wrapper">
                     <a class="nav_link" href="apskatitVisus?table={{EntryTypes::VEHICLE->value}}">
                         <span class="nav_link_span_2_lines">
@@ -137,8 +136,8 @@
                 </div>
                 <div class="nav_link_wrapper">
                     <a class="nav_link" href="apskatitVisus?table={{EntryTypes::ERROR->value}}">
-                        <span class="nav_link_span_2_lines">
-                            Visas <br>kļūdas
+                        <span class="nav_link_span_1_lines">
+                            kļūdas
                         </span>
                     </a>
                 </div>

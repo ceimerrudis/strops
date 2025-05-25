@@ -5,9 +5,9 @@
 <tr>
     <th>Inventārs</th>
     <th>Objekts</th>
-    <th>Lietojums</th>
+    <th>Lietojums</th>,<!--
     <th>Lietojums pirms</th>
-    <th>Lietojums pēc</th>
+    <th>Lietojums pēc</th>-->
     <th>Datums/laiks no</th>
     <th>Datums/laiks līdz</th>
 </tr>
@@ -29,7 +29,7 @@ use \App\Enums\VehicleUsageTypes;
             <br>
             {{ VehicleUsageTypes::getName($vehicleUse->usage_type); }}
         </td>
-        <td>
+        <!--<td>
             {{ VehicleUsageTypes::GetDisplayVal($vehicleUse->usage_type, $vehicleUse->usage_before); }}    
             <br>
             {{ VehicleUsageTypes::getName($vehicleUse->usage_type); }}
@@ -38,7 +38,7 @@ use \App\Enums\VehicleUsageTypes;
             {{ VehicleUsageTypes::GetDisplayVal($vehicleUse->usage_type, $vehicleUse->usage_after); }}    
             <br>
             {{ VehicleUsageTypes::getName($vehicleUse->usage_type); }}
-        </td>
+        </td>-->
         <td>
             {{ Carbon::parse($vehicleUse->from)->translatedFormat('d-M') }}
             <br>
