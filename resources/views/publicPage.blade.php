@@ -63,7 +63,9 @@
                         <li><a class="top-nav" data-scroll href="#services" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar" >PAKALPOJUMI</a></li>
                         <li><a class="top-nav" data-scroll href="#shop" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar" >Veikals</a></li>
                         <li><a class="top-nav" data-scroll href="#projects" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar" >MŪSU OBJEKTI</a></li>
-
+						<li><a class="top-nav" data-scroll href="#altum" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar" >ALTUM</a></li>
+						<li><a class="top-nav" data-scroll href="#paudpa" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar" >DIGITĀLO PRASMJU ATTĪSTĪBA</a></li>
+						
                         <!--<li><a data-scroll href="#price">Price</a></li>-->
                         <li><a class="top-nav" data-scroll href="#contact" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar" >SAZINIETIES AR MUMS</a></li>
                     </ul>
@@ -481,6 +483,55 @@ Adrese: Dzirnavu iela 4A, Saldus, Saldus novads, LV-3801</h5>
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+    <!-- end section -->
+	<div id="altum" class="section">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-5 col-md-6 col-sm-12 col-xs-12">
+                    <div class="message-box">
+                        <h2>Sadarbība ar ALTUM</h2>
+                    </div>
+                    <!-- end messagebox -->
+                </div>
+				<div class="altumImage">
+					<img src="publicPage/img/altum.jpg" alt="altum sadarbības lapa">
+				</div>
+            </div>
+        </div>
+    </div>
+    <!-- end section -->
+    <div id="paudpa" class="section">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-5 col-md-6 col-sm-12 col-xs-12">
+                    <div class="message-box">
+                        <h2>Projekta atbalsts uzņēmuma digitālo prasmju attīstībai</h2>
+                    </div>
+                    <!-- end messagebox -->
+                </div>
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                    <div class="message-box">
+                            <h5 style="margin-top: 20px;" class="maininfo">
+                            SIA “EL.SERVISS” ir saņēmis atbalstu darbinieku digitālo prasmju pilnveidei Latvijas Digitālā akseleratora  īstenotā projekta 
+             <b>               
+                            “Digitālo prasmju attīstība jaunu produktu un tehnoloģiju attīstībai Latvijas komersantos” (Līguma Nr. 2.3.1.2.i.0/1/24/I/CFLA/002) ietvaros.</b>
+            <br class="textSpacer">                
+                            <b>Par projektu</b>
+            <br class="textSpacer">                
+                Projekta mērķis ir veicināt Latvijas komersantu konkurētspēju, attīstot darbinieku digitālās, automatizācijas un inovāciju prasmes.
+            <br class="textSpacer">    
+                Projekta ietvaros uzņēmumiem tiek nodrošinātas dažāda formāta mācības – īsa cikla mācību programmas, profesionālās pilnveides mācības sadarbībā ar starptautiski atzītām augstākās izglītības iestādēm, kā arī tiešsaistes mācības starptautiskās izglītības platformās. Papildus tiek organizēti konferenču un informatīvie pasākumi, kā arī sniegts atbalsts digitālās transformācijas īstenošanai un jaunu produktu un pakalpojumu izstrādei.
+            <br class="textSpacer">
+Projekts stiprina uzņēmumu spēju izmantot digitālās tehnoloģijas uzņēmējdarbības procesos, attīstīt digitālo pārvaldību, automatizāciju, robotizāciju un inovācijas, kā arī veicina eksporta attīstību un ilgtspējīgu uzņēmējdarbību.
+                            </h5>
+                    </div>
+                </div>
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+					<img class="paudpa-image" src="publicPage/img/paudpa.png" alt="Projekta atbalsts uzņēmuma digitālo prasmju attīstībai attēls">
+				</div>
             </div>
         </div>
     </div>

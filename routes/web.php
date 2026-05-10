@@ -50,12 +50,14 @@ Route::middleware(AuthenticationMiddleware::class)->group(function () {
         //Šo lapu izsauc ar ajax (tas atļauj vienā reizē ielādēt tikai viena mēneša rezervācijas)
         Route::get('/kalendars', [ReservationController::class, 'GetCalendarData'])->name("calendar");
         //Funkcija RZIZ
+        Route::get('/izveidotRezervaciju', [ReservationController::class, 'GetCreateReservation'])->name("getCreateReservation");
+		//Funkcija RZIZ
         Route::post('/izveidotRezervaciju', [ReservationController::class, 'CreateReservation'])->name("createReservation");
+        
+		//Lietojumu modulis
         //Funkcija RLIZ
-        Route::post('/izveidotRezervacijuUnLietojumu', [ReservationController::class, 'CreateReservationAndUse'])->name("createReservationAndUse");
-
-        //Lietojumu modulis
-        //Funkcija LTSK
+        Route::get('/izveidotRezervacijuUnLietojumu', [VehicleUseController::class, 'CreateReservationAndUse'])->name("createReservationAndUse");
+		//Funkcija LTSK
         Route::get('/saktLietojumu', [VehicleUseController::class, 'ViewStartVehicleUsePage'])->name("startUse");
         Route::post('/saktLietojumu', [VehicleUseController::class, 'EndOfStartVehicleUse'])->name("startUsePost");
         //Funkcija LTBG
@@ -84,6 +86,8 @@ Route::post('/pieteikties', [UserController::class, 'RecieveLogin']);
 //Papildus lapas kas neitilpst nevienā moduilī 
 //Publiskās lapas ceļš
 Route::view('/', 'publicPage')->name("public"); 
+//Route::view('/altum', 'publicPage')->name("public"); 
+//Route::view('/paudpa', 'publicPage')->name("public"); 
 
 //Šī ir sistēmas kļūdas lapa ko redz pēc tam kad veikts pieprasījums bez nepieciešamajām tiesībām. 
 Route::view('/unauthorized', 'unauthorized')->name("unauthorized");

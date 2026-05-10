@@ -11,7 +11,7 @@ class LoginData extends FormRequest
         $rules = [
             'username' => 'required|regex:/^[\p{L}\p{M}\p{N}_-]+$/u|exists:users,username',
             'password' => 'required',
-       ];
+		];
         return $rules;
     }
 

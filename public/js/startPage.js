@@ -19,15 +19,33 @@ $( document ).ready(function() {
         }
     });
 
+	$('#freezeCheckbox').click(function(){
+        if($(this).is(':checked')){
+            freezeFrom = true;
+        } else {
+            freezeFrom = false;
+        }
+    });
+
     //Rezervēt lietot, rezervēt un lietot pogas
-    $("#makeReservationBtn").on("click", function(){
+	console.log($("#oldVehicle").val());
+	console.log($("#timeErrors").val());
+	if($("#oldVehicle").val() != -1 && $("#timeErrors").val() == 1){
+		startReserv();
+		console.log("b");
+	}
+	
+    $("#stopReservationBtn").on("click", undoReserv);
+	$("#makeReservationBtn").on("click", startReserv);
+	
+	$("#finishReservationBtn").on("click", function(){
         $("#makeReservationForm").attr("action", $("#reservationUrlHolder").html());
         $("#makeReservationForm").attr("method", "post");
         $("#makeReservationForm").submit();
     });
     $("#startUsingWithReservationBtn").on("click", function(){
         $("#makeReservationForm").attr("action", $("#reservationAndUseUrlHolder").html());
-        $("#makeReservationForm").attr("method", "post");
+        $("#makeReservationForm").attr("method", "get");
         $("#makeReservationForm").submit();
     });
     $("#startUsingBtn").on("click", function(){
@@ -41,15 +59,6 @@ $( document ).ready(function() {
         var selectedValue = $('input[name="vehicle"]:checked').val();
         SetVehicle(selectedValue);
         createReservationTimelineVisuals();
-    });
-
-    //Pazīme vai iesaldēt sākuma datumu
-    $('#freezeCheckbox').click(function(){
-        if($(this).is(':checked')){
-            freezeFrom = true;
-        } else {
-            freezeFrom = false;
-        }
     });
 
     //Kalendāra mēnešu izvēles pogas
@@ -77,6 +86,41 @@ $( document ).ready(function() {
         }
     });  
 });
+
+function startReserv() {
+	//hide vehicleSide and show TimeSide
+	if($('input[name="vehicle"]:checked').val() == -1)
+	{
+		$("#angerBox").html("Nav izvēlēts inventārs");
+		return;
+	}
+	$('#vehicleSide').hide(); 
+	$('#TimeSide').show(); 
+	$("#angerBox").html("");
+}
+
+function undoReserv() {
+	//hide TimeSide and show vehicleSide
+	//set vehicle to -1
+	 $('#TimeSide').hide(); 
+	 $('#vehicleSide').show(); 
+	 setActiveVehicle(-1);
+}
+
+function setActiveVehicle(number)
+{
+	$('input[name="vehicle"]').prop('checked', false);
+	 
+	if(number === -1)
+	{	
+		$("#all_vehicles").prop('checked', true);
+	}
+	else
+	{
+		//unimplemented
+		//$("#all_vehicles").prop('checked', true);
+	}
+}
 
 //Mainot loga izmērus laika līnija var izplūst nākamajā rindā.
 window.onresize = resizeTimeline;
@@ -392,8 +436,8 @@ function FillOutDateFields(desiredDay)
         }
     }
     
-    if(freezeFrom == false)
-        $("#from").val((date + fromAdd).replace(/\s/g, ""));//2024-01-25T11:45
+	if(freezeFrom == false)
+		$("#from").val((date + fromAdd).replace(/\s/g, ""));//2024-01-25T11:45
     $("#until").val((date + untilAdd).replace(/\s/g, ""));
 }
 

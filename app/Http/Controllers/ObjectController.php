@@ -20,7 +20,7 @@ class ObjectController extends Controller
 {   
     //Funkcija ATJO
     public function UpdateObjects(Request $request)
-    { 
+    {
         $code = Artisan::call('app:synchronize-object-data');
         $output = Artisan::output();
         $str = Text(110);

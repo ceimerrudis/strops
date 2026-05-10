@@ -11,6 +11,7 @@ class EndVehicleUse extends FormRequest
         $rules = [
             'vehicle_use' => 'required|exists:vehicle_uses,id',
             'usage' => 'required|numeric',
+            'redirectTo' => 'required',
        ];
         return $rules;
     }
@@ -22,6 +23,7 @@ class EndVehicleUse extends FormRequest
             'vehicle_use.exists' => Text(132),
             'usage.numeric' =>  Text(125),
             'usage.required' =>  Text(133),
+            'redirectTo.required' => Text(142),
         ];
     }
 }

@@ -9,6 +9,7 @@ use App\Models\Reservation;
 use App\Models\ObjectModel;
 use Illuminate\Support\Facades\Auth;
 use App\Enums\EntryTypes;
+use Illuminate\Support\Facades\Log;
 
 class SharedMethods
 {
@@ -62,7 +63,7 @@ class SharedMethods
                 $fromClipped->setTime($WORK_DAY_ENDS, 0, 0);
             }
             $endOfWorkTime = $from->copy()->setTime($WORK_DAY_ENDS, 0, 0);
-            $time += $endOfWorkTime->diffInMinutes($fromClipped);
+            $time += abs($endOfWorkTime->diffInMinutes($fromClipped));
             
             $untilClipped = $until->copy();
             if($untilStr > $WORK_DAY_ENDS_STR)
@@ -76,7 +77,7 @@ class SharedMethods
             $startOfWorkTime = $until->copy()->setTime($WORK_DAY_BEGINS, 0, 0);
             $time += $startOfWorkTime->diffInMinutes($untilClipped);    
             
-            //Tagad kad pievienoti abi intervāla gali atliek vienīgi  pievienot pilnas stundas par katru dienu starp šiem galiem. 
+			//Tagad kad pievienoti abi intervāla gali atliek vienīgi  pievienot pilnas stundas par katru dienu starp šiem galiem. 
             
             $fromEndOfDay = $from->copy()->setTime(23, 59, 0);
             $untilStartOfDay = $until->copy()->setTime(0, 0, 0);
@@ -160,7 +161,7 @@ class SharedMethods
         }
     }
 
-    public static function StartVehicleUse($vehicleId, $until = "")
+    public static function StartVehicleUse($vehicleId, $createReservation = false)
     {
         $now = Carbon::now();
         
@@ -186,7 +187,7 @@ class SharedMethods
         ->where('user', '==', Auth::user()->id) 
         ->exists();
         if(!$myReservationExists){
-            $conflictingReservation = Reservation::where('from', '<=', $now->copy()->addMinutes(-30))
+            $conflictingReservation = Reservation::where('from', '<=', $now->copy()->addMinutes(30))
             ->where('until', '>=', $now)
             ->where('vehicle', '=', $vehicleId)
             ->where('user', '!=', Auth::user()->id) 
@@ -196,13 +197,13 @@ class SharedMethods
             
             //Pārbauda vai kāds cits ir rezervējis šo inventāru uz šo dienu. Ja jā tad  pabrīdina lietotāju.
             if($conflictingReservation != null){
-                $timeString = substr($intervalReservation->until, 11, 5);//Laiks teksta formātā
-                $msg = Text(119) . $intervalReservation->name . " " . $intervalReservation->lname . Text(120) . $timeString . ".";
+                $timeString = substr($conflictingReservation->until, 11, 5);//Laiks teksta formātā
+                $msg = Text(119) . $conflictingReservation->name . " " . $conflictingReservation->lname . Text(120) . $timeString . ".";
                 $messages[] = ["statuss" => "reserved", "message" => $msg];
             }
             else
             {
-                $todaysReservations = Reservation::where('from', '<=', $now)
+                $todaysReservations = Reservation::where('from', '>', $now)
                 ->where('until', '>=', $now)
                 ->where('vehicle', '=', $vehicleId)
                 ->where('user', '!=', Auth::user()->id) 
@@ -210,8 +211,8 @@ class SharedMethods
                 ->select('users.name', 'users.lname', 'until')
                 ->first();
                 if($todaysReservations != null){
-                    $timeString = substr($intervalReservation->from, 11, 5);//Laiks teksta formātā
-                    $msg = Text(122) . $intervalReservation->name . " " . $intervalReservation->lname . Text(121) . $timeString . ".";
+                    $timeString = substr($todaysReservations->from, 11, 5);//Laiks teksta formātā
+                    $msg = Text(122) . $todaysReservations->name . " " . $todaysReservations->lname . Text(121) . $timeString . ".";
                     $messages[] = ["statuss" => "reservedInFuture", "message" => $msg];
                 }
             }
@@ -225,7 +226,7 @@ class SharedMethods
         $objects = ObjectModel::get();
         //Iegūst Objektu kurā tiks strādāts kā arī komentāru ja objekts ir “Citi”.
         //Ja izvēlētā inventāra lietojuma  veids ir nolasāms, tad iegūst lietojuma apstiprinājumu vai lietojuma daudzumu. 
-        return view("vehicleUseModule.startVehicleUse", compact('messages', 'objects', 'vehicleName', 'vehicleId', 'usage', 'usage_type', 'until'));
+        return view("vehicleUseModule.startVehicleUse", compact('messages', 'objects', 'vehicleName', 'vehicleId', 'usage', 'usage_type', 'createReservation'));
     }
 
     //Funkcija kas atver rediģēšanas lapu jebkurai tabulai (izmanto arī atskaitēm)

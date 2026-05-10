@@ -13,7 +13,6 @@
 <form id="makeVehicleUseForm" action="{{ route('startUsePost') }}" method="post">
 @csrf
     <input type="hidden" name="endCurrentUsage" id="endCurrentUsage" value="no">
-    <input type="hidden" name="until" id="until" value="{{$until}}">
     <input type="hidden" name="vehicle" id="vehicle" value="{{ $vehicleId }}">
     @error('vehicle')
         <span class="alert">{{ $message }}</span>
@@ -21,8 +20,7 @@
     
     <!-- Pirmā daļa satur objektu komentāru -->
     <div id="firstPartOfMakeVehicleUseForm">
-        <p class="make_vehicle_use_label"> Kurā objektā lietosi inventāru {{$vehicleName}}? </p>
-        
+		<p class="make_vehicle_use_label"> Kurā objektā lietosi inventāru {{$vehicleName}}? </p>
         <input id="objectID" name="object" type="hidden" value="-1">
         <label for="object" class="start_using_object_label">Objekta Nr.</label>
         <input autocomplete="off" id="object" list="objects" class="object_selector" oninput="updateObjectInput()">
@@ -44,13 +42,31 @@
             @endforeach
         </datalist>
 
-
-        <label style="display: none;" id="commentLabel" class="start_using_object_label">Komentārs</label>
+		<label style="display: none;" id="commentLabel" class="start_using_object_label">Komentārs</label>
         <input style="display: none;" id="comment" name="comment" class="object_selector" value="">
         @error('comment')
             <span class="alert">{{ $message }}</span>
         @enderror
-    
+
+		@if($createReservation == true)
+			<label class="make_vehicle_use_label" for="days">Ievadi cik dienas plāno lietot inventāru. (Šodiena - 1 diena, šodiena un rītdiena - 2 dienas, utt.)</label>
+		@endif
+		<input class="day_count_input" name="days" id="days"
+		required
+		@if($createReservation == true)
+			type="number"
+			value="{{ old('days', 1) }}"
+			min="1"
+			step="1"
+		@else 
+			type="hidden"
+			value="0"
+		@endif
+		>
+		@error('days')
+			<span class="alert">{{ $message }}</span>
+		@enderror
+
     </div>
     <!-- Otrā daļa satur lietojuma pārbaudi un jauno lietojumu (ja tas nepieciešams) -->
     <div id="secondPartOfMakeVehicleUseForm">   

@@ -10,6 +10,7 @@ class ViewVehicleUse extends FormRequest
     {
         $rules = [
             'vehicle_use' => 'required|exists:vehicle_uses,id',
+            'redirectTo' => 'nullable|string',
        ];
         return $rules;
     }
@@ -19,6 +20,7 @@ class ViewVehicleUse extends FormRequest
         return [
             'vehicle_use.required' => Text(131),
             'vehicle_use.exists' => Text(132),
+            'redirectTo.string' => Text(142),
         ];
     }
 }

@@ -586,6 +586,23 @@ body, html{
     padding: 2px;
 }
 
+.stop_usage_button
+{
+    background-color: lightgray;
+    width: 80%;
+    margin-top: 20px;
+    margin-right: auto;
+    margin-left: auto;
+    padding: 10px;
+    font-size: 18px;
+    border-radius: 5px;
+    color: black;
+    border: 1px black solid;
+    border-right: 2px solid black;
+    border-bottom: 2px solid black;
+    display: block;
+}
+
 .table tr td .deletebtn
 {
     background-color: darkred;
@@ -717,7 +734,7 @@ body, html{
     background-color: lightgrey;
 }
 
-.object_selector{
+.reservation_selection_date, .day_count_input, .object_selector{
     width: 80%;
     margin:auto;
     display: block;
@@ -746,12 +763,6 @@ font-size: 18px;
 padding-bottom: 10;
 clear:left;
 display: block;
-}
-.make_vehicle_use_label{
-    margin-left: 40px;
-    margin-right: 10px;
-    margin-top: 10px;
-    font-size: 16px;
 }
 #ne_poga{
     font-size: 18px;
@@ -792,18 +803,42 @@ display: block;
     box-sizing: border-box;
     margin-top: 28px;
 }
-.start_using_object_label{
+.date_time_label, .make_vehicle_use_label, .start_using_object_label{
     display: block;
     font-size: 18px;
     width: 80%;
     margin: auto;
-    height: 20px;
+    min-height: 20px;
     font-size: 18px;
     margin-bottom: 10px;
+}
+/*.make_vehicle_use_label{
+    margin-left: 40px;
+    margin-right: 10px;
+    margin-top: 10px;
+    font-size: 16px;
+}*/
+#angerBox 
+{
+	color:red;
+	
 }
 
 .confirm_wrapper {
     display: none;
+}
+.reservation_button
+{
+	display: inline-block; 
+    float: left; 
+    padding: 10px;
+    width: 50%;
+    height:  54px;
+    background-color: lightgrey;	
+}
+.wrapper {
+	all: unset; 
+	display: contents;
 }
 
 .confirmation_box{
@@ -940,7 +975,7 @@ display: block;
     margin-left: auto;
     padding: 10px;
     font-size: 18px;
-    background-color: lightgrey;
+    background-color: rgb(255, 94, 94);
     border-radius: 5px;
     border: 1px black solid;
     border-right: 2px solid black;
@@ -1068,6 +1103,7 @@ display: block;
 #freezeCheckbox{
     width: 20px;
     height: 20px;
+	margin-left: 60px;
     display: inline-block;
 }
 

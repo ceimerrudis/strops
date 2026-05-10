@@ -9,7 +9,7 @@ class StartVehicleUseFullData extends FormRequest
     public function rules(): array
     {
         $rules = [
-            'until' => 'nullable|date|after:now',
+            'days' => 'numeric|min:0|integer',
             'endCurrentUsage' => 'required|string',
             'vehicle' => 'required|exists:vehicles,id',
             'object' => 'required|exists:objects,id',
@@ -29,8 +29,9 @@ class StartVehicleUseFullData extends FormRequest
             'object.exists' =>  Text(127),
             'comment.string' => Text(128),
 
-            'until.date' => Text(114),
-            'until.after' => Text(115),
+            'days.numeric' => Text(228),
+			'days.min' => Text(229),
+			'days.integer' => Text(230),
         ];
     }
 }

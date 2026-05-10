@@ -35,6 +35,7 @@ function resizeHeight()
     document.getElementById("contact").style.height = "100%";
 	document.getElementById("shop").style.height = "100%";
     document.getElementById("projects").style.height = "100%";
+	document.getElementById("altum").style.height = "100%";
 }
 function openIssueSubmit()
 {

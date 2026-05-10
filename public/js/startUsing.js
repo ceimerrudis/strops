@@ -29,6 +29,8 @@ $( document ).ready(function() {
             error: function(XMLHttpRequest, textStatus, errorThrown) { 
                 $("#loadingWrapper").hide();
                 $("#syncText").html("Notika kļūda");
+				console.log(result.output);
+				console.log(result.message);
             }  
         });  
     });
@@ -88,7 +90,7 @@ function updateObjectInput(){
 //Šī funkcija aizstāj objekta nosaukumu ar komentāru vai otrādāk (atkarībā no izvēlētā objekta)
 function ToggleComment(id)
 {
-    if(id == 1){
+    if(id == 0){
         //Objekts ar id 1 ir objekts Cits šis ir īpašs objekts kam  nepieciešams komentārs
         $("#objectNameLabel").hide();
         $("#objectName").hide();   

@@ -53,7 +53,7 @@ class UserController extends Controller
         if($entryToken != null)
         {
             $token = RememberMeToken::where('token', '=', $entryToken)->select('user')->first();
-            if($usetokenr != null)
+            if($token != null)
             {
                 Auth::loginUsingId($token->user);
                 return redirect("sakums");

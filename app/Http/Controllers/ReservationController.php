@@ -12,12 +12,37 @@ use App\Models\Reservation;
 use Carbon\Carbon;
 use App\Services\SharedMethods;
 use App\Http\Requests\GetCalendar;
+use App\Http\Requests\StartVehicleUseCalendarData;
 use App\Http\Requests\SpecificEntry;
 use App\Http\Requests\MakeReservation;
 use App\Enums\EntryTypes;
 
 class ReservationController extends Controller
 {
+	//RZIZ
+	public function GetCreateReservation(StartVehicleUseCalendarData $request)
+    {
+        //Pieprasījums nāk no kalendāra lapas
+        $data = $request->all();
+        $vehicleId = $data["vehicle"];
+		
+		$cmprTime = Carbon::now();
+		$cmprTime->setTime(17, 00, 0);
+		
+		$from = Carbon::now();
+		if($from->greaterThan($cmprTime))
+		{
+			$from->addDays(1);
+			$from->setTime(07, 00, 0);
+		}
+		else
+		{
+			$from = Carbon::now();
+		}
+		$until = $from->copy()->setTime(18, 0, 0);
+		return view('reservationModule.makeReservation', compact('vehicleId', 'from', 'until'));
+    }
+	
     //Funkcijas RZKL atver kalendāra lapu
     public function ViewCalendarPage(Request $request)
     {  
@@ -229,14 +254,20 @@ class ReservationController extends Controller
     public function ViewMyReservationsPage(Request $request)
     {     
         $myreservations = Reservation::where('user', Auth::user()->id)->orderBy('from', 'asc')//TODO desc limit
-        ->join("vehicles", "vehicle", "vehicles.id")->get();
+        ->join("vehicles", "vehicle", "vehicles.id")
+		->select([
+		'reservations.from as from',
+		'reservations.until as until',
+		'vehicles.name as name',
+		'reservations.id as id',
+		])->get();
         return view('reservationModule.myReservations', compact('myreservations'));
     }
     
     //Funkcija RZDZ
     public function DeleteMyReservation(SpecificEntry $request)
-    {     
-        $table = $request->input("table");
+    {    
+		$table = $request->input("table");
         $id = $request->input("id");
         if($table == EntryTypes::RESERVATION->value)
         {   
@@ -257,13 +288,5 @@ class ReservationController extends Controller
         $data = $request->validated();
         SharedMethods::CreateReservationLogic($data['vehicle'], $data['from'], $data['until']);
         return redirect("sakums");
-    }
-
-    //Funkcija RLIZ
-    public function CreateReservationAndUse(MakeReservation $request)
-    {     
-        $data = $request->validated();
-        //Izveido lietojumu lietojums izveidos rezervāciju ja padoti fro  un until
-        return SharedMethods::StartVehicleUse($data['vehicle'], $data['until']);
     }
 }

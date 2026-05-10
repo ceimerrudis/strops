@@ -7,8 +7,9 @@
 <form action="beigtLietojumuNoradotLietojumu" method="post">
 @csrf
     <input type="hidden" name="vehicle_use" id="vehicle_use" value="{{$id}}">
+    <input type="hidden" name="redirectTo" id="redirectTo" value="{{$redirectTo}}">
 
-    <label class="current_usage_label" for="from">
+    <label class="current_usage_label" for="usage">
     @if($usage_type == VehicleUsageTypes::MOTOR_HOURS->value)
         Kādas ir pašreizējās motorstundas?
     @elseif($usage_type == VehicleUsageTypes::KILOMETERS->value)
@@ -29,5 +30,7 @@
 
     <button class="current_usage_confirm_btn" type="submit">pārtraukt lietojumu</button>
 </form>
+<br>
+<br>
 
 @include('footer')

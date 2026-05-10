@@ -206,9 +206,14 @@ class AdminController extends Controller
         $name = $tableName[$table];
         //Iegūst visus konkrētā veida ierakstus, sakārto tos vai nu alfabēta secībā pēc nosaukuma, vai arī pēc lauka sākuma laiks.
         $query = GetModelFromEnum($table)::select(EntryTypes::GetName($table).'.*');
-        foreach ($sortFieldName as [$column, $direction]) {
+        if($table == EntryTypes::OBJECT->value)
+		{
+			$query->orderByRaw('objects.id = ? DESC', [0]);
+		}
+		foreach ($sortFieldName as [$column, $direction]) {
             $query->orderBy($column, $direction);
         }
+		
 
         foreach ($tablesToJoin as $joinedTable) {
             $joinFrom = substr($joinedTable['table'], 0, -1);//Sagadīšanās pēc bieži var izmantot tabulas nosaukumu bez pēdējā burta
@@ -235,7 +240,7 @@ class AdminController extends Controller
     public function RecalculateTime(TimeCalculationRequest $request)
     { 
         $timeInMinutes = SharedMethods::RecalculateTimeCalculation($request->input("from"), $request->input("until"));
-        $timeInDays = $timeInMinutes / 60 /24;
+        $timeInDays = $timeInMinutes / 60 / 9;//darba dienas
         $data = [
             'time' => $timeInDays,
         ];

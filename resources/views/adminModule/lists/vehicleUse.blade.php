@@ -12,7 +12,11 @@ use Carbon\Carbon;
     {{ $entry->objects_code }}
 </td>
 <td>
-    {{ VehicleUsageTypes::GetDisplayVal($entry->vehicles_usage_type, $entry->usage_after - $entry->usage_before) }}  
+	@if($entry->usage_after == 0)
+		{{ VehicleUsageTypes::GetDisplayVal($entry->vehicles_usage_type, $entry->usage_before) }}
+	@else
+		{{ VehicleUsageTypes::GetDisplayVal($entry->vehicles_usage_type, $entry->usage_after - $entry->usage_before) }}  
+	@endif
     <br>{{ VehicleUsageTypes::getName($entry->vehicles_usage_type); }}
 </td>
 <td>

@@ -23,7 +23,10 @@ method="post">
         @endif
     </form>
 
-    
+    @if($viewName == "vehicleUse")
+        @include('adminModule.forms.vehicleUseAfterAddon')
+    @endif
+
     @if($entry->id != null && !isset($justReport))
         <form id="deleteForm" action="{{ route('delete') }}" method="POST">
         @csrf

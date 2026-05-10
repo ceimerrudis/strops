@@ -128,5 +128,8 @@ return [
     225 => 'Nav norādīts mēnesis.',
     226 => 'Mēnesis nav skaitļa formā.',
     227 => 'Lietojums pabeigts!',
+	228 => 'Dienu skaits nav skaitlis',
+	229 => 'Dienu skaits nevar būt negatīvs.',
+	230 => 'Dienu skaitam jābūt veselam skaitlim.',
     999 => 'template',
 ];
