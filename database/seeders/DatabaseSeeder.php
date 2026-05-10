@@ -18,7 +18,7 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         User::create([
-            'username' => 'JānisS', 
+            'username' => 'Jānis', 
             'name' => 'Janis', 
             'lname' => 'Piemers', 
             'type'  => UserTypes::USER->value,
@@ -32,7 +32,7 @@ class DatabaseSeeder extends Seeder
             'password' => 'pass',
         ]);
         User::create([
-            'username' => 'GuntarsG', 
+            'username' => 'Guntars', 
             'name' => 'Guntars', 
             'lname' => 'Piemērs', 
             'type'  => UserTypes::USER->value,
@@ -44,7 +44,7 @@ class DatabaseSeeder extends Seeder
             'name' => 'rūdolfs', 
             'lname' => 'ceimers', 
             'type'  => UserTypes::ADMIN->value,
-            'password' => 'pass',
+            'password' => 'admin',
         ]);
         User::create([
             'username' => 'darbinieks', 
@@ -52,6 +52,12 @@ class DatabaseSeeder extends Seeder
             'lname' => 'Piemērs', 
             'type'  => UserTypes::USER->value,
             'password' => 'pass',
+        ]);
+ 
+        ObjectModel::create([
+            'id' => 2,
+            'code' => 'T100', 
+            'name' => 'Ielu apgaismojuma uzstāde',
         ]);
         ObjectModel::create([
             'id' => 1,
