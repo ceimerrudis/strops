@@ -77,8 +77,8 @@
                 Vai šis nobraukums "{{$usage}}" atbilst patiesībai?
             @endif    
         </label>
-        <button id='ne_poga' type='button' class='ne'>nē</button>
-        <button type='submit' id="yes_btn" class='begin_use_btn'>jā / Sākt lietot</button>
+        <button id='ne_poga' type='button' class='ne' name="ne_nesakrit">nē</button>
+        <button type='submit' id="yes_btn" class='begin_use_btn' name="ja_sakrit">jā / Sākt lietot</button>
 
         <div id='correctUsageBox' style="display: none;">   
             <label for='usage' class="wrong_motorh_label"> 
@@ -98,7 +98,7 @@
     </div>
     <button type='submit' id="beginUse" class='get_next_part'>Sākt lietot</button>
     <!-- Izsauc objektu sinhronizāciju -->
-    <button class="sync_objects_link" type="button" id="syncBtn">Atjaunot objektu sarakstu</button>
+    <button class="sync_objects_link" type="button" id="syncBtn" name="atjaunotObjektuSarakstu">Atjaunot objektu sarakstu</button>
     <p id="syncText"></p>
     <div class="spacer"></div>
 </form>

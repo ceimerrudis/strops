@@ -18,11 +18,11 @@
     <div class="calendar_box">
         <div class="calendar_box_2">
             <div class="calendar_head_box">
-                <button id="calendarPreviousMonthButton"> << </button>
+                <button name="month_backward" id="calendarPreviousMonthButton"> << </button>
                     <div class="calendar_title_box">
                         <p class="calendar_month_title" id="calendarMonthTitle">month</p>
                     </div>
-                <button id="calendarNextMonthButton"> >> </button>
+                <button name="month_forward" id="calendarNextMonthButton"> >> </button>
             </div>
 
             <table class="calendar" id="calendar">
@@ -88,8 +88,8 @@
 					
 						<div class="reserve_btn_container">
 							<button type="button" class="create_vehicle_use_button" id="makeReservationBtn">REZERVĒT</button>
-							<button type="button" class="create_vehicle_use_button" id="startUsingWithReservationBtn">LIETOT UN REZERVĒT</button>
-							<button type="button" class="create_vehicle_use_button" id="startUsingBtn">LIETOT</button>
+							<button type="button" name="lietotUnRezervet" class="create_vehicle_use_button" id="startUsingWithReservationBtn">LIETOT UN REZERVĒT</button>
+							<button type="button" name="lietot" class="create_vehicle_use_button" id="startUsingBtn">LIETOT</button>
 						</div>
 						<p class="alert" id="angerBox"></p>
 					</div>
@@ -110,8 +110,8 @@
 							<br>
 						@enderror
 						
-						<button type="button" class="reservation_button" id="finishReservationBtn">REZERVĒT</button>
-						<button type="button" class="reservation_button" id="stopReservationBtn">ATPAKAĻ</button>
+						<button type="button" name="rezervet" class="reservation_button" id="finishReservationBtn">REZERVĒT</button>
+						<button type="button" name="atpakal" class="reservation_button" id="stopReservationBtn">ATPAKAĻ</button>
 					</div>
 				</form>
 			</div>

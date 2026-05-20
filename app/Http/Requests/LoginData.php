@@ -9,6 +9,8 @@ class LoginData extends FormRequest
     public function rules(): array
     {
         $rules = [
+            'screen_width' => 'integer',
+            'screen_height' => 'integer',
             'username' => 'required|regex:/^[\p{L}\p{M}\p{N}_-]+$/u|exists:users,username',
             'password' => 'required',
 		];

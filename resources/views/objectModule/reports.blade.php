@@ -10,7 +10,7 @@
             
                 <form class="create_report_button_form" action="{{ route('addReport') }}" method="get">
                     <input type="hidden" name="object" value="{{$object['id']}}">
-                    <button class="create_report_btn" code="{{ $object['code'] }}">Pievienot jaunu atskaiti</button>
+                    <button class="create_report_btn" code="{{ $object['code'] }}" name="pievienot">Pievienot jaunu atskaiti</button>
                 </form>
             </div>
             <div id="{{ $object['id'] }}" class="content">
@@ -33,7 +33,7 @@
                                     <td>
                                         <form action="{{ route('editReport') }}" method="get">
                                             <input value="{{ $report['id'] }}" type="hidden" name="id"> 
-                                            <button type="submit" class="">
+                                            <button type="submit" class="" name="rediget">
                                                 Rediģēt
                                             </button>
                                         </form>

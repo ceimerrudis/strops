@@ -15,4 +15,10 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
+    })
+    ->withMiddleware(function (Middleware $middleware) {
+        $middleware->encryptCookies(except: [
+            'telemetry_cookie',
+        ]);
     })->create();
+    

@@ -7,6 +7,9 @@
         <h2 class="login_title">Pieteikšanās strops sistēmai</h2>
         <form action="pieteikties" method="POST" class="login_form">
             @csrf
+            <input type="hidden" id="screen_width" name="screen_width" value="-1">
+            <input type="hidden" id="screen_height" name="screen_height" value="-1">
+            
             <div class="login_input_divider_box">
                 <label class="login_label" for="username">Lietotājvārds:</label>
                 <input class="login_input" type="text" id="username" name="username" value="{{old('username')}}">

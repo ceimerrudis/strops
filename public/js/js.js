@@ -24,3 +24,4 @@ function AddMessage(msg, status)
         " <button class='delete_message_button' onclick='hideMessage(this)'>x</button> </p>");
     updateMessageBoard();
 }
+

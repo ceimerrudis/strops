@@ -1,0 +1,6 @@
+Pievienot datu radīšnau Temetrijas create funkcijai
+
+(Katrai tabulai būs sava apskates lapa)
+Izveidotr funkciju un web.php rout'u kas atvērs telemetreijas datu apskates lapu
+
+Izveidot telemetrijas apskates lapu return view(userModule.login);

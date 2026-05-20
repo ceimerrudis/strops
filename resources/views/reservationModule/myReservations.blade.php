@@ -32,7 +32,7 @@ use App\Enums\EntryTypes;
             @csrf
             <input type="hidden" name="table" value="{{EntryTypes::RESERVATION->value}}">
             <input type="hidden" name="id" value="{{$reservation->id}}">
-            <button type="submit" class="deletebtn">
+            <button type="submit" class="deletebtn" name="izdzest">
                 Izdzēst
             </button>
         </form>
