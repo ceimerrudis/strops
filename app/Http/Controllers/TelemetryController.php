@@ -18,50 +18,36 @@ class TelemetryController extends Controller
         return view('telemetry_views.devices', compact('devices'));
     }
 
-    public function CreateFakeDevice()
-    {
-        DeviceInfo::create([
-            'user_id' => rand(1, 5),
-            'browser_name' => ['Chrome', 'Firefox', 'Safari', 'Edge'][rand(0, 3)],
-            'os_name' => ['Windows', 'Android', 'iOS', 'Linux'][rand(0, 3)],
-            'screen_width' => rand(320, 1920),
-            'screen_height' => rand(480, 1080),
-        ]);
-
-        return ":)";
-    }
 
     public function ShowUserLogins()
     {
-        $logins = UserLogin::all();
-        return view('telemetry_views.user_logins', compact('logins'));
+        // pēdējo 24h login skaits
+        $last24hCount = UserLogin::where('logged_in_at', '>=', now()->subDay())->count(); // subday = 24h atpakaļ
+
+        // procenti, cik izmanto remember_me
+        $totalLogins = UserLogin::count();
+        $rememberCount = UserLogin::where('remember_me', 1)->count();
+        if ($totalLogins > 0) {
+            $rememberPercent = ($rememberCount / $totalLogins) * 100;
+        } else {
+            $rememberPercent = 0;
+        }
+
+
+        // 100 jaunākie ieraksti
+        $logins = UserLogin::with('user')
+            ->orderBy('logged_in_at', 'desc')
+            ->limit(100)
+            ->get();
+
+        return view('telemetry_views.user_logins', compact('logins', 'last24hCount', 'rememberPercent'));
     }
 
-    public function CreateFakeUserLogin()
-    {
-        UserLogin::create([
-            'user_id' => rand(1, 5),
-            'logged_in_at' => now(),
-            'remember_me' => rand(0, 1),
-        ]);
 
-        return ":)";
-    }
-
-        public function ShowPages()
+    public function ShowPages()
     {
         $pages = Page::all();
         return view('telemetry_views.pages', compact('pages'));
-    }
-
-    public function CreateFakePage()
-    {
-        Page::create([
-            'name' => ['Home', 'About', 'Contact', 'Products', 'Login'][rand(0, 4)],
-        ]);
-
-               return ":)";
-
     }
 
 
@@ -71,52 +57,40 @@ class TelemetryController extends Controller
         return view('telemetry_views.buttons', compact('buttons'));
     }
 
-    public function CreateFakeButton()
-    {
-        Button::create([
-            'name' => ['Buy', 'Submit', 'Cancel', 'Login', 'Register'][rand(0, 4)],
-        ]);
-
-        return ":)";
-
-    }
-
 
     public function ShowPageMetrics()
     {
-        $metrics = PageMetric::all();
-        return view('telemetry_views.page_metrics', compact('metrics'));
+
+        $metrics = PageMetric::with(['page', 'device.user'])
+            ->orderBy('device_id')
+            ->orderBy('avg_load_time', 'desc')
+            ->get();
+
+        $highestMaxLoad = PageMetric::with('page')
+            ->orderBy('max_load_time', 'desc')
+            ->first();
+
+        $highestAvgLoad = PageMetric::with('page')
+            ->orderBy('avg_load_time', 'desc')
+            ->first();
+
+        $avgMaxLoad = PageMetric::avg('max_load_time');
+
+        return view('telemetry_views.page_metrics', compact('metrics', 'highestMaxLoad', 'highestAvgLoad', 'avgMaxLoad'));
     }
 
-    public function CreateFakePageMetric()
-    {
-        PageMetric::create([
-            'page_id' => rand(1, 5),
-            'device_id' => rand(1, 5),
-            'visit_count' => rand(1, 50),
-            'avg_load_time' => rand(100, 2000),
-            'max_load_time' => rand(200, 5000),
-        ]);
 
-        return ":)";
-    }
 
     public function ShowButtonClicks()
     {
-        $clicks = ButtonClick::all();
+        $clicks = ButtonClick::with(['user', 'button'])
+            ->orderBy('user_id')
+            ->orderBy('button_id')
+            ->get();
+
         return view('telemetry_views.button_clicks', compact('clicks'));
     }
 
-    public function CreateFakeButtonClicks()
-    {
-        ButtonClick::create([
-            'user_id' => rand(1, 5),
-            'button_id' => rand(28, 30),
-            'clicked_at' => now(),
-        ]);
-
-        return ":)";
-    }
 
 
 }

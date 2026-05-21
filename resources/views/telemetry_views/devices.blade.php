@@ -35,7 +35,12 @@
     @foreach($devices as $d)
     <tr>
         <td>{{ $d->id }}</td>
-        <td>{{ $d->user_id }}</td>
+        <td>@if ($d->user)
+            {{ $d->user->name }} {{ $d->user->lname }}
+        @else
+            Nezināms lietotājs
+        @endif
+        </td>
         <td>{{ $d->browser_name }}</td>
         <td>{{ $d->os_name }}</td>
         <td>{{ $d->screen_width }}</td>

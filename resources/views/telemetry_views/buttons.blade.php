@@ -32,7 +32,12 @@
     @foreach($buttons as $b)
     <tr>
         <td>{{ $b->id }}</td>
-        <td>{{ $b->page_id }}</td>
+        <td>@if ($b->page)
+            {{ $b->page->name }}
+            @else
+            Nezināma lapa
+        @endif
+    </td>
         <td>{{ $b->name }}</td>
     </tr>
     @endforeach

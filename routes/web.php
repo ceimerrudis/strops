@@ -13,45 +13,6 @@ use App\Http\Controllers\ObjectController;
 use App\Http\Controllers\AdminController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/migrate', function () {
-    $logFile = storage_path('logs/migrate.log');
-
-    file_put_contents($logFile, '');
-
-       $command = sprintf(
-        '(php82 %s migrate:fresh --seed; echo "__MIGRATION_FINISHED__") > %s 2>&1 &',
-        base_path('artisan'),
-        $logFile
-    );
-
-    exec($command);
-
-    return view('migrate');
-});
-Route::get('/migrate-status', function () {
-    $logFile = storage_path('logs/migrate.log');
-
-    if (!file_exists($logFile)) {
-        return response()->json([
-            'running' => false,
-            'output' => 'No log file found.'
-        ]);
-    }
-
-    $output = file_get_contents($logFile);
-
-    $finished = str_contains(
-        $output,
-        '__MIGRATION_FINISHED__'
-    );
-
-    return response()->json([
-        'running' => !$finished,
-        'output' => $output
-    ]);
-});
-
-
 Route::middleware(TelemetryMiddleware::class)->group(function () {
     Route::middleware(AuthenticationMiddleware::class)->group(function () {
         Route::middleware(MultipleRequestProtectionMiddleware::class)->group(function () {
@@ -126,28 +87,18 @@ Route::middleware(TelemetryMiddleware::class)->group(function () {
     Route::post('/pieteikties', [UserController::class, 'RecieveLogin']);
 
 
-    Route::get('/fake-device', [TelemetryController::class, 'CreateFakeDevice']);
     Route::get('/devices', [TelemetryController::class, 'ShowDevices']);
 
-
-    Route::get('/fake-page', [TelemetryController::class, 'CreateFakePage']);
     Route::get('/pages', [TelemetryController::class, 'ShowPages']);
 
-
-    Route::get('/fake-page-metric', [TelemetryController::class, 'CreateFakePageMetric']);
     Route::get('/page-metrics', [TelemetryController::class, 'ShowPageMetrics']);
 
-
-    Route::get('/fake-button', [TelemetryController::class, 'CreateFakeButton']);
     Route::get('/buttons', [TelemetryController::class, 'ShowButtons']);
 
-
-    Route::get('/fake-button-click', [TelemetryController::class, 'CreateFakeButtonClicks']);
     Route::get('/button-clicks', [TelemetryController::class, 'ShowButtonClicks']);
 
-
-    Route::get('/fake-user-login', [TelemetryController::class, 'CreateFakeUserLogin']);
     Route::get('/user-logins', [TelemetryController::class, 'ShowUserLogins']);
+
 
 
 
