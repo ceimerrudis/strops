@@ -1,3 +1,5 @@
+@include("header")
+
 <!DOCTYPE html>
 <html>
 <head>

@@ -34,6 +34,7 @@
     <link rel="stylesheet" href="publicPage/style.css">
     <script src="publicPage/js/jquery.js"></script>
     <script src="publicPage/js/javascr.js"></script>
+    <script src="js/telemetry.js"></script>
 </head>
    
 <body class="building_version" data-spy="scroll" data-target=".header">

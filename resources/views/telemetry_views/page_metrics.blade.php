@@ -1,3 +1,5 @@
+@include("header")
+
 <!DOCTYPE html>
 <html>
 
@@ -40,11 +42,13 @@
 
     <h2>Page Metrics</h2>
 
-    <div class="box">
-        <strong>Augstākais max_load_time:</strong>
-        {{ $highestMaxLoad->max_load_time }} ms
-        ({{ $highestMaxLoad->page->name }})
-    </div>
+    @if($highestMaxLoad == null)
+        <div class="box">
+            <strong>Augstākais max_load_time:</strong>
+            {{ $highestMaxLoad->max_load_time }} ms
+            ({{ $highestMaxLoad->page->name }})
+        </div>
+    @endif
 
     <div class="box">
         <strong>Augstākais average_load_time:</strong>

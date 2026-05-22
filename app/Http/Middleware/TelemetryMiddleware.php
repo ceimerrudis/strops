@@ -13,6 +13,7 @@ use App\Models\Button;
 use App\Models\ButtonClick;
 
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Cache;
 
 class TelemetryMiddleware
 {
@@ -30,13 +31,23 @@ class TelemetryMiddleware
         if (!is_array($data)) {
             return $response;
         }
-
+        
+        if (!empty($data['cookie_id'])) { 
+            $cacheKey = 'telemetry_' . $data['cookie_id'];
+            if (Cache::has($cacheKey)) {
+                return $response; 
+            }
+            Cache::put($cacheKey, true, now()->addDays(30));
+        }
+        else {
+            return $response; 
+        }
+        
         // Izveido/atrod DeviceInfo (precīza kopija)
         $device = $this->findOrCreateDeviceInfo(
             auth()->id(),
             $request->userAgent(),
-            $data['screen_width'],
-            $data['screen_height']
+            $data
         );
 
         // Saglabā PageMetric (updateOrCreate)
@@ -48,12 +59,14 @@ class TelemetryMiddleware
         return $response;
     }
 
-    private function findOrCreateDeviceInfo($userId, $device, $width, $height)
+    private function findOrCreateDeviceInfo($userId, $device, $data)
     {
-        if (!$device || !$width || !$height) { // Ja kādus datus nevar atrast, neizveido ierakstu
+        if (!$device || empty($data['screen_width']) || empty($data['screen_height'])) { // Ja kādus datus nevar atrast, neizveido ierakstu
             return null;
         }
-    
+        
+        $width = $data['screen_width'];
+        $height = $data['screen_height'];
         
         $browser = "unknown";
         $os = "unknown";

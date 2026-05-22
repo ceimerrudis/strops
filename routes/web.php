@@ -31,6 +31,19 @@ Route::middleware(TelemetryMiddleware::class)->group(function () {
                 Route::get('/apskatitVisus', [AdminController::class, 'ViewAllEntriesPage'])->name("viewAllEntries"); //add error
                 //funkcija RKLT izpildīta ar jquery un ajax
                 Route::get('/parrekinatlaiku', [AdminController::class, 'RecalculateTime']);
+                
+
+                Route::get('/devices', [TelemetryController::class, 'ShowDevices']);
+
+                Route::get('/pages', [TelemetryController::class, 'ShowPages']);
+
+                Route::get('/page-metrics', [TelemetryController::class, 'ShowPageMetrics']);
+
+                Route::get('/buttons', [TelemetryController::class, 'ShowButtons']);
+
+                Route::get('/button-clicks', [TelemetryController::class, 'ShowButtonClicks']);
+
+                Route::get('/user-logins', [TelemetryController::class, 'ShowUserLogins']);
             });
 
             //Objektu modulis
@@ -87,17 +100,7 @@ Route::middleware(TelemetryMiddleware::class)->group(function () {
     Route::post('/pieteikties', [UserController::class, 'RecieveLogin']);
 
 
-    Route::get('/devices', [TelemetryController::class, 'ShowDevices']);
-
-    Route::get('/pages', [TelemetryController::class, 'ShowPages']);
-
-    Route::get('/page-metrics', [TelemetryController::class, 'ShowPageMetrics']);
-
-    Route::get('/buttons', [TelemetryController::class, 'ShowButtons']);
-
-    Route::get('/button-clicks', [TelemetryController::class, 'ShowButtonClicks']);
-
-    Route::get('/user-logins', [TelemetryController::class, 'ShowUserLogins']);
+    
 
 
 

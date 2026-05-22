@@ -26,7 +26,9 @@ XMLHttpRequest.prototype.send = function(...args) {
 function resetTelemetryCookie(){
     const nav = performance.getEntriesByType("navigation")[0];
 
+    const id = crypto.randomUUID();
     const page_metrics = {
+        cookie_id: id,
         //total_load_ms: nav.loadEventEnd,
         dom_ready_ms: nav.domContentLoadedEventEnd,
         page_name: window.location.pathname,
@@ -37,7 +39,7 @@ function resetTelemetryCookie(){
         screen_width: screen.width,
         screen_height: screen.height,
     };
-    
+   
     document.cookie = "telemetry_cookie=" + encodeURIComponent(JSON.stringify(page_metrics)) + "; path=/; SameSite=Lax";
 }
 
