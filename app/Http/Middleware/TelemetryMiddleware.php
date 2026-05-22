@@ -117,7 +117,10 @@ class TelemetryMiddleware
 
         // Noņem sākuma slīpsvītru
         $pageName = ltrim($data['page_name'], '/');
-
+        if ($data['page_name'] == '/') {
+            $pageName = "public";
+        }
+        
         // Atrod lapu DB
         $page = Page::where('name', $pageName)->first();
         if (!$page) {

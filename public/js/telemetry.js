@@ -26,7 +26,11 @@ XMLHttpRequest.prototype.send = function(...args) {
 function resetTelemetryCookie(){
     const nav = performance.getEntriesByType("navigation")[0];
 
-    const id = crypto.randomUUID();
+
+    const id = typeof crypto.randomUUID === 'function'
+      ? crypto.randomUUID()
+      : generateUUID();
+      
     const page_metrics = {
         cookie_id: id,
         //total_load_ms: nav.loadEventEnd,
@@ -61,3 +65,11 @@ function noteButtonClick(button) {
 
     document.cookie = "telemetry_cookie=" + encodeURIComponent(JSON.stringify(metrics)) + "; path=/; SameSite=Lax";
 };
+
+function generateUUID() {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    const r = Math.random() * 16 | 0;
+    const v = c === 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
+}
