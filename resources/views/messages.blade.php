@@ -1,3 +1,4 @@
+<!-- Paziņojumu konteineris -->
 <div id="messageBoard" class="message_board">
     @php
         $messages = DeleteMessages();

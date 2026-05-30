@@ -17,6 +17,7 @@ use App\Http\Requests\SpecificEntry;
 use App\Http\Requests\NonSpecificEntry;
 use App\Http\Requests\TimeCalculationRequest;
 use App\Enums\EntryTypes;
+use App\Enums\VinjetTypes;
 use App\Enums\UserTypes;
 use App\Enums\VehicleUsageTypes;
 use App\Services\SharedMethods;
@@ -79,7 +80,6 @@ class AdminController extends Controller
         $table = $request->input('table');
         $model = GetModelFromEnum($table);
         $entry = $model::findOrFail($request->input('id'));
-        
         switch((int)$table)
         {
             case EntryTypes::USER->value:
@@ -93,6 +93,7 @@ class AdminController extends Controller
                 $entry->name = $data['name'] ?? $entry->name;
                 $entry->usage = $data['usage'] ?? $entry->usage;
                 $entry->usage_type = $data['usage_type'] ?? $entry->usage_type;
+                $entry->vinjet = $data['vinjet'] ?? $entry->vinjet;
                 break;
             case EntryTypes::OBJECT->value:
                 $entry->code = $data['code'] ?? $entry->code;
@@ -293,9 +294,13 @@ class AdminController extends Controller
                 'usage' => 'required|numeric|min:0',
                 'usage_type' => [
                     'required',
-                    'numeric',
                     'integer', 
                     new Enum(VehicleUsageTypes::class),//Pārbauda vai padotā vērtība atrodama enumeratorā.
+                ],
+                'vinjet' => [
+                    'required',
+                    'integer', 
+                    new Enum(VinjetTypes::class),//Pārbauda vai padotā vērtība atrodama enumeratorā.
                 ],
             ],
             EntryTypes::RESERVATION->value => [
@@ -353,9 +358,11 @@ class AdminController extends Controller
                 'usage.numeric' => Text(179),
                 'usage.min' => Text(180),
                 'usage_type.required' => Text(181),
-                'usage_type.numeric' => Text(182),
                 'usage_type.integer' => Text(183),
-                'usage_type.in' => Text(184),
+                'usage_type.enum' => Text(184),
+                'vinjet.required' => Text(231),
+                'vinjet.integer' => Text(233),
+                'vinjet.enum' => Text(231),
             ],
             EntryTypes::RESERVATION->value => [
                 'from.required' => Text(185),
@@ -410,7 +417,7 @@ class AdminController extends Controller
         if (!array_key_exists($table, $validationRules)) {
             return response()->json(['error' => ''], 400);
         }
-
+        
         return $request->validate($validationRules[$table], $messages[$table]);
     }
 }

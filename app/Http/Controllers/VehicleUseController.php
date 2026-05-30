@@ -35,7 +35,7 @@ class VehicleUseController extends Controller
         //Pieprasījums nāk no kalendāra lapas
         $data = $request->all();
         $vehicleId = $data["vehicle"];
-
+        
         return SharedMethods::StartVehicleUse($vehicleId);
     }
 

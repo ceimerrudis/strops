@@ -113,6 +113,8 @@ Route::middleware(TelemetryMiddleware::class)->group(function () {
     //Papildus lapas kas neitilpst nevienā moduilī 
     //Publiskās lapas ceļš
     Route::view('/', 'publicPage')->name("public"); 
+    Route::view('/riki', 'riki');
+
     //Route::view('/altum', 'publicPage')->name("public"); 
     //Route::view('/paudpa', 'publicPage')->name("public"); 
 

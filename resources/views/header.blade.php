@@ -11,6 +11,12 @@
         <script src="{{ asset('js/jquery-3.7.1.min.js') }}"></script>
         <script src="{{ asset('js/js.js') }}"></script>
         <script src="{{ asset('js/telemetry.js') }}"></script>
+        <script src="{{ asset('js/popUp.js') }}"></script>
+        <script> 
+            $(document).ready(function() {
+                updateMessageBoard();
+            });
+        </script>
         <link rel="stylesheet" href="{{asset('css/style.css');}}">
         <link rel="stylesheet" href="{{asset('css/mobileStyles.css');}}">
     </head>

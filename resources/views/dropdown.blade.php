@@ -9,6 +9,6 @@
         @endif
     @endforeach
 </select>
-@error('{{$fieldName}}')
+@error($fieldName)
     <span class="adimn_alert">{{ $message }}</span>
 @enderror

@@ -26,6 +26,7 @@ class Vehicle extends Model
         'name',
         'usage',
         'usage_type',
+        'vinjet',
     ];
 
     protected function casts(): array

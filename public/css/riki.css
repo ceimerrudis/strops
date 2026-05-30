@@ -1,0 +1,38 @@
+.tools-container {
+    width: 95%;
+    max-width: 1000px;
+    margin: 20px auto;
+}
+
+.take-tool-btn {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #009999; 
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 500;
+    border: 1px solid black;
+}
+
+.take-tool-btn:hover {
+    background-color: #007f7f;
+}
+
+.tools-table {
+    width: 500px;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+.tools-table th,
+.tools-table td {
+    border: 1px solid #000000;
+    padding: 8px 10px;
+    text-align: left;
+}
+
+.tools-table th {
+    background-color: #e0e0e0;
+    font-weight: bold;
+}

@@ -22,11 +22,13 @@ return new class extends Migration
     public function down()
     {
         Schema::table('users', function (Blueprint $table) {
-            if (Schema::hasColumn('users', 'last_used_object')) {
+            if (Schema::hasColumn('users', 'last_used_vehicle')) {
+                $table->dropForeign(['last_used_vehicle']);
                 $table->dropColumn('last_used_vehicle');
             }
-            
+
             if (Schema::hasColumn('users', 'last_used_object')) {
+                $table->dropForeign(['last_used_object']);
                 $table->dropColumn('last_used_object');
             }
         });

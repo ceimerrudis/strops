@@ -70,12 +70,13 @@ class TelemetryMiddleware
         
         $browser = "unknown";
         $os = "unknown";
-        $open = strpos($device, '(');
-        $close = strpos($device, ')');
+        $open = strpos($device, '('); // OS parasti ir iekļauts iekavās
+        $close = strpos($device, ')'); // un browser nosaukums ir pirms un pēc iekavām
         if($open !== false && $close !== false && $close > $open)
         {
-            $os = trim(substr($device, $open + 1, $close - $open - 1));
-            $browser = trim(substr($device, 0, $open)) . trim(substr($device, $close + 1));
+            $os = trim(substr($device, $open + 1, $close - $open - 1)); // susbstr - atņem iekavas
+            $browser = trim(substr($device, 0, $open)) . trim(substr($device, $close + 1)); // apvieno daļu pirms un pēc iekavām, 
+            // lai iegūtu browser nosaukumu
         }else {
             return null;
         }
@@ -175,7 +176,7 @@ class TelemetryMiddleware
                 continue;
             }
 
-            $userId = auth()->id();
+            $userId = auth()->id(); 
 
             // atrod pogu pēc nosaukuma
             $button = Button::where('name', $button_data['button_name'])->first();
@@ -206,4 +207,5 @@ class TelemetryMiddleware
         }
     }
 }
-
+// middlewere vajadzīgs lai apstrādātu telemetry datus, kas tiek sūtīti no klienta puses. Tas nolasa cookie, izveido vai atrod ierakstu par ierīci, un saglabā lapas ielādes laiku un pogu klikšķus datubāzē.
+// kas ir cookie?- 

@@ -33,7 +33,6 @@ class TelemetryController extends Controller
             $rememberPercent = 0;
         }
 
-
         // 100 jaunākie ieraksti
         $logins = UserLogin::with('user')
             ->orderBy('logged_in_at', 'desc')

@@ -222,11 +222,12 @@ class SharedMethods
         $usage = $vehicle->usage;
         $usage_type = $vehicle->usage_type;
         $vehicleId = $vehicle->id;
+        $vinjet = $vehicle->vinjet;
         $vehicleName = $vehicle->name;
         $objects = ObjectModel::get();
         //Iegūst Objektu kurā tiks strādāts kā arī komentāru ja objekts ir “Citi”.
         //Ja izvēlētā inventāra lietojuma  veids ir nolasāms, tad iegūst lietojuma apstiprinājumu vai lietojuma daudzumu. 
-        return view("vehicleUseModule.startVehicleUse", compact('messages', 'objects', 'vehicleName', 'vehicleId', 'usage', 'usage_type', 'createReservation'));
+        return view("vehicleUseModule.startVehicleUse", compact('messages', 'objects', 'vehicleName', 'vehicleId', 'vinjet', 'usage', 'usage_type', 'createReservation'));
     }
 
     //Funkcija kas atver rediģēšanas lapu jebkurai tabulai (izmanto arī atskaitēm)

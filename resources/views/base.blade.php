@@ -1,148 +1,129 @@
 @include('header')
 <body class="background">
-    <div id="loadingWrapper" class="loading_wrapper">
-        <div class="overlay"></div>
-    </div>    
-    @include('messages')
+
+<!-- Melns lapas pārklājs lai pasargātu pogas un elemetus ielādes laikā -->
+<div id="loadingWrapper" class="loading_wrapper">
+    <div class="overlay"></div>
+</div>    
+@include('messages')
+
+@php
+    use App\Enums\UserTypes;
+    use App\Enums\EntryTypes;
+@endphp
+<!-- Galvenā lapa kurā dzīvo pārējā mājas lapa -->
+<div class="system_base_box">
     
-    @php
-        use App\Enums\UserTypes;
-        use App\Enums\EntryTypes;
-    @endphp
-    <div class="system_base_box">
-        <div class="nav_bar_box"
-            @if(Auth::check())
-                @if(Auth::user()->type == UserTypes::ADMIN->value) 
-                    id="adminNavBarBox"
-                @endif
-            @endif
-        </div>
-
-        <div class="nav_link_wrapper">
-            <a class="nav_link" href="sakums">
-                <span class="nav_link_span_1_lines">
-                    Sākums
-                </span>
-            </a>
-        </div>
-
-        <div class="nav_link_wrapper">
-            <a class="nav_link" href="manasRezervacijas">
-                <span class="nav_link_span_2_lines">
-                    Manas 
-                    <br>rezervācijas
-                </span>
-            </a>
-        </div>
-
-        <div class="mobile_visible nav_link_wrapper">
-            <a class="nav_link" id="logoffButton" href="atteikties">
-                <span class="nav_link_span_1_lines">
-                    Iziet
-                </span>
-            </a>
-        </div>
-
-        <div class="nav_link_wrapper">
-            <a class="nav_link" href="maniPabeigtieLietojumi">
-                <span class="nav_link_span_1_lines">
-                    lietojumi
-                </span>
-            </a>
-        </div>
-
-        <div class="nav_link_wrapper">
-            <a class="nav_link" href="maniNepabeigtieLietojumi">
-                <span class="nav_link_span_2_lines">
-                    pašreizējie
-                    <br>lietojumi
-                </span>
-            </a>
-        </div>
-
-        <div class="nav_link_wrapper">
-                    <a class="nav_link" href="apskatitatskaites">
-                <span class="nav_link_span_1_lines">
-                    Atskaites
-                </span>
-            </a>
-        </div>
-
-        @if(Auth::check())
-            @if(Auth::user()->type == UserTypes::ADMIN->value) 
-                
-                <div class="nav_link_wrapper">
-                    <a class="nav_link" href="apskatitVisus?table={{EntryTypes::USER->value}}">
-                        <span class="nav_link_span_2_lines">
-                            Visi <br>
-                            lietotāji
-                        </span>
-                    </a>
-                </div>
-                @endif
+    <!-- Navigācijas josla -->
+    <div class="nav_bar_box" 
+        @if(Auth::check() && Auth::user()->type == UserTypes::ADMIN->value)
+                id="adminNavBarBox"
         @endif
-
-        <div class="mobile_invisible nav_link_wrapper">
-            <a class="nav_link" id="logoffButton" href="atteikties">
-                <span class="nav_link_span_1_lines">
-                    Iziet
-                </span>
-            </a>
-        </div>
+    >
     
-        @if(Auth::check())
-            @if(Auth::user()->type == UserTypes::ADMIN->value) 
-                <div class="nav_link_wrapper">
-                    <a class="nav_link" href="apskatitVisus?table={{EntryTypes::VEHICLE->value}}">
-                        <span class="nav_link_span_2_lines">
-                            Visi 
-                            <br>inventāri
-                        </span>
-                    </a>
-                </div>
-                <div class="nav_link_wrapper">
-                    <a class="nav_link" href="apskatitVisus?table={{EntryTypes::OBJECT->value}}">
-                        <span class="nav_link_span_2_lines">
-                            Visi 
-                            <br>objekti
-                        </span>
-                    </a>
-                </div>
-                
-                <div class="nav_link_wrapper">
-                    <a class="nav_link" href="apskatitVisus?table={{EntryTypes::REPORT->value}}">
-                        <span class="nav_link_span_2_lines">
-                            Visas 
-                            <br>atskaites
-                        </span>
-                    </a>
-                </div>
+    <div class="nav_link_wrapper">
+        <a class="nav_link" href="sakums">
+            <span class="nav_link_span_1_lines">
+                Sākums
+    </span> </a> </div>
 
-                <div class="nav_link_wrapper">
-                    <a class="nav_link" href="apskatitVisus?table={{EntryTypes::RESERVATION->value}}">
-                        <span class="nav_link_span_2_lines">
-                            Visas 
-                            <br>rezervācijas
-                        </span>
-                    </a>
-                </div>
-                <div class="nav_link_wrapper">
-                    <a class="nav_link" href="apskatitVisus?table={{EntryTypes::VEHICLE_USE->value}}">
-                        <span class="nav_link_span_2_lines">
-                            Visi 
-                            <br>lietojumi
-                        </span>
-                    </a>
-                </div>
-                <div class="nav_link_wrapper">
-                    <a class="nav_link" href="apskatitVisus?table={{EntryTypes::ERROR->value}}">
-                        <span class="nav_link_span_1_lines">
-                            kļūdas
-                        </span>
-                    </a>
-                </div>
-            @endif
-        @endif
+    <div class="nav_link_wrapper">
+        <a class="nav_link" href="manasRezervacijas">
+            <span class="nav_link_span_2_lines">
+                Manas 
+                <br>rezervācijas
+    </span> </a> </div>
 
-        
+    <div class="mobile_visible nav_link_wrapper">
+        <a class="nav_link" id="logoffButton" href="atteikties">
+            <span class="nav_link_span_1_lines">
+                Iziet
+            </span>
+        </a>
     </div>
+
+    <div class="nav_link_wrapper">
+        <a class="nav_link" href="maniPabeigtieLietojumi">
+            <span class="nav_link_span_1_lines">
+                lietojumi
+    </span> </a> </div>
+
+    <div class="nav_link_wrapper">
+        <a class="nav_link" href="maniNepabeigtieLietojumi">
+            <span class="nav_link_span_2_lines">
+                pašreizējie
+                <br>lietojumi
+    </span> </a> </div>
+
+    <div class="nav_link_wrapper">
+                <a class="nav_link" href="apskatitatskaites">
+            <span class="nav_link_span_1_lines">
+                Atskaites
+    </span> </a> </div>
+
+    <!-- Izņēmuma administratora poga -->
+    @if(Auth::check())
+        @if(Auth::user()->type == UserTypes::ADMIN->value) 
+            
+            <div class="nav_link_wrapper">
+                <a class="nav_link" href="apskatitVisus?table={{EntryTypes::USER->value}}">
+                    <span class="nav_link_span_2_lines">
+                        Visi <br>
+                        lietotāji
+            </span> </a> </div>
+            @endif
+    @endif
+
+    <div class="mobile_invisible nav_link_wrapper">
+        <a class="nav_link" id="logoffButton" href="atteikties">
+            <span class="nav_link_span_1_lines">
+                Iziet
+    </span> </a> </div>
+
+    <!-- Administratora pogas -->
+    @if(Auth::check())
+        @if(Auth::user()->type == UserTypes::ADMIN->value) 
+            <div class="nav_link_wrapper">
+                <a class="nav_link" href="apskatitVisus?table={{EntryTypes::VEHICLE->value}}">
+                    <span class="nav_link_span_2_lines">
+                        Visi <br> inventāri
+            </span> </a> </div>
+            
+            <div class="nav_link_wrapper">
+                <a class="nav_link" href="apskatitVisus?table={{EntryTypes::OBJECT->value}}">
+                    <span class="nav_link_span_2_lines">
+                        Visi <br> objekti
+            </span> </a> </div>
+            
+            <div class="nav_link_wrapper">
+                <a class="nav_link" href="apskatitVisus?table={{EntryTypes::REPORT->value}}">
+                    <span class="nav_link_span_2_lines">
+                        Visas <br> atskaites
+            </span> </a> </div>
+
+            <div class="nav_link_wrapper">
+                <a class="nav_link" href="apskatitVisus?table={{EntryTypes::RESERVATION->value}}">
+                    <span class="nav_link_span_2_lines">
+                        Visas <br> rezervācijas
+            </span> </a> </div>
+            
+            <div class="nav_link_wrapper">
+                <a class="nav_link" href="apskatitVisus?table={{EntryTypes::VEHICLE_USE->value}}">
+                    <span class="nav_link_span_2_lines">
+                        Visi <br> lietojumi 
+            </span> </a> </div>
+            
+            <div class="nav_link_wrapper">
+                <a class="nav_link" href="apskatitVisus?table={{EntryTypes::ERROR->value}}">
+                    <span class="nav_link_span_1_lines">
+                        kļūdas
+            </span> </a> </div>
+        @endif
+    @endif
+    </div>
+    
+    <!-- Vai šo vēl kaut kas izmanto? -->
+    <div class="page_content">
+        @yield('content')
+    </div>
+

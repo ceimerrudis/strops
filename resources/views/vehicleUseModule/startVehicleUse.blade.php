@@ -1,13 +1,61 @@
-@include('base')
 @php
     use App\Enums\VehicleUsageTypes;
+    use App\Enums\VinjetTypes;
+    
+    $msg = 'type="button" onclick="warning_pop_up(() => document.querySelector(\'#makeVehicleUseForm\').submit(), { message:\'Lai lietotu šo inventāru uz galvenajiem ceļiem nepieciešama <b>vinjete</b>. <br> Ceļu saraksts - <a href=&quot;https://likumi.lv/doc.php?id=185656&quot;>likuma</a> pirmajā pielikumā.\', okLabel : \'Labi\' })"';
+    
+    $vinjetteAttr = $vinjet == VinjetTypes::REQUIRED->value
+    ? sprintf($msg)
+    : 'type="su1bmit"';
 @endphp
+
+@include('base')
+@include('warning_pop_up')
 <script>
     let messages = <?php echo json_encode($messages);?>;
     let dayEnumValue = <?php echo json_encode(VehicleUsageTypes::DAYS->value);?>;
     let usage_type = <?php echo json_encode($usage_type);?>;
 </script>
 <script src="{{ asset('js/startUsing.js') }}"></script>
+<script>
+$(document).ready(function() {
+    $("#Reservation_OKBTN").on('click', Reservation_AnswYes);
+    $("#Reservation_NOBTN").on('click', AnswNo);
+    
+    $("#EndUse_OKBTN").on('click', EndUse_AnswYes);
+    $("#EndUse_NOBTN").on('click', AnswNo);
+
+    $('#ne_poga').click(AskForUsage);
+
+    $("#beginUse").hide();
+    if(usage_type == dayEnumValue)
+    {
+        $("#secondPartOfMakeVehicleUseForm").hide();
+        $("#beginUse").show();
+    }
+
+    CheckMessages();
+
+    $("#syncBtn").on('click', function (){
+        $("#loadingWrapper").show();//Šī darbība var aizņemt kādu laiciņu tapēc uzliek lādēšanās logu
+        $.ajax({
+            type: "GET",
+            url: "atjaunotObjektus", 
+            success: function(result){
+                //close loading window
+                $("#loadingWrapper").hide();
+                $("#syncText").html(result.message);
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown) { 
+                $("#loadingWrapper").hide();
+                $("#syncText").html("Notika kļūda");
+				console.log(result.output);
+				console.log(result.message);
+            }  
+        });  
+    });
+});
+</script>
 
 <div class="make_vehicle_use_form_box">
 <form id="makeVehicleUseForm" action="{{ route('startUsePost') }}" method="post">
@@ -78,7 +126,7 @@
             @endif    
         </label>
         <button id='ne_poga' type='button' class='ne' name="ne_nesakrit">nē</button>
-        <button type='submit' id="yes_btn" class='begin_use_btn' name="ja_sakrit">jā / Sākt lietot</button>
+        <button id="yes_btn" class='begin_use_btn' name="ja_sakrit" {!! $vinjetteAttr !!}>jā / Sākt lietot</button>
 
         <div id='correctUsageBox' style="display: none;">   
             <label for='usage' class="wrong_motorh_label"> 
@@ -96,7 +144,8 @@
         @enderror
 
     </div>
-    <button type='submit' id="beginUse" class='get_next_part'>Sākt lietot</button>
+    <button id="beginUse" class='get_next_part' {!! $vinjetteAttr !!}>Sākt lietot</button>
+    
     <!-- Izsauc objektu sinhronizāciju -->
     <button class="sync_objects_link" type="button" id="syncBtn" name="atjaunotObjektuSarakstu">Atjaunot objektu sarakstu</button>
     <p id="syncText"></p>
