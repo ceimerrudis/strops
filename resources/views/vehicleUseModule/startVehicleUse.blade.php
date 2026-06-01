@@ -2,7 +2,7 @@
     use App\Enums\VehicleUsageTypes;
     use App\Enums\VinjetTypes;
     
-    $msg = 'type="button" onclick="warning_pop_up(() => document.querySelector(\'#makeVehicleUseForm\').submit(), { message:\'Lai lietotu šo inventāru uz galvenajiem ceļiem nepieciešama <b>vinjete</b>. <br> Ceļu karte redzama <a href=&quot;https://www.google.com/maps/d/viewer?ll=56.11007954618068%%2C24.715821016025007&z=8&mid=1BDvnrxY0r59XtMpZoK6rnL46qJRbspo&quot;>šeit</a>.\', okLabel : \'Labi\', cancelLabel: \'Atcelt\', allowCancel: true })"';
+    $msg = 'type="button" onclick="warning_pop_up(() => document.querySelector(\'#makeVehicleUseForm\').submit(), { message:\'UZMANĪBU! Lietojot šo automašīnu, uz galvenajiem ceļiem nepieciešama <b>VINJETE!</b>. <br> Ceļu karte redzama <a href=&quot;https://www.google.com/maps/d/viewer?ll=56.11007954618068%%2C24.715821016025007&z=8&mid=1BDvnrxY0r59XtMpZoK6rnL46qJRbspo&quot;>šeit</a>.\', okLabel : \'Labi\', cancelLabel: \'Atcelt\', allowCancel: true })"';
     
     $vinjetteAttr = $vinjet == VinjetTypes::REQUIRED->value
     ? sprintf($msg)
