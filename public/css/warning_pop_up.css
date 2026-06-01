@@ -25,6 +25,7 @@
     box-sizing: border-box;
     font-size: 22px;
     color: darkred;
+    text-align: justify;
 }
 
 #warning_pop_up_confirm_button, #warning_pop_up_cancel_button{
@@ -32,16 +33,17 @@
     width: 35%;
     height: 80px;
     font-size: 18px;
+    border-radius: 10px;
+    background-color: #3f4366;/*#343759;*/
+    color: white;
 }
 
 #warning_pop_up_confirm_button {
-    background-color: lightgray;
     margin-right: 10%;
     float: right;
 }
 
 #warning_pop_up_cancel_button
 {
-    background-color: white;
     float: left;
 }

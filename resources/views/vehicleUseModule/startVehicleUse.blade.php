@@ -2,11 +2,11 @@
     use App\Enums\VehicleUsageTypes;
     use App\Enums\VinjetTypes;
     
-    $msg = 'type="button" onclick="warning_pop_up(() => document.querySelector(\'#makeVehicleUseForm\').submit(), { message:\'Lai lietotu šo inventāru uz galvenajiem ceļiem nepieciešama <b>vinjete</b>. <br> Ceļu saraksts - <a href=&quot;https://likumi.lv/doc.php?id=185656&quot;>likuma</a> pirmajā pielikumā.\', okLabel : \'Labi\' })"';
+    $msg = 'type="button" onclick="warning_pop_up(() => document.querySelector(\'#makeVehicleUseForm\').submit(), { message:\'Lai lietotu šo inventāru uz galvenajiem ceļiem nepieciešama <b>vinjete</b>. <br> Ceļu karte redzama <a href=&quot;https://www.google.com/maps/d/viewer?ll=56.11007954618068%%2C24.715821016025007&z=8&mid=1BDvnrxY0r59XtMpZoK6rnL46qJRbspo&quot;>šeit</a>.\', okLabel : \'Labi\', cancelLabel: \'Atcelt\', allowCancel: true })"';
     
     $vinjetteAttr = $vinjet == VinjetTypes::REQUIRED->value
     ? sprintf($msg)
-    : 'type="su1bmit"';
+    : 'type="submit"';
 @endphp
 
 @include('base')
@@ -149,6 +149,13 @@ $(document).ready(function() {
     <!-- Izsauc objektu sinhronizāciju -->
     <button class="sync_objects_link" type="button" id="syncBtn" name="atjaunotObjektuSarakstu">Atjaunot objektu sarakstu</button>
     <p id="syncText"></p>
+    
+    <a class="return_link" href="sakums">
+        <button class="return_button" type="button">
+            Atgrieztiez us sākumu
+        </button>
+    </a>
+    
     <div class="spacer"></div>
 </form>
 </div>

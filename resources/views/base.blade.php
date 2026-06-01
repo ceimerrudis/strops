@@ -24,41 +24,40 @@
     <div class="nav_link_wrapper">
         <a class="nav_link" href="sakums">
             <span class="nav_link_span_1_lines">
-                Sākums
+                SĀKUMS
     </span> </a> </div>
 
     <div class="nav_link_wrapper">
         <a class="nav_link" href="manasRezervacijas">
             <span class="nav_link_span_2_lines">
-                Manas 
-                <br>rezervācijas
+                MANAS 
+                <br>REZERVĀCIJAS
     </span> </a> </div>
 
     <div class="mobile_visible nav_link_wrapper">
         <a class="nav_link" id="logoffButton" href="atteikties">
             <span class="nav_link_span_1_lines">
-                Iziet
-            </span>
-        </a>
-    </div>
+                IZIET
+    </span> </a> </div>
 
     <div class="nav_link_wrapper">
         <a class="nav_link" href="maniPabeigtieLietojumi">
-            <span class="nav_link_span_1_lines">
-                lietojumi
+            <span class="nav_link_span_2_lines">
+                MANI 
+                <br>LIETOJUMI
     </span> </a> </div>
 
     <div class="nav_link_wrapper">
         <a class="nav_link" href="maniNepabeigtieLietojumi">
             <span class="nav_link_span_2_lines">
-                pašreizējie
-                <br>lietojumi
+                PAŠREIZĒJIE
+                <br>LIETOJUMI
     </span> </a> </div>
 
     <div class="nav_link_wrapper">
                 <a class="nav_link" href="apskatitatskaites">
             <span class="nav_link_span_1_lines">
-                Atskaites
+                ATSKAITES
     </span> </a> </div>
 
     <!-- Izņēmuma administratora poga -->
@@ -67,9 +66,8 @@
             
             <div class="nav_link_wrapper">
                 <a class="nav_link" href="apskatitVisus?table={{EntryTypes::USER->value}}">
-                    <span class="nav_link_span_2_lines">
-                        Visi <br>
-                        lietotāji
+                    <span class="nav_link_span_1_lines">
+                        LIETOTĀJI
             </span> </a> </div>
             @endif
     @endif
@@ -77,7 +75,7 @@
     <div class="mobile_invisible nav_link_wrapper">
         <a class="nav_link" id="logoffButton" href="atteikties">
             <span class="nav_link_span_1_lines">
-                Iziet
+                IZIET
     </span> </a> </div>
 
     <!-- Administratora pogas -->
@@ -85,38 +83,40 @@
         @if(Auth::user()->type == UserTypes::ADMIN->value) 
             <div class="nav_link_wrapper">
                 <a class="nav_link" href="apskatitVisus?table={{EntryTypes::VEHICLE->value}}">
-                    <span class="nav_link_span_2_lines">
-                        Visi <br> inventāri
+                    <span class="nav_link_span_1_lines">
+                        INVENTĀRI
             </span> </a> </div>
             
             <div class="nav_link_wrapper">
                 <a class="nav_link" href="apskatitVisus?table={{EntryTypes::OBJECT->value}}">
-                    <span class="nav_link_span_2_lines">
-                        Visi <br> objekti
+                    <span class="nav_link_span_1_lines">
+                        OBJEKTI
             </span> </a> </div>
             
             <div class="nav_link_wrapper">
                 <a class="nav_link" href="apskatitVisus?table={{EntryTypes::REPORT->value}}">
-                    <span class="nav_link_span_2_lines">
-                        Visas <br> atskaites
+                    <span class="nav_link_span_1_lines">
+                        ATSKAITES
             </span> </a> </div>
 
             <div class="nav_link_wrapper">
                 <a class="nav_link" href="apskatitVisus?table={{EntryTypes::RESERVATION->value}}">
                     <span class="nav_link_span_2_lines">
-                        Visas <br> rezervācijas
+                        VISAS 
+                        <br>REZERVĀCIJAS
             </span> </a> </div>
             
             <div class="nav_link_wrapper">
                 <a class="nav_link" href="apskatitVisus?table={{EntryTypes::VEHICLE_USE->value}}">
                     <span class="nav_link_span_2_lines">
-                        Visi <br> lietojumi 
+                        VISI 
+                        <br>LIETOJUMI 
             </span> </a> </div>
             
             <div class="nav_link_wrapper">
                 <a class="nav_link" href="apskatitVisus?table={{EntryTypes::ERROR->value}}">
                     <span class="nav_link_span_1_lines">
-                        kļūdas
+                        KĻŪDAS
             </span> </a> </div>
         @endif
     @endif

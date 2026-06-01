@@ -9,7 +9,7 @@
 
 .spacer {
     height: 50px; 
-    width: 100%;
+    width: 1%;
 }
 
 #buttons{
@@ -61,6 +61,27 @@
 
 #confirmDeleteWindow #confirmDeleteWindowBox #cancelButton{
     background-color: gray;
+}
+
+.return_button
+{
+    margin:auto;
+    margin-top: 10px;
+    width: 80%;
+    padding-top: 10;
+    height: 40px;
+    font-size: 18px;
+    padding-bottom: 10;
+    clear:left;
+    display: block;
+}
+
+.return_link
+{
+    text-decoration: none;
+    width: 100%;
+    height: 100%;
+    display: block;
 }
 
 #confirmDeleteWindow #confirmDeleteWindowBox p{
@@ -247,7 +268,7 @@ body, html{
     display: block;
     text-align: center;
     text-decoration: none;
-    font-size: 18px;
+    font-size: 15px;
     color: white;
     margin: auto;
     box-sizing: border-box;
