@@ -224,7 +224,8 @@ class SharedMethods
         $vehicleId = $vehicle->id;
         $vinjet = $vehicle->vinjet;
         $vehicleName = $vehicle->name;
-        $objects = ObjectModel::get();
+        $objects = ObjectModel::where('active', '=', true)->get();
+        
         //Iegūst Objektu kurā tiks strādāts kā arī komentāru ja objekts ir “Citi”.
         //Ja izvēlētā inventāra lietojuma  veids ir nolasāms, tad iegūst lietojuma apstiprinājumu vai lietojuma daudzumu. 
         return view("vehicleUseModule.startVehicleUse", compact('messages', 'objects', 'vehicleName', 'vehicleId', 'vinjet', 'usage', 'usage_type', 'createReservation'));
