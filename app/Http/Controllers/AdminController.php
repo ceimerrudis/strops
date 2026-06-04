@@ -163,7 +163,7 @@ class AdminController extends Controller
         $sortFields = [
             EntryTypes::USER->value => [['name', 'asc']],
             EntryTypes::VEHICLE->value => [['name', 'asc']],
-            EntryTypes::OBJECT->value => [['name', 'asc']],
+            EntryTypes::OBJECT->value => [['active', 'desc'], ['name', 'asc']],
             EntryTypes::REPORT->value => [['object', 'desc'], ['year', 'desc'], ['month', 'desc']],
             EntryTypes::RESERVATION->value => [['from', 'desc']],
             EntryTypes::VEHICLE_USE->value => [['from', 'desc']],

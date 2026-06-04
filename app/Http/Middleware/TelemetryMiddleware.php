@@ -203,7 +203,7 @@ class TelemetryMiddleware
             $metric->update([
                 'press_count' => $metric->press_count + 1
             ]);
-            Log::debug($data['button_log']);
+            //Log::debug($data['button_log']);
         }
     }
 }

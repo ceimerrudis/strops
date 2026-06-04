@@ -31,6 +31,7 @@ class SynchronizeObjectData extends Command
             Excel::import($import, $path, null, null);
             $activeObjects = $import->getActiveObjects();
             $active_objs = ObjectModel::where('active', true)->get();
+            
             foreach($active_objs as $object)
             {
                 if(!in_array($object->code, $activeObjects))
@@ -44,7 +45,7 @@ class SynchronizeObjectData extends Command
             }
             Log::info("End object import");
         }catch(\Exception $e){
-            Log::error("Falied oppenningn file. - ". $e->getMessage());
+            Log::error("Falied opening file. - ". $e->getMessage());
             throw new \Exception("Object sync failure.");
         }
         return Text(222);
