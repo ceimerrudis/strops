@@ -1,6 +1,6 @@
 @include('base')
 <form 
-@if($entry->id == null)
+@if($entry->id === null)
     action="{{ route($createRouteName) }}" 
 @else
     action="{{ route($editRouteName) }}" 

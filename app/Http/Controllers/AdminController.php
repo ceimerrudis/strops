@@ -76,6 +76,7 @@ class AdminController extends Controller
     //Funkcija RDIR.
     public function UpdateEntry(SpecificEntry $request, $redirectToReports = false)
     {
+    dd($request);
         $data = $this->ValidateEntry($request, true);//data satur tikai ieraksta datus
         $table = $request->input('table');
         $model = GetModelFromEnum($table);

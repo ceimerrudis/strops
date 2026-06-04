@@ -62,7 +62,7 @@ class DatabaseSeeder extends Seeder
             'name' => 'Ielu apgaismojuma uzstāde',
         ]);
         ObjectModel::create([
-            'id' => 1,
+            'id' => 0,
             'code' => 'Citi',
             'name' => 'Citi darbi',
         ]);
