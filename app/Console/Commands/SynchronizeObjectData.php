@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Imports\ObjectsImport;
+use App\Models\ObjectModel;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
@@ -26,7 +27,21 @@ class SynchronizeObjectData extends Command
 
         try{
             Log::info("Begin object import");
-            Excel::import(new ObjectsImport, $path, null, null);
+            $import = new ObjectsImport();
+            Excel::import($import, $path, null, null);
+            $activeObjects = $import->getActiveObjects();
+            $active_objs = ObjectModel::where('active', true)->get();
+            foreach($active_objs as $object)
+            {
+                if(!in_array($object->code, $activeObjects))
+                {
+                    Log::info("Changing statuss of object to inactive.");
+                    Log::info($object);
+
+                    $object->active = false;
+                    $object->save();
+                }
+            }
             Log::info("End object import");
         }catch(\Exception $e){
             Log::error("Falied oppenningn file. - ". $e->getMessage());

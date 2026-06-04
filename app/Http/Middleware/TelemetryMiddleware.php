@@ -207,5 +207,3 @@ class TelemetryMiddleware
         }
     }
 }
-// middlewere vajadzīgs lai apstrādātu telemetry datus, kas tiek sūtīti no klienta puses. Tas nolasa cookie, izveido vai atrod ierakstu par ierīci, un saglabā lapas ielādes laiku un pogu klikšķus datubāzē.
-// kas ir cookie?- 

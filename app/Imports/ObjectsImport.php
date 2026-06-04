@@ -13,6 +13,7 @@ use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 class ObjectsImport implements ToModel, WithCalculatedFormulas, WithStartRow, WithMultipleSheets 
 {
     private $stopImport = false;
+    private array $activeObjects = [];
     
     public function model(array $row)
     {
@@ -22,6 +23,8 @@ class ObjectsImport implements ToModel, WithCalculatedFormulas, WithStartRow, Wi
         if($row[0] == null) {$this->stopImport = true; return null;}
         
         if($row[4] == "aktīvs"){
+            $this->activeObjects[] = $row[1];
+            
             if(ObjectModel::where('code', $row[1])->exists()) {      
                 return null; 
             }   
@@ -36,6 +39,7 @@ class ObjectsImport implements ToModel, WithCalculatedFormulas, WithStartRow, Wi
     
             return $objectModel;
         }
+        /*
         if(ObjectModel::where('code', $row[1])->exists()) {
             $object = ObjectModel::where('code', $row[1])->first();
             if($object->active){
@@ -46,7 +50,7 @@ class ObjectsImport implements ToModel, WithCalculatedFormulas, WithStartRow, Wi
                 $object->active = false;
                 $object->save();
             }
-        }
+        }*/
         return null;
     }
 
@@ -60,5 +64,10 @@ class ObjectsImport implements ToModel, WithCalculatedFormulas, WithStartRow, Wi
         return [
             'Objekti' => new ObjectsImport()
         ];
+    }
+    
+    public function getActiveObjects(): array
+    {
+        return $this->activeObjects;
     }
 }

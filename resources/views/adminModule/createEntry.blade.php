@@ -17,7 +17,7 @@ method="post">
                 @if($entry->id == null)
                     Izveidot
                 @else
-                    Mainīt
+                    Saglabāt
                 @endif
             </button>
         @endif

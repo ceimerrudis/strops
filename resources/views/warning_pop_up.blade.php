@@ -1,6 +1,7 @@
 <!-- Warning box -->
 <link rel="stylesheet" href="{{asset('css/warning_pop_up.css');}}">
 <div class="overlay" id="warning_pop"> <!-- black opque element over page -->
+    <audio id="warning_sound" src="sounds/click.mp3" preload="auto"></audio>
     <div class="warning_pop_up_warning_box"> <!-- Actual message box -->
         <p id="warning_pop_up_warning_text">
             Paziņojums nav atrasts 

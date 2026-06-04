@@ -6,6 +6,7 @@ function warning_pop_up(action, options = {}) {
         allowCancel = false,
     } = options;
     
+    document.getElementById('warning_sound').play();
     $("#warning_pop").show();
     
     $("#warning_pop_up_warning_text").html(message);
