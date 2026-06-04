@@ -34,7 +34,7 @@ class SynchronizeObjectData extends Command
             
             foreach($active_objs as $object)
             {
-                if(!in_array($object->code, $activeObjects))
+                if(!in_array($object->code, $activeObjects) && $object->id != 0)
                 {
                     Log::info("Changing statuss of object to inactive.");
                     Log::info($object);

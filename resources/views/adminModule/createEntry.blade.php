@@ -14,7 +14,7 @@ method="post">
 
         @if($table != App\Enums\EntryTypes::ERROR->value)
             <button type="submit" class="create_element_button">
-                @if($entry->id == null)
+                @if($entry->id === null)
                     Izveidot
                 @else
                     Saglabāt
