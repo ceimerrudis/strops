@@ -152,7 +152,7 @@ $(document).ready(function() {
     
     <a class="return_link" href="sakums">
         <button class="return_button" type="button">
-            Atgrieztiez us sākumu
+            Atgriezties us sākumu
         </button>
     </a>
     

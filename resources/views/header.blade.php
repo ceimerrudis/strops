@@ -17,7 +17,7 @@
                 updateMessageBoard();
             });
         </script>
-        <link rel="stylesheet" href="{{asset('css/style.css');}}">
+        <link rel="stylesheet" href="{{asset('css/style.css?v=1');}}">
         <link rel="stylesheet" href="{{asset('css/mobileStyles.css');}}">
     </head>
     
