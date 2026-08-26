@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('objects', function (Blueprint $table) {
             $table->id();
             $table->string('code')->nullable(false)->unique();
-            $table->string('name')->nullable(false);
+            $table->string('name')->nullable(true);
             $table->boolean('active')->default(true);
             $table->dateTime('deleted_at')->nullable(true);
             $table->unsignedBigInteger('user_in_charge')->nullable(true);

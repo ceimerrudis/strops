@@ -28,6 +28,15 @@ class ObjectsSheetImport implements ToModel, WithCalculatedFormulas, WithStartRo
         }
         if($row[0] == null) {$this->stopImport = true; return null;}
 
+        if(ObjectModel::where('code', $row[1])->exists()) {  
+            $object = ObjectModel::where('code', $row[1])->first();
+
+            if ($object->name !== $row[2]) { 
+                $object->name = $row[2];
+                $object->save();
+            }
+        }
+
         if ($row[4] == "aktīvs") {
             $this->activeObjects[] = $row[1];
             if(ObjectModel::where('code', $row[1])->exists()) {  
