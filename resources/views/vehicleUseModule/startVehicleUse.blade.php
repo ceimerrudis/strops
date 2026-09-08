@@ -1,9 +1,9 @@
 @php
     use App\Enums\VehicleUsageTypes;
     use App\Enums\VinjetTypes;
-    
+
     $msg = 'type="button" onclick="warning_pop_up(() => document.querySelector(\'#makeVehicleUseForm\').submit(), { message:\'UZMANĪBU! Lietojot šo automašīnu, uz galvenajiem ceļiem nepieciešama <b>VINJETE!</b>. <br> Ceļu karte redzama <a href=&quot;https://www.google.com/maps/d/viewer?ll=56.11007954618068%%2C24.715821016025007&z=8&mid=1BDvnrxY0r59XtMpZoK6rnL46qJRbspo&quot;>šeit</a>.\', okLabel : \'Labi\', cancelLabel: \'Atcelt\', allowCancel: true })"';
-    
+
     $vinjetteAttr = $vinjet == VinjetTypes::REQUIRED->value
     ? sprintf($msg)
     : 'type="submit"';
@@ -19,9 +19,16 @@
 <script src="{{ asset('js/startUsing.js') }}"></script>
 <script>
 $(document).ready(function() {
+    const message = sessionStorage.getItem("refresh_message");
+
+    if (message !== null) {
+        $("#syncText").html(message);
+        sessionStorage.removeItem("refresh_message");
+    }
+
     $("#Reservation_OKBTN").on('click', Reservation_AnswYes);
     $("#Reservation_NOBTN").on('click', AnswNo);
-    
+
     $("#EndUse_OKBTN").on('click', EndUse_AnswYes);
     $("#EndUse_NOBTN").on('click', AnswNo);
 
@@ -40,19 +47,22 @@ $(document).ready(function() {
         $("#loadingWrapper").show();//Šī darbība var aizņemt kādu laiciņu tapēc uzliek lādēšanās logu
         $.ajax({
             type: "GET",
-            url: "atjaunotObjektus", 
+            url: "atjaunotObjektus",
             success: function(result){
                 //close loading window
                 $("#loadingWrapper").hide();
                 $("#syncText").html(result.message);
+
+                sessionStorage.setItem("refresh_message", result.message);
+                location.reload();
             },
-            error: function(XMLHttpRequest, textStatus, errorThrown) { 
+            error: function(XMLHttpRequest, textStatus, errorThrown) {
                 $("#loadingWrapper").hide();
                 $("#syncText").html("Notika kļūda");
 				console.log(result.output);
 				console.log(result.message);
-            }  
-        });  
+            }
+        });
     });
 });
 </script>
@@ -65,7 +75,7 @@ $(document).ready(function() {
     @error('vehicle')
         <span class="alert">{{ $message }}</span>
     @enderror
-    
+
     <!-- Pirmā daļa satur objektu komentāru -->
     <div id="firstPartOfMakeVehicleUseForm">
 		<p class="make_vehicle_use_label"> Kurā objektā lietosi inventāru {{$vehicleName}}? </p>
@@ -106,7 +116,7 @@ $(document).ready(function() {
 			value="{{ old('days', 1) }}"
 			min="1"
 			step="1"
-		@else 
+		@else
 			type="hidden"
 			value="0"
 		@endif
@@ -117,27 +127,27 @@ $(document).ready(function() {
 
     </div>
     <!-- Otrā daļa satur lietojuma pārbaudi un jauno lietojumu (ja tas nepieciešams) -->
-    <div id="secondPartOfMakeVehicleUseForm">   
-        <label id='confirmMotorHLabel' for='usage'> 
+    <div id="secondPartOfMakeVehicleUseForm">
+        <label id='confirmMotorHLabel' for='usage'>
             @if($usage_type == VehicleUsageTypes::MOTOR_HOURS->value)
                 Vai šīs motorstundas "{{$usage}}" atbilst patiesībai?
             @elseif($usage_type == VehicleUsageTypes::KILOMETERS->value)
                 Vai šis nobraukums "{{$usage}}" atbilst patiesībai?
-            @endif    
+            @endif
         </label>
         <button id='ne_poga' type='button' class='ne' name="ne_nesakrit">nē</button>
         <button id="yes_btn" class='begin_use_btn' name="ja_sakrit" {!! $vinjetteAttr !!}>jā / Sākt lietot</button>
 
-        <div id='correctUsageBox' style="display: none;">   
-            <label for='usage' class="wrong_motorh_label"> 
+        <div id='correctUsageBox' style="display: none;">
+            <label for='usage' class="wrong_motorh_label">
                 @if($usage_type == VehicleUsageTypes::MOTOR_HOURS->value)
                     Ievadi pašreizējās motorstundas
                 @elseif($usage_type == VehicleUsageTypes::KILOMETERS->value)
                     Ievadi pašreizējo nobraukumu
-                @endif   
-            </label>    
+                @endif
+            </label>
             <input class="admin_edit_input" type='numeric' name='usage' id='usage' value='{{$usage}}'>
-            
+
         </div>
         @error('usage')
             <span class='alert'>{{ $message }}</span>
@@ -145,17 +155,17 @@ $(document).ready(function() {
 
     </div>
     <button id="beginUse" class='get_next_part' {!! $vinjetteAttr !!}>Sākt lietot</button>
-    
+
     <!-- Izsauc objektu sinhronizāciju -->
     <button class="sync_objects_link" type="button" id="syncBtn" name="atjaunotObjektuSarakstu">Atjaunot objektu sarakstu</button>
     <p id="syncText"></p>
-    
+
     <a class="return_link" href="sakums">
         <button class="return_button" type="button">
             Atgriezties us sākumu
         </button>
     </a>
-    
+
     <div class="spacer"></div>
 </form>
 </div>
