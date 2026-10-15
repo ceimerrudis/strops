@@ -66,6 +66,11 @@ class VehicleUseController extends Controller
                     return redirect()->back()->withData();
                 }
                 $msg = $this->StopUsingVehicleLogic($vehicleUse->id, $data["usage"]);
+                if($msg != "")
+                {
+                    AddMessage($msg, "w");
+                    return redirect()->back()->withData();                
+                }
             }
             else
             {
