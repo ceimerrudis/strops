@@ -50,7 +50,6 @@ class VehicleUseController extends Controller
     {
         $data = $request->validated();
 
-        $vehicle = Vehicle::findOrFail($data['vehicle']);
         //Vispirms pārliecinās ka neviens pašlaik nelieto šo inventāru.
         $vehicleUse = VehicleUse::whereNull('until')
         ->where('vehicle', '=', $data["vehicle"])->first();
@@ -63,13 +62,13 @@ class VehicleUseController extends Controller
                 
                 if(!isset($data["usage"]))
                 {
-                    return redirect()->back()->withData();
+                    return redirect()->back()->withInput();
                 }
                 $msg = $this->StopUsingVehicleLogic($vehicleUse->id, $data["usage"]);
                 if($msg != "")
                 {
                     AddMessage($msg, "w");
-                    return redirect()->back()->withData();                
+                    return redirect()->back()->withInput();
                 }
             }
             else
@@ -78,6 +77,8 @@ class VehicleUseController extends Controller
                 return redirect("sakums");
             }
         }
+        
+        $vehicle = Vehicle::findOrFail($data['vehicle']);
 
         //Pārraksta nesakrītošo lietojumu
         $createError = false;
