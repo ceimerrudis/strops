@@ -22,6 +22,7 @@ class ReservationController extends Controller
 	//RZIZ
 	public function GetCreateReservation(StartVehicleUseCalendarData $request)
     {
+    
         //Pieprasījums nāk no kalendāra lapas
         $data = $request->all();
         $vehicleId = $data["vehicle"];
@@ -45,7 +46,7 @@ class ReservationController extends Controller
 	
     //Funkcijas RZKL atver kalendāra lapu
     public function ViewCalendarPage(Request $request)
-    {  
+    {
         //Eksistē inventāri kurus izmanto tikai  1 konkrēta persona. 
         //Tapēc pārējiem lietotājiem (neskaitot administratorus) šie inventāri netiek rādīti.
         $vehicles = [];
