@@ -181,40 +181,77 @@ class SharedMethods
         }
         
         //Pārbauda vai lietotājs ir rezervējis inventāru uz  šo brīdi. Ja jā tad pāriet uz soli 5. Ja nē tad turpina ar soli 3.
-        $myReservationExists = Reservation::where('from', '<=', $now)
+        $myReservationExists = Reservation::where('from', '<=', $now->copy()->addMinutes(60))
         ->where('until', '>=', $now)
         ->where('vehicle', '=', $vehicleId)
-        ->where('user', '==', Auth::user()->id) 
+        ->where('user', '=', 3)
         ->exists();
-        if(!$myReservationExists){
-            $conflictingReservation = Reservation::where('from', '<=', $now->copy()->addMinutes(30))
+        if(!$myReservationExists) {
+            $conflictingReservations = Reservation::where('from', '<=', $now->copy()->addDays(3))
             ->where('until', '>=', $now)
             ->where('vehicle', '=', $vehicleId)
-            ->where('user', '!=', Auth::user()->id) 
-            ->join('users', 'user', '=', 'users.id')
-            ->select('users.name', 'users.lname', 'until')
-            ->first();
-            
-            //Pārbauda vai kāds cits ir rezervējis šo inventāru uz šo dienu. Ja jā tad  pabrīdina lietotāju.
-            if($conflictingReservation != null){
-                $timeString = substr($conflictingReservation->until, 11, 5);//Laiks teksta formātā
-                $msg = Text(119) . $conflictingReservation->name . " " . $conflictingReservation->lname . Text(120) . $timeString . ".";
-                $messages[] = ["statuss" => "reserved", "message" => $msg];
-            }
-            else
-            {
-                $todaysReservations = Reservation::where('from', '>', $now)
-                ->where('until', '>=', $now)
-                ->where('vehicle', '=', $vehicleId)
-                ->where('user', '!=', Auth::user()->id) 
-                ->join('users', 'user', '=', 'users.id')
-                ->select('users.name', 'users.lname', 'until')
-                ->first();
-                if($todaysReservations != null){
-                    $timeString = substr($todaysReservations->from, 11, 5);//Laiks teksta formātā
-                    $msg = Text(122) . $todaysReservations->name . " " . $todaysReservations->lname . Text(121) . $timeString . ".";
-                    $messages[] = ["statuss" => "reservedInFuture", "message" => $msg];
+            ->where('user', '!=', Auth::id())
+            ->join('users', 'reservations.user', '=', 'users.id')
+            ->select(
+                'users.name',
+                'users.lname',
+                'reservations.from',
+                'reservations.until'
+            )
+            ->get();
+
+            $msgList = [];
+
+            foreach ($conflictingReservations as $reservation) {
+
+                $from = Carbon::parse($reservation->from);
+                $until = Carbon::parse($reservation->until);
+
+                $timeFrom = $from->format('H:i');
+                $timeUntil = $until->format('H:i');
+
+                // Reservation starts today
+                if ($from->isSameDay($now)) {
+                    $msg = $reservation->name . " "
+                    . $reservation->lname . " "
+                    . Text(119)
+                    . $timeFrom
+                    . Text(120)
+                    . $timeUntil
+                    . ".";
+
+                    $msgList[] = [
+                        "statuss" => "reserved",
+                        "message" => $msg,
+                        "priority" => $from,
+                        "future" => false
+                    ];
+                } else {
+                    // Reservation starts in the future
+                    $msg = Text(122)
+                    . $from->format('d.m.Y H:i')
+                    . ".";
+
+                    $msgList[] = [
+                        "statuss" => "reservedInFuture",
+                        "message" => $msg,
+                        "priority" => $from,
+                        "future" => true
+                    ];
                 }
+            }
+
+            // Sort by earliest reservation start time
+            usort($msgList, function ($a, $b) {
+                return $a['priority']->timestamp <=> $b['priority']->timestamp;
+            });
+
+            // Send only the highest-priority message
+            if (!empty($msgList)) {
+                $messages[] = [
+                    "statuss" => $msgList[0]['statuss'],
+                    "message" => $msgList[0]['message']
+                ];
             }
         }
     

@@ -19,10 +19,10 @@ return [
     116 => 'Jūs jau lietojat šo inventāru.',
     117 => 'Šo inventāru pašlaik lieto ',//Tiek papildināts ar koda datiem
     118 => ' <br>Vai izveidot lietojumu, un pārtraukt pašreizējo?',
-    119 => 'Pašlaik inventāru ir rezervējis ',
+    119 => 'šodien ir rezervējis šo inventāru no plkst. ',
     120 => ' līdz plkst. ',
     121 => ' no plkst. ',
-    122 => 'Šo inventāru šodien ir rezervējis ',
+    122 => 'Šis inventārts rezervēts no ',
     123 => 'Sākot lietojumu inventāram jābūt norādītam.',
     124 => 'Šāds inventārs netika atrasts.',
     125 => 'Lietojumam jābūt skaitlim.',
