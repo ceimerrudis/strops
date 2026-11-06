@@ -184,7 +184,7 @@ class SharedMethods
         $myReservationExists = Reservation::where('from', '<=', $now->copy()->addMinutes(60))
         ->where('until', '>=', $now)
         ->where('vehicle', '=', $vehicleId)
-        ->where('user', '=', 3)
+        ->where('user', '=', Auth::id())
         ->exists();
         if(!$myReservationExists) {
             $conflictingReservations = Reservation::where('from', '<=', $now->copy()->addDays(3))
